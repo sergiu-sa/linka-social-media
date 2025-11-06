@@ -1,0 +1,49 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="armGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2a28;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f0d;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="coreGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#4a4a48;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a18;stop-opacity:1" />
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Arm 1 (0°, top) -->
+  <g transform="translate(100, 100) rotate(0) translate(-100, -100)">
+    <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#armGradient)" filter="url(#shadow)" opacity="0.9"/>
+  </g>
+
+  <!-- Arm 2 (60°) -->
+  <g transform="translate(100, 100) rotate(60) translate(-100, -100)">
+    <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#armGradient)" filter="url(#shadow)" opacity="0.85"/>
+  </g>
+
+  <!-- Arm 3 (120°) -->
+  <g transform="translate(100, 100) rotate(120) translate(-100, -100)">
+    <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#armGradient)" filter="url(#shadow)" opacity="0.80"/>
+  </g>
+
+  <!-- Arm 4 (180°, bottom) -->
+  <g transform="translate(100, 100) rotate(180) translate(-100, -100)">
+    <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#armGradient)" filter="url(#shadow)" opacity="0.90"/>
+  </g>
+
+  <!-- Arm 5 (240°) -->
+  <g transform="translate(100, 100) rotate(240) translate(-100, -100)">
+    <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#armGradient)" filter="url(#shadow)" opacity="0.85"/>
+  </g>
+
+  <!-- Arm 6 (300°) -->
+  <g transform="translate(100, 100) rotate(300) translate(-100, -100)">
+    <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#armGradient)" filter="url(#shadow)" opacity="0.80"/>
+  </g>
+
+  <!-- Core sphere - much larger -->
+  <circle cx="100" cy="100" r="55" fill="url(#coreGradient)" filter="url(#shadow)"/>
+  <circle cx="100" cy="100" r="55" fill="none" stroke="#3a3a38" stroke-width="0.5" opacity="0.3"/>
+</svg>

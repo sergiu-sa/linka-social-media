@@ -1,0 +1,29 @@
+{
+  "name": "social_media",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/three": "^0.181.0",
+    "jsdom": "^27.0.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.6",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@fontsource/bebas-neue": "^5.2.7",
+    "@fontsource/open-sans": "^5.2.7",
+    "@tailwindcss/vite": "^4.1.16",
+    "gsap": "^3.13.0",
+    "tailwindcss": "^4.1.16",
+    "three": "^0.181.0"
+  }
+}
