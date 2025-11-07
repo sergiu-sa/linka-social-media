@@ -21,6 +21,7 @@
   "dependencies": {
     "@fontsource/bebas-neue": "^5.2.7",
     "@fontsource/open-sans": "^5.2.7",
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "@tailwindcss/vite": "^4.1.16",
     "gsap": "^3.13.0",
     "tailwindcss": "^4.1.16",

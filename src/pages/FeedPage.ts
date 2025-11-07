@@ -811,7 +811,7 @@ async function handleEditPost(event: Event): Promise<void> {
           mediaContainer.className = 'post-media-preview';
           postElement.insertBefore(mediaContainer, postElement.firstChild);
         }
-        mediaContainer.innerHTML = `<img src="${updated.media.url}" alt="${updated.media.alt || 'Post image'}" class="post-image-preview">`;
+        mediaContainer.innerHTML = `<img src="${updated.media.url}" alt="${updated.media.alt || 'Post image'}" loading="lazy" class="post-image-preview">`;
       }
     }
 
@@ -1247,14 +1247,14 @@ function viewFullPost(postId: number): void {
 
   fullPostContent.innerHTML = `
     <article class="full-post-card">
-      ${mediaImg ? `<div class="full-post-media"><img src="${mediaImg.src}" alt="${mediaImg.alt}" class="full-post-image"></div>` : ''}
+      ${mediaImg ? `<div class="full-post-media"><img src="${mediaImg.src}" alt="${mediaImg.alt}" loading="lazy" class="full-post-image"></div>` : ''}
 
       <header class="full-post-header">
         <div class="author-info">
           <div class="author-avatar">
             ${
               avatarUrl
-                ? `<img src="${avatarUrl}" alt="${author}" class="avatar-img">`
+                ? `<img src="${avatarUrl}" alt="${author}" loading="lazy" class="avatar-img">`
                 : `<div class="avatar-placeholder">${author.charAt(0).toUpperCase()}</div>`
             }
           </div>

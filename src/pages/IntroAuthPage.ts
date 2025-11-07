@@ -96,7 +96,7 @@ export default async function IntroAuthPage(): Promise<string> {
         <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 text-white leading-tight animate-fade-in">LINKA</h1>
         <p class="text-base sm:text-lg text-orange-400 mb-3 sm:mb-4 leading-relaxed font-semibold animate-fade-in-delay-1">Connections Come Together</p>
         <p class="text-xs sm:text-sm text-white/70 mb-6 sm:mb-8 leading-relaxed animate-fade-in-delay-2">The infinite potential of human connection. Real relationships, beautifully structured and endlessly possible.</p>
-        <p class="text-[10px] sm:text-xs tracking-widest uppercase text-white/50 animate-pulse">PRESS ENTER TO EXPLORE</p>
+        <p class="text-xs sm:text-sm tracking-widest uppercase text-white font-semibold animate-pulse">PRESS ENTER TO EXPLORE</p>
       </div>
     </div>
 
@@ -124,7 +124,7 @@ export default async function IntroAuthPage(): Promise<string> {
           <p class="form-msg text-xs sm:text-sm mt-3 sm:mt-4 text-center text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-lg p-2 sm:p-3 font-medium empty:hidden min-h-0"></p>
         </form>
 
-        <form id="register" class="form-panel space-y-4 sm:space-y-5 max-w-xl mx-auto w-full" novalidate>
+        <form id="register" class="form-panel space-y-4 sm:space-y-5 max-w-xl mx-auto w-full">
           <div class="relative">
             <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-orange-500 light:text-orange-600 mb-2 sm:mb-2.5 drop-shadow-sm light:drop-shadow-none">Username</label>
             <input type="text" name="name" placeholder="my_username" required class="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-sm sm:text-base rounded-xl bg-slate-800/90 light:bg-white/95 backdrop-blur-md border-2 border-slate-600/50 light:border-slate-300/80 text-white light:text-slate-900 placeholder-white/50 light:placeholder-slate-500/60 shadow-lg shadow-black/10 light:shadow-black/5 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-500/40 focus:border-orange-500/80 focus:bg-slate-800 light:focus:bg-white focus:-translate-y-0.5 focus:shadow-xl focus:shadow-orange-500/20 hover:border-orange-500/50 hover:bg-slate-800/95 light:hover:bg-white hover:shadow-xl light:hover:border-orange-500/60" />
@@ -328,7 +328,10 @@ function setupUI() {
           if (typeof (window as any).refreshNavbar === 'function') {
             (window as any).refreshNavbar();
           }
-          renderRoute('/feed');
+          // Small delay to ensure navbar is fully rendered before navigating
+          setTimeout(() => {
+            renderRoute('/feed');
+          }, 50);
         }, 500);
       } catch (err: any) {
         console.error(err);

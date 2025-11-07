@@ -94,7 +94,7 @@ function renderProfileHeader(profile: ProfileWithFollowData, isOwnProfile: boole
   return `
     <div class="relative ${hasBanner ? 'h-52 sm:h-72' : 'h-36 bg-gradient-to-br from-orange-500/10 via-orange-600/5 to-orange-500/5 dark:from-slate-800 dark:via-slate-800/70 dark:to-slate-900'}">
       ${hasBanner ? `
-        <img src="${bannerUrl}" alt="Profile banner" class="w-full h-full object-cover" />
+        <img src="${bannerUrl}" alt="Profile banner" loading="lazy" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/15 to-black/35"></div>
       ` : ''}
 
@@ -137,6 +137,7 @@ function renderProfileInfo(profile: UserProfile, isOwnProfile: boolean): string 
             <img
               src="${avatarUrl}"
               alt="${profile.name}'s avatar"
+              loading="lazy"
               class="w-full h-full object-cover"
               onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=f97316&color=fff&size=160&bold=true'"
             />

@@ -1,0 +1,14 @@
+declare module '@fontsource/bebas-neue';
+declare module '@fontsource/open-sans/300.css';
+declare module '@fontsource/open-sans/400.css';
+declare module '@fontsource/open-sans/500.css';
+declare module '@fontsource/open-sans/600.css';
+declare module '@fontsource/open-sans/700.css';
+declare module '@fontsource/open-sans/800.css';
+declare module '@fontsource/open-sans/300-italic.css';
+declare module '@fontsource/open-sans/400-italic.css';
+declare module '@fontsource/open-sans/500-italic.css';
+declare module '@fontsource/open-sans/600-italic.css';
+declare module '@fontsource/open-sans/700-italic.css';
+declare module '@fontsource/open-sans/800-italic.css';
+declare module '@fortawesome/fontawesome-free/css/all.css';

@@ -58,7 +58,7 @@ export default function postCard(
         media?.url
           ? `
         <div class="mb-6 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-3xl overflow-hidden">
-          <img src="${media.url}" alt="${media.alt || 'Post image'}" class="w-full h-72 sm:h-80 md:h-96 lg:h-[28rem] object-cover transition-transform duration-500 hover:scale-110">
+          <img src="${media.url}" alt="${media.alt || 'Post image'}" loading="lazy" class="w-full h-72 sm:h-80 md:h-96 lg:h-[28rem] object-cover transition-transform duration-500 hover:scale-110">
         </div>
       `
           : ''
@@ -69,7 +69,7 @@ export default function postCard(
           <div class="cursor-pointer shrink-0 group"
                  onclick="navigateToProfile('${author?.name || 'Unknown'}')"
                  style="cursor: pointer;">
-                <img src="${avatarUrl}" alt="${avatarAlt}" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-orange-400 dark:border-orange-500 object-cover transition-all duration-300 group-hover:scale-110 group-hover:border-orange-500 dark:group-hover:border-orange-400 group-hover:shadow-md">
+                <img src="${avatarUrl}" alt="${avatarAlt}" loading="lazy" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-orange-400 dark:border-orange-500 object-cover transition-all duration-300 group-hover:scale-110 group-hover:border-orange-500 dark:group-hover:border-orange-400 group-hover:shadow-md">
             </div>
           <div class="min-w-0 flex-1">
               <h4 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1">
