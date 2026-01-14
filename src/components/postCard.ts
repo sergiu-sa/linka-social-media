@@ -53,7 +53,7 @@ export default function postCard(
     title.length > 50 ? title.substring(0, 50) + '...' : title;
 
   return `
-    <article class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-orange-400 dark:hover:border-orange-600 transform hover:-translate-y-1" data-post-id="${id}" id="post-${id}" style="animation-delay: ${animationDelay}s">
+    <article class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-orange-400 dark:hover:border-orange-600 transform hover:-translate-y-1" data-post-id="${id}" id="post-${id}" data-full-title="${encodeURIComponent(title)}" data-full-body="${encodeURIComponent(body)}" data-tags="${encodeURIComponent(JSON.stringify(tags))}" data-media="${media?.url ? encodeURIComponent(JSON.stringify(media)) : ''}" data-author="${encodeURIComponent(JSON.stringify(author))}" data-created="${created || ''}" data-reaction-count="${reactionCount}" data-comment-count="${_count.comments}" style="animation-delay: ${animationDelay}s">
       ${
         media?.url
           ? `
@@ -219,11 +219,6 @@ export default function postCard(
   `;
 }
 
-/**
- * Calculate time ago from a date
- * @param date The date to calculate from
- * @returns Formatted time ago string
- */
 function getTimeAgo(date: Date): string {
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();
@@ -238,30 +233,3 @@ function getTimeAgo(date: Date): string {
   if (diffInDays < 7) return `${diffInDays}d ago`;
   return date.toLocaleDateString();
 }
-
-/**
- * Show reactions modal on hover
- */
-function showReactionsModal(postId: number): void {
-  const modal = document.getElementById(`reactions-${postId}`);
-  if (modal) {
-    modal.style.display = 'block';
-  }
-}
-
-/**
- * Hide reactions modal when not hovering
- */
-function hideReactionsModal(postId: number): void {
-  // Add a small delay to allow clicking on reactions
-  setTimeout(() => {
-    const modal = document.getElementById(`reactions-${postId}`);
-    if (modal && !modal.matches(':hover')) {
-      modal.style.display = 'none';
-    }
-  }, 200);
-}
-
-// Make functions globally available
-(window as any).showReactionsModal = showReactionsModal;
-(window as any).hideReactionsModal = hideReactionsModal;

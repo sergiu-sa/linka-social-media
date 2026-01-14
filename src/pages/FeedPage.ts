@@ -1216,97 +1216,98 @@ function viewFullPost(postId: number): void {
   const postElement = document.getElementById(`post-${postId}`);
   if (!postElement) return;
 
-  const title =
-    postElement.querySelector('.post-title-compact')?.textContent || '';
-  const body = postElement.querySelector('.post-body')?.textContent || '';
-  const author =
-    postElement.querySelector('.author-name-compact')?.textContent || '';
-  const time =
-    postElement.querySelector('.post-time-compact')?.textContent || '';
-  const mediaImg = postElement.querySelector(
-    '.post-image-preview'
-  ) as HTMLImageElement;
-  const tags = Array.from(postElement.querySelectorAll('.tag-compact'))
-    .map((tag) => tag.textContent?.replace('#', '') || '')
-    .filter((tag) => tag.length > 0);
+  // Read full data from data attributes (not truncated DOM content)
+  const title = decodeURIComponent(postElement.dataset.fullTitle || '');
+  const body = decodeURIComponent(postElement.dataset.fullBody || '');
+  const tags: string[] = postElement.dataset.tags
+    ? JSON.parse(decodeURIComponent(postElement.dataset.tags))
+    : [];
+  const media = postElement.dataset.media
+    ? JSON.parse(decodeURIComponent(postElement.dataset.media))
+    : null;
+  const author = postElement.dataset.author
+    ? JSON.parse(decodeURIComponent(postElement.dataset.author))
+    : { name: 'Unknown' };
+  const created = postElement.dataset.created || '';
+  const reactionCount = postElement.dataset.reactionCount || '0';
+  const commentCount = postElement.dataset.commentCount || '0';
 
-  const likeCount =
-    postElement.querySelector('.like-btn .action-count-compact')?.textContent ||
-    '0';
-  const commentCount =
-    postElement.querySelector('.comment-btn .action-count-compact')
-      ?.textContent || '0';
-
-  const avatarImg = postElement.querySelector(
-    '.avatar-img-small'
-  ) as HTMLImageElement;
-  const avatarUrl = avatarImg?.src || '';
+  // Format time
+  const timeAgo = created ? getTimeAgoFromDate(new Date(created)) : '';
+  const avatarUrl = author?.avatar?.url || '';
 
   const fullPostContent = document.getElementById('fullPostContent');
   if (!fullPostContent) return;
 
   fullPostContent.innerHTML = `
-    <article class="full-post-card">
-      ${mediaImg ? `<div class="full-post-media"><img src="${mediaImg.src}" alt="${mediaImg.alt}" loading="lazy" class="full-post-image"></div>` : ''}
+    <article class="space-y-6">
+      ${media?.url ? `
+        <div class="-mx-6 -mt-6 rounded-t-2xl overflow-hidden">
+          <img src="${media.url}" alt="${media.alt || 'Post image'}" loading="lazy" class="w-full max-h-[500px] object-cover">
+        </div>
+      ` : ''}
 
-      <header class="full-post-header">
-        <div class="author-info">
-          <div class="author-avatar">
-            ${
-              avatarUrl
-                ? `<img src="${avatarUrl}" alt="${author}" loading="lazy" class="avatar-img">`
-                : `<div class="avatar-placeholder">${author.charAt(0).toUpperCase()}</div>`
-            }
-          </div>
-          <div class="author-details">
-            <h4 class="author-name">
-              <a href="/profile?user=${author}" class="author-link" onclick="event.preventDefault(); navigateToProfile('${author}')">${author}</a>
-            </h4>
-            <p class="post-time">${time}</p>
-          </div>
+      <header class="flex items-center gap-4">
+        <div class="cursor-pointer" onclick="navigateToProfile('${author?.name || 'Unknown'}'); closeFullPostModal();">
+          ${avatarUrl
+            ? `<img src="${avatarUrl}" alt="${author?.name}" loading="lazy" class="w-14 h-14 rounded-full border-2 border-orange-400 object-cover hover:scale-105 transition-transform">`
+            : `<div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-xl font-bold">${(author?.name || 'U').charAt(0).toUpperCase()}</div>`
+          }
+        </div>
+        <div>
+          <h4 class="text-lg font-bold text-white hover:text-orange-400 transition-colors cursor-pointer" onclick="navigateToProfile('${author?.name || 'Unknown'}'); closeFullPostModal();">
+            ${author?.name || 'Unknown'}
+          </h4>
+          <p class="text-sm text-slate-400">${timeAgo}</p>
         </div>
       </header>
 
-      <div class="full-post-content">
-        ${title ? `<h2 class="full-post-title">${title}</h2>` : ''}
-        <div class="full-post-text">${body}</div>
-        ${
-          tags.length
-            ? `<div class="full-post-tags">${tags.map((tag) => `<span class="tag">#${tag}</span>`).join('')}</div>`
-            : ''
-        }
+      <div class="space-y-4">
+        ${title ? `<h2 class="text-2xl font-bold text-white">${escapeHtml(title)}</h2>` : ''}
+        <div class="text-slate-300 leading-relaxed whitespace-pre-wrap">${escapeHtml(body)}</div>
+        ${tags.length ? `
+          <div class="flex flex-wrap gap-2 pt-2">
+            ${tags.map((tag: string) => `<span class="px-3 py-1 bg-orange-500/20 text-orange-400 text-sm font-medium rounded-full border border-orange-500/30">#${escapeHtml(tag)}</span>`).join('')}
+          </div>
+        ` : ''}
       </div>
 
-      <footer class="full-post-actions">
-        <div class="action-buttons">
-          <div style="position: relative;">
-            <button class="action-btn like-btn" data-post-id="${postId}"
-              onclick="toggleReaction(${postId}, '❤️')"
-              onmouseenter="showReactionsModal(${postId})"
-              onmouseleave="hideReactionsModal(${postId})">
-              ❤️ <span class="action-count">${likeCount}</span>
-            </button>
-            <div class="reactions-modal" id="reactions-${postId}" style="display: none;">
-              <div class="reactions-list">
-                ${['👍', '❤️', '😂', '😮', '😢', '😡'].map((e) => `<button class="reaction-btn" onclick="selectReaction(${postId}, '${e}')">${e}</button>`).join('')}
-              </div>
-            </div>
-          </div>
-
-          <button class="action-btn comment-btn" data-post-id="${postId}" onclick="toggleComments(${postId}); closeFullPostModal();">
-            💬 <span class="action-count">${commentCount}</span>
-          </button>
-
-          <button class="action-btn share-btn" onclick="sharePost(${postId})">
-            📤 <span class="action-label">Share</span>
-          </button>
-        </div>
+      <footer class="flex items-center gap-4 pt-4 border-t border-slate-600/50">
+        <button class="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-orange-500/20 text-slate-300 hover:text-orange-400 rounded-xl transition-all" onclick="toggleReaction(${postId}, '❤️')">
+          <i class="fa-solid fa-heart"></i>
+          <span>${reactionCount}</span>
+        </button>
+        <button class="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-orange-500/20 text-slate-300 hover:text-orange-400 rounded-xl transition-all" onclick="toggleComments(${postId}); closeFullPostModal();">
+          <i class="fa-solid fa-comment"></i>
+          <span>${commentCount}</span>
+        </button>
       </footer>
     </article>
   `;
 
   const modal = document.getElementById('fullPostModal');
   if (modal) modal.style.display = 'flex';
+}
+
+function getTimeAgoFromDate(date: Date): string {
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInSeconds = Math.floor(diffInMs / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInSeconds < 60) return 'Just now';
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+  return date.toLocaleDateString();
+}
+
+function escapeHtml(text: string): string {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function closeFullPostModal(): void {
