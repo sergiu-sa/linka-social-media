@@ -17,10 +17,10 @@ import {
   toggleReaction,
   deleteComment,
 } from '../services/interactions/interactions';
-import { getLocalItem } from '../utils/storage';
+import { getLocalItem, setLocalItem } from '../utils/storage';
+import { getTimeAgo } from '../utils/date';
 import { renderRoute } from '../router';
 import { fetchApiKey } from '../services/api/client';
-import { setLocalItem } from '../utils/storage';
 
 /* ---------- Auth helpers (token from any key) ---------- */
 const tokenFromAnyKey = () =>
@@ -1233,7 +1233,7 @@ function viewFullPost(postId: number): void {
   const commentCount = postElement.dataset.commentCount || '0';
 
   // Format time
-  const timeAgo = created ? getTimeAgoFromDate(new Date(created)) : '';
+  const timeAgo = created ? getTimeAgo(new Date(created)) : '';
   const avatarUrl = author?.avatar?.url || '';
 
   const fullPostContent = document.getElementById('fullPostContent');
@@ -1287,21 +1287,6 @@ function viewFullPost(postId: number): void {
 
   const modal = document.getElementById('fullPostModal');
   if (modal) modal.style.display = 'flex';
-}
-
-function getTimeAgoFromDate(date: Date): string {
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInSeconds = Math.floor(diffInMs / 1000);
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  const diffInDays = Math.floor(diffInHours / 24);
-
-  if (diffInSeconds < 60) return 'Just now';
-  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString();
 }
 
 function escapeHtml(text: string): string {

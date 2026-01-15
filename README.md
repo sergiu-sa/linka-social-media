@@ -62,7 +62,6 @@ This project demonstrates contemporary web development practices: CSS framework 
 - **Testing:** Vitest
 - **Code Formatting:** Prettier
 - **Deployment:** Netlify
-- **3D Graphics:** Three.js + GSAP
 
 ## Quick Start
 
@@ -140,16 +139,6 @@ src/
 - Muhammad Hammad Khan (@Hammadniazi)  
 - Renate Pedersen (@03-renate)  
 - Sergiu Sarbu (@sergiu-sa)
-
-## Acknowledgments
-
-- **Noroff API v2** for backend services  
-- **Tailwind CSS** for the utility-first CSS framework  
-- **Vite** for the fast dev environment  
-- **Three.js & GSAP** for interactive 3D graphics  
-- **Font Awesome** for iconography  
-- **Netlify** for deployment and hosting  
-- **Monde Sineke** ([S3ak](https://github.com/S3ak)) – instructor guidance and starter template  
 
 ## License
 

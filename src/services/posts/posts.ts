@@ -89,45 +89,6 @@ export async function getPublicPosts(
   return getSamplePosts(limit, page);
 }
 
-/**
- * Fetch a single post by ID
- */
-export async function getPostById(id: number): Promise<NoroffPost> {
-  try {
-    const response = await get<{ data: NoroffPost }>(
-      `${BASE_URL}/${id}?_author=true&_reactions=true&_comments=true`
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching post by ID:", error);
-    throw error;
-  }
-}
-
-/**
- * Search posts by query
- */
-export async function searchPosts(
-  query: string,
-  limit: number = 20
-): Promise<PostsApiResponse> {
-  try {
-    const queryParams = new URLSearchParams({
-      q: query,
-      limit: limit.toString(),
-      _author: "true",
-      _reactions: "true",
-    });
-
-    return await get<PostsApiResponse>(
-      `${BASE_URL}/search?${queryParams.toString()}`
-    );
-  } catch (error) {
-    console.error("Error searching posts:", error);
-    throw error;
-  }
-}
-
 /* -------------------------------------------------------------------------- */
 /*                               WRITE METHODS                                */
 /* -------------------------------------------------------------------------- */
@@ -183,41 +144,6 @@ export async function updatePost(
  */
 export async function deletePost(postId: number): Promise<void> {
   return del(`${BASE_URL}/${postId}`);
-}
-
-/**
- * Add a comment to a post
- */
-export async function addComment(postId: number, body: string) {
-  return post(`${BASE_URL}/${postId}/comment`, { body });
-}
-
-/**
- * Reply to a comment
- */
-export async function replyToComment(
-  postId: number,
-  parentCommentId: number,
-  body: string
-) {
-  return post(`${BASE_URL}/${postId}/comment`, {
-    body,
-    replyToId: parentCommentId,
-  });
-}
-
-/**
- * React to a post with an emoji
- */
-export async function reactToPost(postId: number, symbol: string) {
-  return put(`${BASE_URL}/${postId}/react/${symbol}`, {});
-}
-
-/**
- * Remove reaction from a post
- */
-export async function removeReaction(postId: number, symbol: string) {
-  return del(`${BASE_URL}/${postId}/react/${symbol}`);
 }
 
 /* -------------------------------------------------------------------------- */

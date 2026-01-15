@@ -6,6 +6,7 @@
 
 import type { NoroffPost } from '../services/posts/posts';
 import { getLocalItem } from '../utils/storage';
+import { getTimeAgo } from '../utils/date';
 
 /**
  * Creates a comprehensive post card HTML with full interaction capabilities
@@ -217,19 +218,4 @@ export default function postCard(
 </div>
     </article>
   `;
-}
-
-function getTimeAgo(date: Date): string {
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInSeconds = Math.floor(diffInMs / 1000);
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  const diffInDays = Math.floor(diffInHours / 24);
-
-  if (diffInSeconds < 60) return 'Just now';
-  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString();
 }

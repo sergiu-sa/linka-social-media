@@ -3,7 +3,7 @@
  * @file interactions.ts - Fixed version
  */
 
-import { get, post, put, del } from '../api/client';
+import { post, put, del } from '../api/client';
 
 export interface Comment {
   id: string;
@@ -92,15 +92,6 @@ export async function createComment(
 }
 
 /**
- * Reply to an existing comment
- * @param postId The ID of the post
- * @param parentCommentId The ID of the comment to reply to
- * @param body The reply text
- * @returns Promise with created reply
- */
-
-
-/**
  * Delete a comment (only works for your own comments)
  * @param postId The ID of the post
  * @param commentId The ID of the comment to delete
@@ -130,12 +121,9 @@ export async function deleteComment(
 }
 
 /**
- * React to a post with an emoji
- * @param postId The ID of the post
- * @param symbol The emoji symbol to react with
- * @returns Promise that resolves when reaction is added
+ * React to a post with an emoji (internal helper for toggleReaction)
  */
-export async function reactToPost(
+async function reactToPost(
   postId: string,
   symbol: string
 ): Promise<void> {
@@ -162,12 +150,9 @@ export async function reactToPost(
 }
 
 /**
- * Remove reaction from a post
- * @param postId The ID of the post
- * @param symbol The emoji symbol to remove
- * @returns Promise that resolves when reaction is removed
+ * Remove reaction from a post (internal helper for toggleReaction)
  */
-export async function removeReaction(
+async function removeReaction(
   postId: string,
   symbol: string
 ): Promise<void> {
@@ -223,22 +208,5 @@ export async function toggleReaction(
 
     // If it's a different error, re-throw it
     throw error;
-  }
-}
-
-/**
- * Get reactions for a specific post
- * @param postId The ID of the post
- * @returns Promise with reactions data
- */
-export async function getPostReactions(postId: string): Promise<Reaction[]> {
-  try {
-    const response = await get<{ data: Reaction[] }>(
-      `/social/posts/${postId}?_reactions=true`
-    );
-    return response?.data || [];
-  } catch (error) {
-    console.error('Error fetching post reactions:', error);
-    return [];
   }
 }

@@ -39,31 +39,3 @@ export function getLocalItem(key = '') {
   }
 }
 
-/**
- * Removes an item from local storage
- *
- * @param {string} key - The key to remove from local storage
- */
-export function removeLocalItem(key = '') {
-  window.localStorage.removeItem(key);
-}
-
-/**
- * Clears all authentication-related data from local storage
- */
-export function clearAuthData() {
-  removeLocalItem('accessToken');
-  removeLocalItem('user');
-  removeLocalItem('apiKey');
-}
-
-/**
- * Gets all stored authentication data
- */
-export function getAuthData() {
-  return {
-    accessToken: getLocalItem('accessToken'),
-    user: getLocalItem('user'),
-    apiKey: getLocalItem('apiKey'),
-  };
-}
