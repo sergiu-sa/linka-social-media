@@ -92,11 +92,11 @@ export default async function IntroAuthPage(): Promise<string> {
     </header>
 
     <div id="storyOverlay" class="fixed inset-0 z-40 flex flex-col items-center justify-center bg-transparent opacity-100 pointer-events-auto transition-all duration-500 px-4">
-      <div class="max-w-lg w-full backdrop-blur-xl bg-slate-900/40 border border-white/10 rounded-2xl sm:rounded-3xl px-6 py-8 sm:px-10 sm:py-12 text-center shadow-2xl z-50">
-        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 text-white leading-tight animate-fade-in">LINKA</h1>
-        <p class="text-base sm:text-lg text-orange-400 mb-3 sm:mb-4 leading-relaxed font-semibold animate-fade-in-delay-1">Connections Come Together</p>
-        <p class="text-xs sm:text-sm text-white/70 mb-6 sm:mb-8 leading-relaxed animate-fade-in-delay-2">The infinite potential of human connection. Real relationships, beautifully structured and endlessly possible.</p>
-        <p class="text-xs sm:text-sm tracking-widest uppercase text-white font-semibold animate-pulse">PRESS ENTER TO EXPLORE</p>
+      <div class="max-w-xs sm:max-w-sm w-full backdrop-blur-xl bg-slate-900/40 border border-white/10 rounded-xl sm:rounded-2xl px-5 py-5 sm:px-7 sm:py-7 text-center shadow-2xl z-50">
+        <h1 class="font-serif text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-white leading-tight animate-fade-in">LINKA</h1>
+        <p class="text-sm text-orange-400 mb-2 leading-relaxed font-semibold animate-fade-in-delay-1">Connections Come Together</p>
+        <p class="text-[11px] sm:text-xs text-white/70 mb-4 leading-relaxed animate-fade-in-delay-2">The infinite potential of human connection. Real relationships, beautifully structured and endlessly possible.</p>
+        <p class="text-[10px] sm:text-xs tracking-widest uppercase text-white font-semibold animate-pulse">PRESS ENTER TO EXPLORE</p>
       </div>
     </div>
 
