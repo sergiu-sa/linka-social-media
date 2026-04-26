@@ -13,66 +13,6 @@ body {
   z-index: 1;
 }
 
-/* LINKA intro helpers */
-.drawer {
-  transform: translateY(100%);
-  transition:
-    transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
-    max-height 0.4s ease;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
-}
-.drawer.show {
-  transform: translateY(0);
-}
-.form-panel {
-  display: none;
-  animation: fadeInUp 0.4s ease forwards;
-  opacity: 0;
-}
-.form-panel.active {
-  display: block;
-  opacity: 1;
-}
-
-/* Tab button active state with animated underline */
-.tab-button {
-  position: relative;
-}
-.tab-button::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(
-    to right,
-    rgb(249 115 22 / 0.8),
-    rgb(251 146 60 / 0.8)
-  );
-  transform: scaleX(0);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
-  border-radius: 2px;
-}
-.tab-button.active {
-  color: rgb(249 115 22);
-  font-weight: 800;
-}
-.tab-button.active::after {
-  transform: scaleX(1);
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 html.light-mode body {
   background: linear-gradient(to bottom right, #fff7f2, #ffffff);
   color: #1a1a1a;
@@ -149,115 +89,592 @@ body {
   }
 }
 
-/* Light mode drawer styling */
-html.light-mode #drawer {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.75),
-    rgba(248, 250, 252, 0.8)
-  ) !important;
-  border-top-color: rgba(203, 213, 225, 0.6) !important;
-  box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Light mode drawer handle */
-html.light-mode #drawer > div:first-child > div {
-  background: linear-gradient(
-    to right,
-    rgba(249, 115, 22, 0.4),
-    rgba(249, 115, 22, 0.8),
-    rgba(249, 115, 22, 0.4)
-  ) !important;
-}
-
-/* Light mode close button */
-html.light-mode #closeDrawer {
-  background: rgba(15, 23, 42, 0.05) !important;
-  border-color: rgba(203, 213, 225, 0.3) !important;
-  color: rgba(15, 23, 42, 0.8) !important;
-}
-
-html.light-mode #closeDrawer:hover {
-  background: rgba(249, 115, 22, 0.15) !important;
-  border-color: rgba(249, 115, 22, 0.4) !important;
-  color: rgba(249, 115, 22, 1) !important;
-}
-
-/* Light mode tab section border */
-html.light-mode .tab-button {
-  color: rgba(71, 85, 105, 0.7) !important;
-}
-
-html.light-mode .tab-button:hover {
-  color: rgba(30, 41, 59, 0.9) !important;
-}
-
-html.light-mode .tab-button.active {
-  color: rgb(249 115 22) !important;
-}
-
-/* Light mode form inputs and textareas */
-html.light-mode .form-panel input,
-html.light-mode .form-panel textarea {
-  background: linear-gradient(
-    to bottom right,
-    rgba(241, 245, 249, 0.9),
-    rgba(255, 255, 255, 0.9)
-  ) !important;
-  border-color: rgba(203, 213, 225, 0.6) !important;
-  color: rgba(15, 23, 42, 1) !important;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-}
-
-html.light-mode .form-panel input::placeholder,
-html.light-mode .form-panel textarea::placeholder {
-  color: rgba(100, 116, 139, 0.5) !important;
-}
-
-html.light-mode .form-panel input:hover,
-html.light-mode .form-panel textarea:hover {
-  border-color: rgba(249, 115, 22, 0.4) !important;
-  background: linear-gradient(
-    to bottom right,
-    rgba(255, 255, 255, 1),
-    rgba(254, 252, 251, 1)
-  ) !important;
-}
-
-html.light-mode .form-panel input:focus,
-html.light-mode .form-panel textarea:focus {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(249, 115, 22, 0.7) !important;
-  box-shadow:
-    0 0 0 4px rgba(249, 115, 22, 0.15),
-    inset 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Light mode labels */
-html.light-mode .form-panel label {
-  color: rgba(249, 115, 22, 1) !important;
-  text-shadow: none !important;
-}
-
-/* Light mode helper text */
-html.light-mode .form-panel p[class*='text-slate-300'] {
-  color: rgba(71, 85, 105, 0.7) !important;
-}
-
-/* Light mode optional span in labels */
-html.light-mode .form-panel label span[class*='text-slate-400'] {
-  color: rgba(100, 116, 139, 0.8) !important;
-}
-
-/* Light mode tab section border */
-html.light-mode div[class*='border-b-2'] {
-  border-color: rgba(203, 213, 225, 0.5) !important;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .mobile-menu {
     overflow-y: auto;
     max-height: calc(100vh - 4rem);
+  }
+}
+
+/* ==========================================================================
+   AUTH SHELL (Login / Register split-screen)
+   ========================================================================== */
+/* Cancel the global body pt-16 when an auth shell is on the page,
+   so the brand panel reaches the very top of the viewport. */
+body:has(.auth-shell) {
+  padding-top: 0 !important;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+  .auth-shell {
+    grid-template-columns: 60fr 40fr;
+  }
+}
+
+.auth-brand {
+  position: relative;
+  background: linear-gradient(135deg, #0b1220 0%, #1a1f2e 100%);
+  color: #fff;
+  overflow: hidden;
+  min-height: 220px;
+  padding: 1.5rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+html.light-mode .auth-brand {
+  background: linear-gradient(135deg, #fff7f2 0%, #ffffff 100%);
+  color: #1a1a1a;
+}
+html.light-mode .auth-brand-logo {
+  color: #1a1a1a;
+}
+html.light-mode .auth-brand-quote {
+  color: #0f172a;
+}
+html.light-mode .auth-brand-sub {
+  color: rgba(15, 23, 42, 0.6);
+}
+html.light-mode .auth-brand-footer {
+  color: rgba(15, 23, 42, 0.55);
+}
+@media (min-width: 768px) {
+  .auth-brand {
+    min-height: 25vh;
+    padding: 2rem 2.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .auth-brand {
+    min-height: 100vh;
+    padding: 3rem 4rem;
+  }
+}
+
+.auth-brand canvas.auth-starfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+html.light-mode .auth-brand canvas.auth-starfield {
+  opacity: 0.85;
+}
+
+.auth-brand > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+.auth-brand-logo svg {
+  width: 2.25rem;
+  height: 2.25rem;
+  animation: auth-rotate 30s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.35));
+}
+@keyframes auth-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.auth-brand-quote {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  color: #f8fafc;
+  max-width: 18ch;
+  margin: 0;
+}
+.auth-brand-quote .accent {
+  color: rgb(249 115 22);
+}
+.auth-brand-sub {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: rgba(248, 250, 252, 0.6);
+  max-width: 38ch;
+  line-height: 1.55;
+}
+
+.auth-brand-footer {
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.45);
+}
+.auth-brand-footer::before {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: rgb(249 115 22);
+}
+
+/* Mobile: show quote (smaller), hide the longer subhead and footer */
+.auth-brand-quote {
+  display: block;
+  font-size: clamp(1.75rem, 8vw, 2.5rem);
+}
+.auth-brand-sub,
+.auth-brand-footer {
+  display: none;
+}
+@media (min-width: 768px) {
+  .auth-brand-quote {
+    font-size: clamp(2.25rem, 6vw, 5rem);
+  }
+  .auth-brand-sub {
+    display: block;
+  }
+  .auth-brand-footer {
+    display: flex;
+  }
+}
+
+/* Form panel — INVERTED to contrast with the brand panel.
+   Dark mode (default): form panel is LIGHT cream.
+   Light mode: form panel is DARK slate. */
+.auth-form-panel {
+  position: relative;
+  background: linear-gradient(to bottom right, #fff7f2, #ffffff);
+  color: #1a1a1a;
+  padding: 2.25rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: auto;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+@media (min-width: 1024px) {
+  .auth-form-panel {
+    padding: 4rem 5rem;
+    justify-content: center;
+    min-height: 100vh;
+  }
+}
+html.light-mode .auth-form-panel {
+  background: linear-gradient(to bottom right, #0f172a, #1a1f2e);
+  color: #f8fafc;
+}
+
+.auth-form-inner {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+
+.auth-title {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.5rem;
+  display: inline-block;
+  border-bottom: 3px solid rgb(249 115 22);
+  padding-bottom: 0.35rem;
+}
+.auth-subhead {
+  margin: 0.75rem 0 2rem;
+  font-size: 0.95rem;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.auth-field {
+  margin-bottom: 1.25rem;
+}
+.auth-field label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(249 115 22);
+  margin-bottom: 0.5rem;
+}
+/* Inputs — match the (inverted) form panel.
+   Default (dark mode): light inputs on cream form.
+   Light mode: dark inputs on slate form. */
+.auth-field input,
+.auth-field textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+.auth-field textarea {
+  resize: none;
+  min-height: 4.5rem;
+}
+html.light-mode .auth-field input,
+html.light-mode .auth-field textarea {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+.auth-field input::placeholder,
+.auth-field textarea::placeholder {
+  color: rgba(100, 116, 139, 0.55);
+}
+html.light-mode .auth-field input::placeholder,
+html.light-mode .auth-field textarea::placeholder {
+  color: rgba(148, 163, 184, 0.5);
+}
+.auth-field input:focus,
+.auth-field textarea:focus {
+  outline: none;
+  border-color: rgb(249 115 22);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.18);
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+html.light-mode .auth-field input:focus,
+html.light-mode .auth-field textarea:focus {
+  background: rgba(15, 23, 42, 0.85);
+}
+.auth-hint {
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  font-style: italic;
+  opacity: 0.6;
+  padding-left: 0.25rem;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 1rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 0.75rem;
+  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.55);
+  transition: all 0.25s ease;
+}
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -10px rgba(249, 115, 22, 0.7);
+}
+.auth-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-msg {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  color: #be123c;
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+html.light-mode .auth-msg {
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.1);
+}
+.auth-msg:empty {
+  display: none;
+}
+
+.auth-crosslink {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+.auth-crosslink a {
+  color: rgb(249 115 22);
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 0.35rem;
+}
+.auth-crosslink a:hover {
+  text-decoration: underline;
+}
+
+/* Theme toggle position on auth pages */
+.auth-theme-toggle {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+}
+
+/* Back-to-intro link on auth pages */
+.auth-back-link {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.5rem;
+  z-index: 10;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(15, 23, 42, 0.55);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+html.light-mode .auth-back-link {
+  color: rgba(248, 250, 252, 0.55);
+}
+.auth-back-link:hover {
+  color: rgb(249 115 22);
+  transform: translateX(-2px);
+}
+.auth-back-link span {
+  display: inline-block;
+  margin-right: 0.25rem;
+  transition: transform 0.2s ease;
+}
+.auth-back-link:hover span {
+  transform: translateX(-3px);
+}
+
+/* ==========================================================================
+   INTRO PAGE CHROME (top strip + bottom strip + interactive star)
+   ========================================================================== */
+
+#canvas3d {
+  cursor: grab;
+}
+body.is-dragging-star,
+body.is-dragging-star #canvas3d {
+  cursor: grabbing !important;
+}
+
+.intro-top-strip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 2rem;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(11, 18, 32, 0.65) 0%, rgba(11, 18, 32, 0) 100%);
+  opacity: 0;
+}
+.intro-top-strip > * {
+  pointer-events: auto;
+}
+html.light-mode .intro-top-strip {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.intro-bottom-strip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.25rem;
+  padding: 2rem 1.5rem 1.75rem;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(11, 18, 32, 0.7) 0%, rgba(11, 18, 32, 0) 100%);
+  opacity: 0;
+  flex-wrap: wrap;
+}
+.intro-bottom-strip .intro-cta-row {
+  display: flex;
+  gap: 1.25rem;
+}
+.intro-bottom-strip > * {
+  pointer-events: auto;
+}
+html.light-mode .intro-bottom-strip {
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.intro-enter-hint {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+html.light-mode .intro-enter-hint {
+  color: rgba(15, 23, 42, 0.6);
+  text-shadow: none;
+}
+.intro-enter-hint kbd {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  margin-right: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.3rem;
+  font-family: inherit;
+  font-size: 0.85em;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+}
+html.light-mode .intro-enter-hint kbd {
+  border-color: rgba(15, 23, 42, 0.3);
+  color: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.intro-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.6rem;
+  border-radius: 0.6rem;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.intro-cta-primary {
+  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  color: #fff;
+  box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65);
+}
+.intro-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px -10px rgba(249, 115, 22, 0.85);
+}
+.intro-cta-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+}
+.intro-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(249, 115, 22, 0.6);
+  transform: translateY(-2px);
+}
+html.light-mode .intro-cta-secondary {
+  background: rgba(15, 23, 42, 0.05);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.2);
+}
+html.light-mode .intro-cta-secondary:hover {
+  background: rgba(15, 23, 42, 0.1);
+  border-color: rgba(249, 115, 22, 0.6);
+}
+.intro-cta.is-pulsing {
+  animation: intro-cta-pulse 0.6s ease-out 1;
+}
+@keyframes intro-cta-pulse {
+  0%   { box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65); }
+  50%  { box-shadow: 0 0 0 18px rgba(249, 115, 22, 0); }
+  100% { box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65); }
+}
+
+@media (max-width: 640px) {
+  .intro-bottom-strip {
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .intro-bottom-strip .intro-cta-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+  }
+  .intro-bottom-strip .intro-cta {
+    flex: 1;
+  }
+}
+
+/* Discovery hint label that appears once near the star */
+.intro-hint-label {
+  position: fixed;
+  left: 50%;
+  bottom: 22vh;
+  transform: translateX(-50%);
+  z-index: 45;
+  pointer-events: none;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  white-space: nowrap;
+}
+html.light-mode .intro-hint-label {
+  color: rgba(15, 23, 42, 0.4);
+  text-shadow: none;
+}
+.intro-hint-label.is-visible {
+  opacity: 1;
+}
+
+/* Reveal hooks set on chrome elements during page-load orchestration */
+.intro-reveal-up {
+  transform: translateY(8px);
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.intro-reveal-up.is-revealed {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-top-strip,
+  .intro-bottom-strip {
+    opacity: 1 !important;
+  }
+  .intro-reveal-up {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+  .intro-cta.is-pulsing {
+    animation: none;
   }
 }

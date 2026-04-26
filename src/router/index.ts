@@ -4,6 +4,8 @@
  */
 
 import IntroAuthPage from '../pages/IntroAuthPage.js';
+import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
 import FeedPage from '../pages/FeedPage';
 import ProfilePage from '../pages/ProfilePage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -17,12 +19,10 @@ type RouteDef = {
 };
 
 const PATHS = {
-  // Unified intro + auth
   root: { url: '/', component: IntroAuthPage },
-  login: { url: '/login', component: IntroAuthPage },
-  register: { url: '/register', component: IntroAuthPage },
+  login: { url: '/login', component: LoginPage },
+  register: { url: '/register', component: RegisterPage },
 
-  // App
   feed: { url: '/feed', component: FeedPage, protected: true },
   profile: { url: '/profile', component: ProfilePage, protected: true },
 } as const;
