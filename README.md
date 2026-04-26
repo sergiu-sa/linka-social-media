@@ -1,7 +1,7 @@
 # LINKA – Social Media Platform
 
 A modern, responsive social media application built with TypeScript, Vite, Tailwind CSS v4, and the Noroff Social API v2.  
-This project demonstrates contemporary web development practices: CSS framework integration, authenticated API consumption, CRUD operations, modular architecture, and production-ready deployment.
+This project demonstrates contemporary web development practices: CSS framework integration, authenticated API consumption, CRUD operations, modular architecture, and production-ready deployment..
 
 **Final submission for Noroff FED2-24 CSS Frameworks Course Assignment.**
 
