@@ -4,6 +4,7 @@
  */
 
 import { get, post, put, del } from "../api/client";
+import { error as logError } from "../../utils/log";
 
 // Define the Post interface according to Noroff API v2 structure
 export interface NoroffPost {
@@ -72,9 +73,9 @@ export async function getAllPosts(
     });
 
     return await get<PostsApiResponse>(`${BASE_URL}?${queryParams.toString()}`);
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    throw error;
+  } catch (err) {
+    logError("Error fetching posts:", err);
+    throw err;
   }
 }
 
@@ -85,7 +86,6 @@ export async function getPublicPosts(
   limit: number = 50,
   page: number = 1
 ): Promise<PostsApiResponse> {
-  console.log("Loading sample posts for public viewing");
   return getSamplePosts(limit, page);
 }
 

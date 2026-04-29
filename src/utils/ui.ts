@@ -4,6 +4,8 @@
  * @note Originally adapted from a boilerplate by Monde Sineke.
  */
 
+import { error as logError } from './log';
+
 /**
  * Creates a DOM node from an HTML string template.
  *
@@ -64,7 +66,7 @@ export const getDOMElements = (
   });
 
   if (DOMElements.length === 0) {
-    console.error(
+    logError(
       new Error(
         "Please check the HTML for missing DOM HTML element with the id='js-*'"
       )

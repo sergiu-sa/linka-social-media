@@ -16,6 +16,7 @@ import './style.css';
 import { renderRoute } from './router';
 import LoadingScreen from './pages/LoadingScreen.js';
 import NavbarPage, { initNavbar } from './pages/NavbarPage.js';
+import { error as logError } from './utils/log';
 
 // Initialize loading screen
 const loadingScreen = new LoadingScreen();
@@ -65,29 +66,20 @@ function refreshNavbar() {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM Content Loaded - Starting app initialization');
-
   try {
-    // Add navbar to the page
     const navbar = NavbarPage();
-    console.log('Navbar created, length:', navbar.length);
     document.body.insertAdjacentHTML('afterbegin', navbar);
-  } catch (error) {
-    console.error('Error creating navbar:', error);
+  } catch (err) {
+    logError('Error creating navbar:', err);
   }
 
   // Initialize navbar functionality with a small delay to ensure DOM is ready
   setTimeout(() => {
     initNavbar();
-    // Set initial navbar visibility based on current route
     updateNavbarVisibility(window.location.pathname);
   }, 100);
 
-  // Handle initial route - ensure we get the current path
-  const currentPath = window.location.pathname;
-  console.log('About to call renderRoute with path:', currentPath);
-  renderRoute(currentPath);
-  console.log('renderRoute called');
+  renderRoute(window.location.pathname);
 
   // Handle browser navigation (back/forward buttons)
   window.addEventListener('popstate', () => {

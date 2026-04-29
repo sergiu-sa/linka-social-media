@@ -20,6 +20,7 @@ import {
 import { getLocalItem, setLocalItem } from '../utils/storage';
 import { renderRoute } from '../router';
 import { fetchApiKey } from '../services/api/client';
+import { warn, error as logError } from '../utils/log';
 
 /* ---------- Auth helpers (token from any key) ---------- */
 const tokenFromAnyKey = () =>
@@ -41,7 +42,7 @@ async function ensureApiKey(): Promise<void> {
       const key = await fetchApiKey(token);
       if (key) setLocalItem('apiKey', key);
     } catch (e) {
-      console.warn('ensureApiKey(): failed to get API key', e);
+      warn('ensureApiKey(): failed to get API key', e);
     }
   }
 }
@@ -97,8 +98,8 @@ export default async function FeedPage(): Promise<string> {
           ? await getAllPosts(postsPerPage, currentPage)
           : await getPublicPosts(postsPerPage, currentPage);
         posts = postsResponse.data;
-      } catch (error) {
-        console.log('Failed to load posts:', error);
+      } catch (err) {
+        logError('Failed to load posts:', err);
         posts = [];
         postsResponse = {
           data: [],
@@ -283,8 +284,8 @@ export default async function FeedPage(): Promise<string> {
         </div>
       </div>
     `;
-  } catch (error) {
-    console.error('Error loading feed:', error);
+  } catch (err) {
+    logError('Error loading feed:', err);
     return renderErrorState();
   }
 }
@@ -530,7 +531,7 @@ async function handleCreatePost(event: Event): Promise<void> {
   )?.value.trim();
 
   if (!title || !body) {
-    alert('Title and Body are required.');
+    showNotification('Title and body are required.', 'error');
     return;
   }
 
@@ -574,10 +575,10 @@ async function handleCreatePost(event: Event): Promise<void> {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Post';
 
-    showNotification('✅ Post created successfully!', 'success');
+    showNotification('Post created successfully', 'success');
   } catch (err: any) {
-    console.error('Error creating post:', err);
-    alert(err?.message || 'Failed to create post. Please try again.');
+    logError('Error creating post:', err);
+    showNotification(err?.message || 'Failed to create post.', 'error');
     const submitBtn = form.querySelector(
       "button[type='submit']"
     ) as HTMLButtonElement;
@@ -674,7 +675,7 @@ async function handleEditPost(event: Event): Promise<void> {
   ).value.trim();
 
   if (!title || !body) {
-    alert('Title and Body are required.');
+    showNotification('Title and body are required.', 'error');
     return;
   }
 
@@ -740,13 +741,13 @@ async function handleEditPost(event: Event): Promise<void> {
     }
 
     closeEditModal();
-    showNotification('✅ Post updated successfully!', 'success');
+    showNotification('Post updated successfully', 'success');
 
     submitBtn.disabled = false;
-    submitBtn.textContent = '💾 Update Post';
-  } catch (error) {
-    console.error('Error updating post:', error);
-    alert('Failed to update post. Please try again.');
+    submitBtn.textContent = 'Update post';
+  } catch (err) {
+    logError('Error updating post:', err);
+    showNotification('Failed to update post.', 'error');
 
     const submitBtn = modal?.querySelector(
       'button[type="submit"]'
@@ -777,10 +778,10 @@ async function deletePostFunction(postId: number): Promise<void> {
       setTimeout(() => postElement.remove(), 300);
     }
 
-    showNotification('✅ Post deleted successfully!', 'success');
-  } catch (error) {
-    console.error('Error deleting post:', error);
-    alert('Failed to delete post. Please try again.');
+    showNotification('Post deleted', 'success');
+  } catch (err) {
+    logError('Error deleting post:', err);
+    showNotification('Failed to delete post.', 'error');
   }
 
   togglePostMenu(postId);
@@ -832,7 +833,7 @@ async function submitComment(postId: number): Promise<void> {
   }
 
   if (commentText.length > 280) {
-    alert('Comment is too long. Maximum 280 characters allowed.');
+    showNotification('Comment is too long. Max 280 characters.', 'error');
     return;
   }
 
@@ -875,15 +876,15 @@ async function submitComment(postId: number): Promise<void> {
       ).toString();
     }
 
-    showNotification('Comment added!', 'success');
-  } catch (error: any) {
-    console.error('Error creating comment:', error);
-    if (error.message?.includes('unauthorized')) {
-      alert('Please log in to comment on posts.');
-    } else if (error.message?.includes('not found')) {
-      alert('Post not found. Please refresh the page.');
+    showNotification('Comment added', 'success');
+  } catch (err: any) {
+    logError('Error creating comment:', err);
+    if (err.message?.includes('unauthorized')) {
+      showNotification('Please log in to comment.', 'error');
+    } else if (err.message?.includes('not found')) {
+      showNotification('Post not found. Please refresh.', 'error');
     } else {
-      alert('Failed to post comment. Please try again.');
+      showNotification('Failed to post comment.', 'error');
     }
   } finally {
     if (submitBtn) {
@@ -993,7 +994,7 @@ async function submitReply(
     return;
   }
   if (replyText.length > 280) {
-    alert('Reply is too long. Maximum 280 characters allowed.');
+    showNotification('Reply is too long. Max 280 characters.', 'error');
     return;
   }
 
@@ -1028,10 +1029,10 @@ async function submitReply(
       ).toString();
     }
 
-    showNotification('Reply added!', 'success');
-  } catch (error: any) {
-    console.error('Error creating reply:', error);
-    alert('Failed to post reply. Please try again.');
+    showNotification('Reply added', 'success');
+  } catch (err: any) {
+    logError('Error creating reply:', err);
+    showNotification('Failed to post reply.', 'error');
   }
 }
 
@@ -1068,10 +1069,10 @@ async function deleteCommentFunction(
       ).toString();
     }
 
-    showNotification('Comment deleted!', 'success');
-  } catch (error: any) {
-    console.error('Error deleting comment:', error);
-    alert('Failed to delete comment. Please try again.');
+    showNotification('Comment deleted', 'success');
+  } catch (err: any) {
+    logError('Error deleting comment:', err);
+    showNotification('Failed to delete comment.', 'error');
   }
 }
 
@@ -1084,7 +1085,7 @@ async function handleToggleReaction(
   emoji: string
 ): Promise<void> {
   if (!isLoggedInNow()) {
-    alert('Please log in to react to posts.');
+    showNotification('Please log in to react to posts.', 'error');
     return;
   }
 
@@ -1115,9 +1116,9 @@ async function handleToggleReaction(
       if (wasAdded) likeBtn.classList.add('reacted');
       else likeBtn.classList.remove('reacted');
     }
-  } catch (error) {
-    console.error('Error toggling reaction:', error);
-    alert('Failed to react to post. Please try again.');
+  } catch (err) {
+    logError('Error toggling reaction:', err);
+    showNotification('Failed to react to post.', 'error');
   }
 }
 
@@ -1193,21 +1194,14 @@ function showNotification(
   message: string,
   type: 'success' | 'error' | 'info' = 'info'
 ): void {
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}-notification`;
-  notification.innerHTML = `<div class="notification-content">${message}</div>`;
-  notification.style.cssText = `
-    position: fixed; top: 90px; right: 20px; z-index: 10000;
-    padding: 1rem 1.5rem; border-radius: 8px; color: white; font-weight: 500;
-    animation: slideInFromRight 0.3s ease-out;
-    ${type === 'success' ? 'background: var(--success-color);' : ''}
-    ${type === 'error' ? 'background: var(--danger-color);' : ''}
-    ${type === 'info' ? 'background: var(--primary-color);' : ''}
-  `;
-  document.body.appendChild(notification);
+  const el = document.createElement('div');
+  el.className = `notification-toast notification-${type}`;
+  el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+  el.textContent = message;
+  document.body.appendChild(el);
 
   setTimeout(() => {
-    notification.style.animation = 'slideOutToRight 0.3s ease-out forwards';
-    setTimeout(() => notification.parentNode?.removeChild(notification), 300);
+    el.classList.add('is-leaving');
+    setTimeout(() => el.parentNode?.removeChild(el), 300);
   }, 3000);
 }

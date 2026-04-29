@@ -4,6 +4,7 @@
  */
 
 import { post, put, del } from '../api/client';
+import { error as logError } from '../../utils/log';
 
 export interface Comment {
   id: string;
@@ -69,11 +70,7 @@ export async function createComment(
   }
 
   try {
-    console.log(`Creating comment on post ${postId}:`, commentData);
-
     const response = await post(`/social/posts/${postId}/comment`, commentData);
-
-    console.log('Create comment response:', response);
 
     // Handle the response according to the API docs
     if (response?.data) {
@@ -83,10 +80,10 @@ export async function createComment(
     } else {
       throw new Error('Invalid response format from comment creation');
     }
-  } catch (error: any) {
-    console.error('Error creating comment:', error);
+  } catch (err: any) {
+    logError('Error creating comment:', err);
     throw new Error(
-      error?.message || 'Failed to create comment. Please try again.'
+      err?.message || 'Failed to create comment. Please try again.'
     );
   }
 }
@@ -102,19 +99,17 @@ export async function deleteComment(
   commentId: string
 ): Promise<void> {
   try {
-    console.log(`Deleting comment ${commentId} from post ${postId}`);
     await del(`/social/posts/${postId}/comment/${commentId}`);
-    console.log('Comment deleted successfully');
-  } catch (error: any) {
-    console.error('Error deleting comment:', error);
+  } catch (err: any) {
+    logError('Error deleting comment:', err);
 
-    if (error?.message?.toLowerCase().includes('unauthorized')) {
+    if (err?.message?.toLowerCase().includes('unauthorized')) {
       throw new Error('You can only delete your own comments.');
-    } else if (error?.message?.toLowerCase().includes('not found')) {
+    } else if (err?.message?.toLowerCase().includes('not found')) {
       throw new Error('The comment you are trying to delete was not found.');
     } else {
       throw new Error(
-        error?.message || 'Failed to delete comment. Please try again.'
+        err?.message || 'Failed to delete comment. Please try again.'
       );
     }
   }
@@ -128,22 +123,20 @@ async function reactToPost(
   symbol: string
 ): Promise<void> {
   try {
-    console.log(`Adding reaction ${symbol} to post ${postId}`);
     await put(
       `/social/posts/${postId}/react/${encodeURIComponent(symbol)}`,
       {}
     );
-    console.log('Reaction added successfully');
-  } catch (error: any) {
-    console.error('Error reacting to post:', error);
+  } catch (err: any) {
+    logError('Error reacting to post:', err);
 
-    if (error?.message?.toLowerCase().includes('unauthorized')) {
+    if (err?.message?.toLowerCase().includes('unauthorized')) {
       throw new Error('You must be logged in to react to posts.');
-    } else if (error?.message?.toLowerCase().includes('not found')) {
+    } else if (err?.message?.toLowerCase().includes('not found')) {
       throw new Error('The post you are trying to react to was not found.');
     } else {
       throw new Error(
-        error?.message || 'Failed to react to post. Please try again.'
+        err?.message || 'Failed to react to post. Please try again.'
       );
     }
   }
@@ -157,19 +150,17 @@ async function removeReaction(
   symbol: string
 ): Promise<void> {
   try {
-    console.log(`Removing reaction ${symbol} from post ${postId}`);
     await del(`/social/posts/${postId}/react/${encodeURIComponent(symbol)}`);
-    console.log('Reaction removed successfully');
-  } catch (error: any) {
-    console.error('Error removing reaction:', error);
+  } catch (err: any) {
+    logError('Error removing reaction:', err);
 
-    if (error?.message?.toLowerCase().includes('unauthorized')) {
+    if (err?.message?.toLowerCase().includes('unauthorized')) {
       throw new Error('You must be logged in to remove reactions.');
-    } else if (error?.message?.toLowerCase().includes('not found')) {
+    } else if (err?.message?.toLowerCase().includes('not found')) {
       throw new Error('The reaction you are trying to remove was not found.');
     } else {
       throw new Error(
-        error?.message || 'Failed to remove reaction. Please try again.'
+        err?.message || 'Failed to remove reaction. Please try again.'
       );
     }
   }
@@ -189,24 +180,24 @@ export async function toggleReaction(
     // Try to add the reaction first
     await reactToPost(postId, symbol);
     return true; // Successfully added
-  } catch (error: any) {
+  } catch (err: any) {
     // If the reaction already exists, try to remove it
     if (
-      error.message?.includes('already') ||
-      error.message?.includes('exist') ||
-      error.statusCode === 400 ||
-      error.statusCode === 409
+      err.message?.includes('already') ||
+      err.message?.includes('exist') ||
+      err.statusCode === 400 ||
+      err.statusCode === 409
     ) {
       try {
         await removeReaction(postId, symbol);
         return false; // Successfully removed
       } catch (removeError: any) {
-        console.error('Error removing existing reaction:', removeError);
+        logError('Error removing existing reaction:', removeError);
         throw removeError;
       }
     }
 
     // If it's a different error, re-throw it
-    throw error;
+    throw err;
   }
 }

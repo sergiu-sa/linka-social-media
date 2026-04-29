@@ -7,6 +7,7 @@
 import { loginUser, registerUser, fetchApiKey } from '../api/client';
 import { setLocalItem } from '../../utils/storage';
 import { renderRoute } from '../../router';
+import { warn, error as logError } from '../../utils/log';
 import type {
   LoginCredentials,
   ApiResponse,
@@ -66,7 +67,7 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
         const key = await fetchApiKey(token);
         if (key) setLocalItem('apiKey', key);
       } catch (e) {
-        console.warn('Could not fetch API key yet:', e);
+        warn('Could not fetch API key yet:', e);
       }
 
       btn.textContent = '✓ Success';
@@ -81,7 +82,7 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
         }, 50);
       }, 500);
     } catch (err: any) {
-      console.error(err);
+      logError(err);
       msg.textContent =
         err?.message || 'Something went wrong. Please try again.';
       btn.textContent = '✗ Error';

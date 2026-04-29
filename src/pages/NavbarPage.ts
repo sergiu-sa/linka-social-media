@@ -10,6 +10,7 @@ import {
   getPublicPosts,
   type NoroffPost,
 } from '../services/posts/posts';
+import { error as logError } from '../utils/log';
 
 // Add the global window interface to actually USE the NoroffPost type
 declare global {
@@ -291,8 +292,8 @@ async function enhancedSearch(query: string): Promise<SearchResult[]> {
         data: post,
       });
     });
-  } catch (error) {
-    console.error('Search error:', error);
+  } catch (err) {
+    logError('Search error:', err);
   }
 
   return results;
@@ -437,9 +438,7 @@ export function initNavbar() {
     // Reset icon to hamburger state
     if (mobileToggle) {
       const toggleIcon = mobileToggle.querySelector('.mobile-toggle-icon');
-
       if (toggleIcon) {
-        console.log('🔄 Resetting icon to hamburger state');
         toggleIcon.className = 'fas fa-bars text-lg mobile-toggle-icon';
       }
     }
@@ -455,14 +454,9 @@ export function initNavbar() {
 
   // Mobile menu toggle with single FontAwesome icon that changes class
   if (mobileToggle) {
-    // Initialize icon state
     const toggleIcon = mobileToggle.querySelector('.mobile-toggle-icon');
-
     if (toggleIcon) {
-      console.log('🔧 Initializing single mobile toggle icon...');
-      // Ensure it starts as hamburger
       toggleIcon.className = 'fas fa-bars text-lg mobile-toggle-icon';
-      console.log('✅ Icon initialized as hamburger (fa-bars)');
     }
 
     mobileToggle.addEventListener('click', () => {
@@ -473,23 +467,13 @@ export function initNavbar() {
         const isOpen = !mobileMenu.classList.contains('hidden');
 
         if (isOpen) {
-          // Close menu
-          console.log('🍔 Closing mobile menu - changing to hamburger icon');
           mobileMenu.classList.add('hidden');
           navbar.classList.remove('mobile-menu-open');
-
-          // Change to hamburger icon
           toggleIcon.className = 'fas fa-bars text-lg mobile-toggle-icon';
-          console.log('📱 Icon changed to: fa-bars (hamburger)');
         } else {
-          // Open menu
-          console.log('❌ Opening mobile menu - changing to close icon');
           mobileMenu.classList.remove('hidden');
           navbar.classList.add('mobile-menu-open');
-
-          // Change to close icon
           toggleIcon.className = 'fas fa-times text-lg mobile-toggle-icon';
-          console.log('📱 Icon changed to: fa-times (close)');
         }
       }
     });
@@ -511,8 +495,8 @@ export function initNavbar() {
           await getPublicPosts(100, 1);
         }
         // We don't need to store posts here since enhancedSearch makes its own API calls
-      } catch (error) {
-        console.error('Error loading posts for search:', error);
+      } catch (err) {
+        logError('Error loading posts for search:', err);
       }
     };
 

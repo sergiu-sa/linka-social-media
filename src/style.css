@@ -1776,3 +1776,67 @@ html:not(.light-mode) body:has(.feed-page) {
   color: rgb(249 115 22);
 }
 
+/* ==========================================================================
+   TOAST NOTIFICATIONS (used by FeedPage.showNotification)
+   ========================================================================== */
+
+.notification-toast {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 10000;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.6rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.35);
+  animation: toast-slide-in 0.3s ease-out;
+  max-width: min(420px, calc(100vw - 40px));
+}
+
+.notification-toast.notification-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.notification-toast.notification-error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+.notification-toast.notification-info {
+  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+}
+
+.notification-toast.is-leaving {
+  animation: toast-slide-out 0.3s ease-out forwards;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-toast,
+  .notification-toast.is-leaving {
+    animation: none;
+  }
+}
+

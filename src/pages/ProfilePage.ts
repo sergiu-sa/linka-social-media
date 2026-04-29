@@ -4,6 +4,7 @@ import { getTimeAgo } from '../utils/date';
 import { isLoggedIn } from '../utils/auth';
 import { get, put } from '../services/api/client';
 import type { UserProfile, FollowResponse, ProfileWithFollowData } from '../types/index';
+import { error as logError } from '../utils/log';
 
 export default async function ProfilePage(): Promise<string> {
   try {
@@ -51,8 +52,8 @@ export default async function ProfilePage(): Promise<string> {
         </div>
       </div>
     `;
-  } catch (error) {
-    console.error('Error loading profile:', error);
+  } catch (err) {
+    logError('Error loading profile:', err);
     return renderErrorState('Failed to load profile');
   }
 }
@@ -448,8 +449,8 @@ async function initializeFollowButton(username: string) {
         updateFollowButton(btn, true);
         updateFollowerCount(1);
       }
-    } catch (error) {
-      console.error('Follow action failed:', error);
+    } catch (err) {
+      logError('Follow action failed:', err);
       // Revert on error
       updateFollowButton(btn, currentlyFollowing);
     } finally {
@@ -566,8 +567,8 @@ async function switchTab(tab: string | null, username: string, container: HTMLEl
         </div>
       `;
     }
-  } catch (error) {
-    console.error('Tab load error:', error);
+  } catch (err) {
+    logError('Tab load error:', err);
     container.innerHTML = `
       <div class="flex flex-col items-center justify-center py-16 text-center">
         <div class="w-16 h-16 mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
