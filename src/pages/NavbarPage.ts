@@ -1,7 +1,6 @@
 /**
  * @file NavbarPage.ts
- * @description Navigation bar component with brand name, search functionality, and navigation buttons
- * @author Your Name
+ * @description Navigation bar component with brand name, search functionality, and navigation buttons.
  */
 
 import { renderRoute } from '../router';

@@ -8,7 +8,7 @@ This project demonstrates contemporary web development practices: CSS framework 
 ## Live Project & Repository
 
 **Production Deploy:** [https://linka-social.netlify.app/](https://linka-social.netlify.app/)  
-**API Base URL:** [https://v2.api.noroff.dev/social/posts](https://v2.api.noroff.dev/social/posts)
+**API Base URL:** `https://v2.api.noroff.dev`
 
 ## Features
 
@@ -84,12 +84,13 @@ Edit `.env` with your configuration.
 
 ### Environment Variables
 
-Create a `.env` file with:
+Copy `.env.example` to `.env`. The only required variable is the API base URL:
 
 ```bash
-
-VITE_API_BASE_URL=https://v2.api.noroff.dev/social
+VITE_API_URL=https://v2.api.noroff.dev
 ```
+
+If `VITE_API_URL` is not set, the app falls back to the production Noroff API.
 
 ### Development
 
@@ -110,16 +111,18 @@ npm run preview
 
 ```md
 src/
-├── components/        # Reusable UI
-├── pages/             # Login, Register, Feed, Profile, SinglePost, 404
+├── components/        # Reusable UI (postCard)
+├── pages/             # Intro, Login, Register, Feed, Profile, Navbar, 404, Loading
+│   └── auth/          # Shared editorial split-screen shell
 ├── services/          # API and business logic
 │   ├── api/           # HTTP client
-│   ├── auth/          # Authentication utils
+│   ├── auth/          # Auth form submit handler
+│   ├── error/         # ApiError class
 │   ├── posts/         # Posts API integration
 │   └── interactions/  # Comments & reactions
 ├── router/            # Client-side routing
 ├── types/             # TypeScript definitions
-├── utils/             # Helpers (auth, storage, ui, validators)
+├── utils/             # Helpers (auth, storage, theme, ui, date)
 ├── constant.ts        # App constants
 ├── main.ts            # Application entry point
 └── style.css          # Global styles

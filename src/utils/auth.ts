@@ -1,7 +1,6 @@
 /**
  * @file auth.ts
- * @description Authentication utilities for managing user login state
- * @author Your Name
+ * @description Authentication utilities for managing user login state.
  */
 
 import { getLocalItem } from './storage';

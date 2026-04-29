@@ -1,7 +1,6 @@
 /**
  * @file LoadingScreen.ts
- * @description Loading screen component with animated elements
- * @author [Your Name]
+ * @description Loading screen component with animated elements.
  */
 
 export default class LoadingScreen {

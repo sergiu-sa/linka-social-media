@@ -1,8 +1,7 @@
 /**
  * @file storage.ts
  * @description Utility functions for interacting with local storage.
- * @note This code is taken from a boiler-plate created by Monde Sineke
- * @author Your Name
+ * @note Originally adapted from a boilerplate by Monde Sineke.
  */
 
 /**

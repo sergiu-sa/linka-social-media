@@ -1,7 +1,6 @@
 /**
  * @file error.ts
- * @description This file contains error handling classes for the application.
- * @author [Your Name]
+ * @description Error classes used by the API client.
  */
 
 export class ApiError extends Error {

@@ -1,7 +1,6 @@
 /**
  * @file NotFoundPage.ts
- * @description This file contains the NotFoundPage component which is displayed when a user navigates to a route that does not exist.
- * @author Your Name
+ * @description 404 page rendered when a user navigates to an unknown route.
  */
 
 export default async function NotFoundPage() {
