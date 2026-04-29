@@ -11,6 +11,7 @@ import {
   type NoroffPost,
 } from '../services/posts/posts';
 import { error as logError } from '../utils/log';
+import { getCurrentTheme, toggleTheme as toggleAppTheme, applyTheme, getInitialTheme } from '../utils/theme';
 
 // Add the global window interface to actually USE the NoroffPost type
 declare global {
@@ -645,89 +646,43 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
     }
   });
 
-  // Theme toggle functionality
-  const themeToggle = document.getElementById('theme-toggle');
-  const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
-  // Using inline SVGs now; no FA icon required here
-  const sunIcon = document.querySelector('.icon-sun') as HTMLElement | null;
-  const moonIcon = document.querySelector('.icon-moon') as HTMLElement | null;
+  // Apply the persisted/preferred theme on first navbar mount, then sync UI.
+  applyTheme(getInitialTheme());
+  syncNavbarThemeUI();
+
+  const onToggle = () => {
+    toggleAppTheme();
+    syncNavbarThemeUI();
+  };
+  document.getElementById('theme-toggle')?.addEventListener('click', onToggle);
+  document.getElementById('mobile-theme-toggle')?.addEventListener('click', onToggle);
+}
+
+/**
+ * Re-queries icon/text nodes on every call, so a re-mounted navbar doesn't
+ * keep stale references. Attached to `document` exactly once at module load
+ * (see bottom of file) to avoid leaks across navbar re-mounts.
+ */
+function syncNavbarThemeUI(): void {
+  const isDark = getCurrentTheme() === 'dark';
+  const sunIcon = document.querySelector<HTMLElement>('.icon-sun');
+  const moonIcon = document.querySelector<HTMLElement>('.icon-moon');
   const mobileThemeIcon = document.querySelector('.mobile-theme-icon');
   const mobileThemeText = document.querySelector('.mobile-theme-text');
+  const btn = document.getElementById('theme-toggle');
 
-  // Initialize theme based on localStorage or system preference
-  const initTheme = () => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light-mode');
-      if (sunIcon) sunIcon.style.display = 'inline';
-      if (moonIcon) moonIcon.style.display = 'none';
-      if (mobileThemeIcon)
-        mobileThemeIcon.className = 'fa-solid fa-sun text-sm mobile-theme-icon';
-      if (mobileThemeText) mobileThemeText.textContent = 'Light Mode';
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light-mode');
-      if (sunIcon) sunIcon.style.display = 'none';
-      if (moonIcon) moonIcon.style.display = 'inline';
-      if (mobileThemeIcon)
-        mobileThemeIcon.className = 'fa-solid fa-moon text-sm mobile-theme-icon';
-      if (mobileThemeText) mobileThemeText.textContent = 'Dark Mode';
-    }
-  };
-
-  // Toggle theme function
-  // Keeps the navbar's `.dark` system AND the intro/feed `.light-mode`
-  // system in sync so a single toggle flips every page consistently.
-  const toggleTheme = () => {
-    const isDark = !document.documentElement.classList.contains('light-mode');
-
-    if (isDark) {
-      // → switch to light
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light-mode');
-      localStorage.setItem('theme', 'light');
-      if (sunIcon) sunIcon.style.display = 'none';
-      if (moonIcon) moonIcon.style.display = 'inline';
-      if (mobileThemeIcon)
-        mobileThemeIcon.className = 'fa-solid fa-moon text-sm mobile-theme-icon';
-      if (mobileThemeText) mobileThemeText.textContent = 'Dark Mode';
-      const btn = document.getElementById('theme-toggle');
-      if (btn) btn.setAttribute('aria-pressed', 'false');
-    } else {
-      // → switch to dark
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light-mode');
-      localStorage.setItem('theme', 'dark');
-      if (sunIcon) sunIcon.style.display = 'inline';
-      if (moonIcon) moonIcon.style.display = 'none';
-      if (mobileThemeIcon)
-        mobileThemeIcon.className = 'fa-solid fa-sun text-sm mobile-theme-icon';
-      if (mobileThemeText) mobileThemeText.textContent = 'Light Mode';
-      const btn = document.getElementById('theme-toggle');
-      if (btn) btn.setAttribute('aria-pressed', 'true');
-    }
-
-    // Notify listeners
-    document.dispatchEvent(new Event('linka-theme-changed'));
-  };
-
-  // Initialize theme on load
-  initTheme();
-
-  // Theme toggle event listeners
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-  }
-
-  if (mobileThemeToggle) {
-    mobileThemeToggle.addEventListener('click', toggleTheme);
-  }
+  if (sunIcon) sunIcon.style.display = isDark ? 'inline' : 'none';
+  if (moonIcon) moonIcon.style.display = isDark ? 'none' : 'inline';
+  if (mobileThemeIcon)
+    mobileThemeIcon.className = `fa-solid ${isDark ? 'fa-sun' : 'fa-moon'} text-sm mobile-theme-icon`;
+  if (mobileThemeText) mobileThemeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  if (btn) btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
 }
+
+// One-time global listener: keeps the navbar UI in sync when any other
+// surface (intro/auth page) toggles the theme. Idempotent because module
+// init only runs once.
+document.addEventListener('linka-theme-changed', syncNavbarThemeUI);
 
 function updateActiveNav() {
   const currentPath = window.location.pathname;
