@@ -89,6 +89,38 @@ export async function getPublicPosts(
   return getSamplePosts(limit, page);
 }
 
+export interface NoroffComment {
+  id: number;
+  body: string;
+  replyToId: number | null;
+  postId: number;
+  owner: string;
+  created: string;
+  author?: {
+    name: string;
+    email: string;
+    avatar?: { url: string; alt: string } | null;
+  };
+}
+
+/**
+ * Fetch a single post with its comments embedded.
+ * Used by the feed thread to populate existing comments on open.
+ */
+export async function getPostComments(
+  postId: number
+): Promise<NoroffComment[]> {
+  try {
+    const response = await get<{
+      data: NoroffPost & { comments?: NoroffComment[] };
+    }>(`${BASE_URL}/${postId}?_comments=true&_author=true`);
+    return response.data?.comments ?? [];
+  } catch (err) {
+    logError("Error fetching comments:", err);
+    return [];
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 /*                               WRITE METHODS                                */
 /* -------------------------------------------------------------------------- */

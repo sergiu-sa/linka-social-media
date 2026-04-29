@@ -58,11 +58,13 @@ function refreshNavbar() {
   }, 10);
 }
 
-// Make renderRoute, loadingScreen, refreshNavbar, and updateNavbarVisibility globally available
-(window as any).renderRoute = renderRoute;
-(window as any).loadingScreen = loadingScreen;
-(window as any).refreshNavbar = refreshNavbar;
-(window as any).updateNavbarVisibility = updateNavbarVisibility;
+// Expose router/loading helpers as window globals (typed in src/types/index.ts).
+// The router code reads `window.renderRoute` to navigate from contexts that
+// don't directly import the router (inline onclick="" attributes, etc.).
+window.renderRoute = renderRoute;
+window.loadingScreen = loadingScreen;
+window.refreshNavbar = refreshNavbar;
+window.updateNavbarVisibility = updateNavbarVisibility;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
@@ -84,12 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle browser navigation (back/forward buttons)
   window.addEventListener('popstate', () => {
     renderRoute();
-    // Update active nav state when navigating
     setTimeout(() => {
-      if (typeof (window as any).updateActiveNav === 'function') {
-        (window as any).updateActiveNav();
-      }
-      // Update navbar visibility
+      window.updateActiveNav?.();
       updateNavbarVisibility(window.location.pathname);
     }, 100);
   });
@@ -100,15 +98,11 @@ function navigateToProfile(username: string) {
 
   const url = `/profile?user=${username}`;
   history.pushState({ path: url }, '', url);
-  (window as any).renderRoute('/profile');
+  window.renderRoute?.('/profile');
 
-  // Update active nav state
   setTimeout(() => {
-    if (typeof (window as any).updateActiveNav === 'function') {
-      (window as any).updateActiveNav();
-    }
+    window.updateActiveNav?.();
   }, 100);
 }
 
-// Make it globally available
-(window as any).navigateToProfile = navigateToProfile;
+window.navigateToProfile = navigateToProfile;

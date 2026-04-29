@@ -76,8 +76,8 @@ export async function renderRoute(path?: string) {
   const contentContainer = document.getElementById(APP_CONTAINER_CLASSNAME);
   if (!targetPath || !contentContainer) return;
 
-  // Optional loading screen 
-  const loadingScreen = (window as any).loadingScreen;
+  // Optional loading screen
+  const loadingScreen = window.loadingScreen;
   const isAuthRoute =
     targetPath === '/' || targetPath === '/login' || targetPath === '/register';
 
@@ -97,12 +97,7 @@ export async function renderRoute(path?: string) {
   // not the original requested path. Otherwise a logged-in user landing
   // on `/` gets feed HTML but the navbar stays hidden because we'd be
   // checking visibility for `/`.
-  try {
-    const updateNavbarVisibility = (window as any).updateNavbarVisibility as ((p: string) => void) | undefined;
-    if (typeof updateNavbarVisibility === 'function') {
-      updateNavbarVisibility(resolvedPath);
-    }
-  } catch {}
+  window.updateNavbarVisibility?.(resolvedPath);
 
   if (loadingScreen && isAuthRoute) {
     setTimeout(() => loadingScreen.hideLoadingScreen(), 400);

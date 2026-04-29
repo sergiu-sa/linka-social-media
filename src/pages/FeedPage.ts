@@ -10,6 +10,7 @@ import {
   createPost,
   updatePost,
   deletePost,
+  getPostComments,
   type NoroffPost,
 } from '../services/posts/posts';
 import {
@@ -47,26 +48,19 @@ async function ensureApiKey(): Promise<void> {
   }
 }
 
-/* ---------- Window typings for global handlers ---------- */
-declare global {
-  interface Window {
-    searchQuery?: string;
-    searchResults?: NoroffPost[];
-    navigateToProfile?: (username: string) => void;
-    navigateToPage?: (page: number) => void;
-  }
-}
-
-const isUserLoggedIn = isLoggedInNow();
-
-
-if (isUserLoggedIn) {
-  await ensureApiKey();
-}
+// Window globals are declared centrally in src/types/index.ts.
+import '../types/index';
 
 export default async function FeedPage(): Promise<string> {
   try {
     const isUserLoggedIn = isLoggedInNow();
+
+    // Make sure we have an API key before fetching posts. `ensureApiKey`
+    // is a no-op if one is already cached, and swallows network errors
+    // (the post fetch below will surface a real failure if it matters).
+    if (isUserLoggedIn) {
+      await ensureApiKey();
+    }
 
     // Check for search results from navbar
     const searchQuery = window.searchQuery;
@@ -466,33 +460,33 @@ function initializeFeedInteractions(): void {
     if (expanded) closeFullPostModal();
   });
 
-  // Make ALL functions globally available
-  (window as any).togglePostMenu = togglePostMenu;
-  (window as any).editPost = editPostFunction;
-  (window as any).deletePost = deletePostFunction;
-  (window as any).toggleComments = toggleComments;
-  (window as any).submitComment = submitComment;
-  (window as any).startReply = startReply;
-  (window as any).cancelReply = cancelReply;
-  (window as any).submitReply = submitReply;
-  (window as any).deleteCommentFunction = deleteCommentFunction;
-  (window as any).toggleReaction = handleToggleReaction;
-  (window as any).selectReaction = selectReaction;
-  (window as any).viewFullPost = viewFullPost;
-  (window as any).closeEditModal = closeEditModal;
-  (window as any).closeFullPostModal = closeFullPostModal;
-  (window as any).showReactionsModal = showReactionsModal;
-  (window as any).hideReactionsModal = hideReactionsModal;
+  // Expose handlers for inline `onclick="..."` attributes inside post cards.
+  // Typed centrally on the Window interface in src/types/index.ts.
+  window.togglePostMenu = togglePostMenu;
+  window.editPost = editPostFunction;
+  window.deletePost = deletePostFunction;
+  window.toggleComments = toggleComments;
+  window.submitComment = submitComment;
+  window.startReply = startReply;
+  window.cancelReply = cancelReply;
+  window.submitReply = submitReply;
+  window.deleteCommentFunction = deleteCommentFunction;
+  window.toggleReaction = handleToggleReaction;
+  window.selectReaction = selectReaction;
+  window.viewFullPost = viewFullPost;
+  window.closeEditModal = closeEditModal;
+  window.closeFullPostModal = closeFullPostModal;
+  window.showReactionsModal = showReactionsModal;
+  window.hideReactionsModal = hideReactionsModal;
 
-  // Define missing navigation functions
+  // Default navigation helpers if main.ts hasn't supplied them yet.
   if (!window.navigateToProfile) {
-    (window as any).navigateToProfile = function (username: string) {
+    window.navigateToProfile = (username: string) => {
       window.location.href = `/profile?user=${username}`;
     };
   }
-
   if (!window.navigateToPage) {
-    (window as any).navigateToPage = function (page: number) {
+    window.navigateToPage = (page: number) => {
       const url = new URL(window.location.href);
       url.searchParams.set('page', page.toString());
       window.location.href = url.toString();
@@ -817,8 +811,49 @@ async function loadComments(postId: number): Promise<void> {
   const commentsList = document.getElementById(`comments-list-${postId}`);
   if (!commentsList) return;
 
+  // Avoid re-fetching while a thread is just being toggled open/closed —
+  // if we already populated this thread, leave it alone.
+  if (commentsList.dataset.loaded === 'true') return;
+
   commentsList.innerHTML =
-    '<div class="no-comments">No comments yet. Be the first to comment!</div>';
+    '<div class="no-comments">Loading comments…</div>';
+
+  const comments = await getPostComments(postId);
+
+  if (!comments.length) {
+    commentsList.innerHTML =
+      '<div class="no-comments">No comments yet. Be the first to comment!</div>';
+    commentsList.dataset.loaded = 'true';
+    return;
+  }
+
+  // Clear placeholder, but keep any optimistically-added comments the user
+  // submitted while we were waiting on the network.
+  const existingIds = new Set<string>(
+    Array.from(commentsList.querySelectorAll<HTMLElement>('.comment-item'))
+      .map((el) => el.dataset.commentId || '')
+      .filter(Boolean)
+  );
+  commentsList.querySelectorAll('.no-comments').forEach((el) => el.remove());
+
+  for (const c of comments) {
+    if (existingIds.has(String(c.id))) continue;
+    addCommentToUI(postId, {
+      id: c.id,
+      body: c.body,
+      author: {
+        name: c.author?.name || c.owner || 'Unknown',
+        email: c.author?.email || '',
+        avatar: c.author?.avatar || null,
+      },
+      created: c.created,
+      postId: String(c.postId ?? postId),
+      replyToId: c.replyToId ? String(c.replyToId) : null,
+      owner: c.owner,
+      updated: c.created,
+    });
+  }
+  commentsList.dataset.loaded = 'true';
 }
 
 async function submitComment(postId: number): Promise<void> {

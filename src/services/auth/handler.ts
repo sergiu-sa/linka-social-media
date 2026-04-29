@@ -74,9 +74,7 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
       document.dispatchEvent(new Event('auth:changed'));
       setTimeout(() => {
         document.body.style.overflow = 'auto';
-        if (typeof (window as any).refreshNavbar === 'function') {
-          (window as any).refreshNavbar();
-        }
+        window.refreshNavbar?.();
         setTimeout(() => {
           // Keep the URL bar in sync with the rendered page — otherwise
           // the user lands on /feed content while the URL still says /login.

@@ -71,3 +71,53 @@ export interface RegisterResponse {
   email: string;
   id: number;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                        Global window extensions                            */
+/* -------------------------------------------------------------------------- */
+
+import type { NoroffPost } from '../services/posts/posts';
+import type LoadingScreen from '../pages/LoadingScreen';
+
+declare global {
+  interface Window {
+    // Router / navigation
+    renderRoute?: (path?: string) => void | Promise<void>;
+    navigateToProfile?: (username: string) => void;
+    navigateToPage?: (page: number) => void;
+    updateNavbarVisibility?: (path: string) => void;
+    updateActiveNav?: () => void;
+    refreshNavbar?: () => void;
+    updateNavbarAfterLogout?: () => void;
+
+    // Loading screen instance attached at boot
+    loadingScreen?: LoadingScreen;
+
+    // Search bridge from navbar to feed
+    searchQuery?: string | null;
+    searchResults?: NoroffPost[];
+    userResults?: unknown[];
+
+    // Feed-page handlers exposed for inline onclick handlers in postCard.ts
+    togglePostMenu?: (postId: number) => void;
+    editPost?: (postId: number) => void;
+    deletePost?: (postId: number) => void;
+    toggleComments?: (postId: number) => void;
+    submitComment?: (postId: number) => void;
+    startReply?: (commentId: number, authorName: string) => void;
+    cancelReply?: (commentId: number) => void;
+    submitReply?: (postId: number, parentCommentId: number) => void;
+    deleteCommentFunction?: (postId: number, commentId: number) => void;
+    toggleReaction?: (postId: number, emoji: string) => void;
+    selectReaction?: (postId: number, emoji: string) => void;
+    viewFullPost?: (postId: number) => void;
+    closeEditModal?: () => void;
+    closeFullPostModal?: () => void;
+    showReactionsModal?: (postId: number) => void;
+    hideReactionsModal?: (postId: number) => void;
+
+    // Generic close hooks read by the navbar's outside-click listener
+    closeModal?: () => void;
+    createPost?: () => void;
+  }
+}

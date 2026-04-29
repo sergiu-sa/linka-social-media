@@ -180,8 +180,7 @@ export function wireAuthLinks(): void {
       const href = a.getAttribute('href') || '/';
       e.preventDefault();
       history.pushState({ path: href }, '', href);
-      const renderRoute = (window as any).renderRoute as ((p: string) => void) | undefined;
-      if (typeof renderRoute === 'function') renderRoute(href);
+      window.renderRoute?.(href);
     });
   });
 }

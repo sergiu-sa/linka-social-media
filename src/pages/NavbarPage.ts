@@ -12,17 +12,7 @@ import {
 } from '../services/posts/posts';
 import { error as logError } from '../utils/log';
 import { getCurrentTheme, toggleTheme as toggleAppTheme, applyTheme, getInitialTheme } from '../utils/theme';
-
-// Add the global window interface to actually USE the NoroffPost type
-declare global {
-  interface Window {
-    searchQuery?: string;
-    searchResults?: NoroffPost[]; // This uses the imported type
-    userResults?: any[];
-    navigateToProfile?: (username: string) => void;
-    navigateToPage?: (page: number) => void;
-  }
-}
+import '../types/index';
 
 // TypeScript interfaces and types for NavbarPage
 export interface NavbarElements {
@@ -61,10 +51,9 @@ export type NavbarEventHandler = (event: Event) => void;
 export type NavigationRoute = '/' | '/feed' | '/profile' | '/register';
 export type NavbarTheme = 'light' | 'dark' | 'auto';
 
-interface SearchResult {
-  type: 'post' | 'user';
-  data: NoroffPost | any; // Use NoroffPost here too
-}
+type SearchResult =
+  | { type: 'post'; data: NoroffPost }
+  | { type: 'user'; data: NoroffPost['author'] };
 
 export default function NavbarPage() {
   const userLoggedIn = isLoggedIn();
@@ -261,8 +250,12 @@ async function enhancedSearch(query: string): Promise<SearchResult[]> {
   const results: SearchResult[] = [];
 
   try {
-    // Search for posts
-    const postsResponse = await getAllPosts(50, 1);
+    // Search for posts. Guests can't hit the authenticated /social/posts
+    // endpoint, so fall back to the public sample list — same shape, just
+    // a smaller corpus.
+    const postsResponse = isLoggedIn()
+      ? await getAllPosts(50, 1)
+      : await getPublicPosts(50, 1);
     const matchingPosts: NoroffPost[] = postsResponse.data.filter(
       (post: NoroffPost) =>
         post.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -271,7 +264,7 @@ async function enhancedSearch(query: string): Promise<SearchResult[]> {
     );
 
     // Add unique users from matching posts
-    const uniqueUsers = new Map();
+    const uniqueUsers = new Map<string, NoroffPost['author']>();
     matchingPosts.forEach((post: NoroffPost) => {
       if (post.author.name.toLowerCase().includes(query.toLowerCase())) {
         uniqueUsers.set(post.author.name, post.author);
@@ -280,10 +273,7 @@ async function enhancedSearch(query: string): Promise<SearchResult[]> {
 
     // Add user results
     uniqueUsers.forEach((user) => {
-      results.push({
-        type: 'user',
-        data: user,
-      });
+      results.push({ type: 'user', data: user });
     });
 
     // Add post results
@@ -511,7 +501,7 @@ export function initNavbar() {
 
       if (searchTerm === '') {
         // Clear search - trigger reload of original feed
-        (window as any).searchQuery = null;
+        window.searchQuery = null;
         if (window.location.pathname === '/feed') {
           renderRoute('/feed');
         }
@@ -526,9 +516,9 @@ export function initNavbar() {
       const postResults = searchResults.filter((r) => r.type === 'post');
 
       // Store results globally
-      (window as any).searchQuery = searchTerm;
-      (window as any).searchResults = postResults.map((r) => r.data);
-      (window as any).userResults = userResults.map((r) => r.data);
+      window.searchQuery = searchTerm;
+      window.searchResults = postResults.map((r) => r.data) as NoroffPost[];
+      window.userResults = userResults.map((r) => r.data);
 
       // Navigate to feed to show results
       if (window.location.pathname !== '/feed') {
@@ -565,8 +555,8 @@ export function initNavbar() {
   updateActiveNav();
 
   // Make updateActiveNav available globally for route changes
-  (window as any).updateActiveNav = updateActiveNav;
-  (window as any).updateNavbarAfterLogout = updateNavbarAfterLogout;
+  window.updateActiveNav = updateActiveNav;
+  window.updateNavbarAfterLogout = updateNavbarAfterLogout;
 }
 
 function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
@@ -581,12 +571,8 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
 
     // Close modals when clicking outside
     if ((e.target as Element).classList?.contains('modal')) {
-      if (typeof (window as any).closeModal === 'function') {
-        (window as any).closeModal();
-      }
-      if (typeof (window as any).closeEditModal === 'function') {
-        (window as any).closeEditModal();
-      }
+      window.closeModal?.();
+      window.closeEditModal?.();
     }
   });
 
@@ -608,19 +594,15 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
         searchInput.value = '';
         searchInput.blur();
         // Clear search results
-        (window as any).searchQuery = null;
+        window.searchQuery = null;
         if (window.location.pathname === '/feed') {
           renderRoute('/feed');
         }
       }
 
       // Close modals
-      if (typeof (window as any).closeModal === 'function') {
-        (window as any).closeModal();
-      }
-      if (typeof (window as any).closeEditModal === 'function') {
-        (window as any).closeEditModal();
-      }
+      window.closeModal?.();
+      window.closeEditModal?.();
 
       // Close dropdowns
       document.querySelectorAll('.dropdown-content').forEach((dropdown) => {
@@ -632,9 +614,7 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       const activeElement = document.activeElement as HTMLElement;
       if (activeElement?.id === 'newPostContent') {
-        if (typeof (window as any).createPost === 'function') {
-          (window as any).createPost();
-        }
+        window.createPost?.();
       } else if (activeElement?.id === 'editPostContent') {
         const editForm = document.getElementById(
           'editPostForm'

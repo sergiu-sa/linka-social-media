@@ -404,13 +404,21 @@ function setupThreeStar() {
 
   let tapStart: { t: number; x: number; y: number } | null = null;
 
-  // ---- Hover raycast (window-passive, throttled in render loop) ----
+  // ---- Hover raycast (canvas-scoped, throttled in render loop) ----
+  // Listening on `canvas` (not `window`) so chrome elements (top/bottom
+  // strips, CTAs) don't keep updating the hover state when the cursor is
+  // over them. Pointer events on those siblings don't bubble through the
+  // canvas, so we get clean enter/leave semantics.
   const ray = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  window.addEventListener('pointermove', (e) => {
+  canvas.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch') return; // skip hover on touch
     hoverRef.value = { x: e.clientX, y: e.clientY };
     lastInputAt = performance.now();
+  });
+  canvas.addEventListener('pointerleave', () => {
+    hoverRef.value = null;
+    setHover(false);
   });
 
   const raycastHit = (clientX: number, clientY: number) => {
