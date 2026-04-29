@@ -16,8 +16,19 @@ import {
 const FIELDS_HTML = `
   <div class="auth-field">
     <label for="register-name">Username</label>
-    <input id="register-name" type="text" name="name" placeholder="my_username" required autocomplete="username" />
-    <p class="auth-hint">No punctuation except underscore (_)</p>
+    <input
+      id="register-name"
+      type="text"
+      name="name"
+      placeholder="my_username"
+      required
+      autocomplete="username"
+      pattern="^[A-Za-z0-9_]+$"
+      minlength="3"
+      maxlength="20"
+      title="Letters, numbers, and underscores only (3–20 characters)"
+    />
+    <p class="auth-hint">Letters, numbers, and underscores only — no spaces or punctuation.</p>
   </div>
   <div class="auth-field">
     <label for="register-email">Email</label>

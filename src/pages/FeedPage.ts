@@ -3,7 +3,7 @@
  * @file Enhanced FeedPage.ts - COMPLETE VERSION
  */
 
-import postCard from '../components/postCard';
+import postCard, { wirePostCardActions } from '../components/postCard';
 import {
   getAllPosts,
   getPublicPosts,
@@ -22,6 +22,7 @@ import { getLocalItem, setLocalItem } from '../utils/storage';
 import { renderRoute } from '../router';
 import { fetchApiKey } from '../services/api/client';
 import { warn, error as logError } from '../utils/log';
+import { confirmDialog } from '../utils/confirm';
 
 /* ---------- Auth helpers (token from any key) ---------- */
 const tokenFromAnyKey = () =>
@@ -385,6 +386,8 @@ function renderPaginationControls(meta: any): string {
 /* -------------------------------------------------------------------------- */
 
 function initializeFeedInteractions(): void {
+  wirePostCardActions();
+
   // Handle create post form
   const createForm = document.getElementById(
     'create-post-form'
@@ -493,6 +496,9 @@ function initializeFeedInteractions(): void {
     };
   }
 }
+
+/* (Delegated post-card event handling lives in `components/postCard.ts`
+   so both the feed and the profile posts tab share the same dispatcher.) */
 
 /* -------------------------------------------------------------------------- */
 /*                                Post Create                                 */
@@ -754,11 +760,14 @@ async function handleEditPost(event: Event): Promise<void> {
 }
 
 async function deletePostFunction(postId: number): Promise<void> {
-  if (
-    !confirm(
-      'Are you sure you want to delete this post? This action cannot be undone.'
-    )
-  ) {
+  const ok = await confirmDialog({
+    title: 'Delete post?',
+    body: 'This post will be permanently removed. This action cannot be undone.',
+    confirmLabel: 'Delete',
+    cancelLabel: 'Keep',
+    danger: true,
+  });
+  if (!ok) {
     togglePostMenu(postId);
     return;
   }
@@ -872,9 +881,10 @@ async function submitComment(postId: number): Promise<void> {
     return;
   }
 
-  const submitBtn = document.querySelector(
-    `[onclick="submitComment(${postId})"]`
-  ) as HTMLButtonElement;
+  const article = document.getElementById(`post-${postId}`);
+  const submitBtn = article?.querySelector<HTMLButtonElement>(
+    '[data-action="comment-submit"]'
+  ) ?? null;
 
   try {
     if (submitBtn) {
@@ -945,8 +955,9 @@ function addCommentToUI(postId: number, comment: any): void {
   const currentUserName = getLocalItem('user');
   const isOwner = currentUserName && comment.author.name === currentUserName;
 
+  const safeAuthor = String(comment.author.name).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   const commentHTML = `
-    <div class="comment-item" data-comment-id="${comment.id}" style="animation-delay: 0s">
+    <div class="comment-item" data-comment-id="${comment.id}">
       <div class="comment-avatar">
         <div class="comment-avatar-placeholder">${comment.author.name.charAt(0).toUpperCase()}</div>
       </div>
@@ -957,18 +968,27 @@ function addCommentToUI(postId: number, comment: any): void {
         </div>
         <div class="comment-text">${comment.body}</div>
         <div class="comment-actions">
-          <button class="comment-action-btn reply-btn" onclick="startReply(${comment.id}, '${comment.author.name}')">Reply</button>
+          <button type="button" class="comment-action-btn reply-btn"
+                  data-action="reply-start"
+                  data-comment-id="${comment.id}"
+                  data-author-name="${safeAuthor}">Reply</button>
           ${
             isOwner
-              ? `<button class="comment-action-btn delete-btn" onclick="deleteCommentFunction(${postId}, ${comment.id})">Delete</button>`
+              ? `<button type="button" class="comment-action-btn delete-btn"
+                         data-action="comment-delete"
+                         data-comment-id="${comment.id}">Delete</button>`
               : ''
           }
         </div>
         <div class="reply-form" id="reply-form-${comment.id}" style="display: none;">
           <div class="reply-input-container">
-            <input type="text" id="reply-input-${comment.id}" class="reply-input" placeholder="Write a reply..." maxlength="280" onkeypress="if(event.key === 'Enter') submitReply(${postId}, ${comment.id})">
-            <button class="reply-submit-btn" onclick="submitReply(${postId}, ${comment.id})">Send</button>
-            <button class="reply-cancel-btn" onclick="cancelReply(${comment.id})">Cancel</button>
+            <input type="text" id="reply-input-${comment.id}" class="reply-input"
+                   placeholder="Write a reply..." maxlength="280"
+                   data-action="reply-input" data-comment-id="${comment.id}">
+            <button type="button" class="reply-submit-btn"
+                    data-action="reply-submit" data-comment-id="${comment.id}">Send</button>
+            <button type="button" class="reply-cancel-btn"
+                    data-action="reply-cancel" data-comment-id="${comment.id}">Cancel</button>
           </div>
         </div>
       </div>
@@ -1079,7 +1099,14 @@ async function deleteCommentFunction(
   postId: number,
   commentId: number
 ): Promise<void> {
-  if (!confirm('Are you sure you want to delete this comment?')) return;
+  const ok = await confirmDialog({
+    title: 'Delete comment?',
+    body: 'This comment will be permanently removed.',
+    confirmLabel: 'Delete',
+    cancelLabel: 'Keep',
+    danger: true,
+  });
+  if (!ok) return;
 
   try {
     await deleteComment(postId.toString(), commentId.toString());

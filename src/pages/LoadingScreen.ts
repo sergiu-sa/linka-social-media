@@ -1,83 +1,82 @@
 /**
  * @file LoadingScreen.ts
- * @description Loading screen component with animated elements.
+ * @description Editorial-flat loading overlay. CSS lives in style.css under
+ *              `.linka-loader`. The DOM is created once on app boot and
+ *              toggled in/out via `.is-visible`.
  */
+
+const STAR_SVG = `
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="loaderArm" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ff7a2e"/>
+        <stop offset="100%" stop-color="#f36920"/>
+      </linearGradient>
+      <radialGradient id="loaderCore" cx="30%" cy="30%">
+        <stop offset="0%" stop-color="#ff9d5c"/>
+        <stop offset="100%" stop-color="#f36920"/>
+      </radialGradient>
+    </defs>
+    ${[0, 60, 120, 180, 240, 300]
+      .map(
+        (deg) => `
+      <g transform="translate(100, 100) rotate(${deg}) translate(-100, -100)">
+        <rect x="75" y="10" width="50" height="83" rx="6" fill="url(#loaderArm)" opacity="0.88"/>
+      </g>`
+      )
+      .join('')}
+    <circle cx="100" cy="100" r="55" fill="url(#loaderCore)"/>
+  </svg>
+`;
 
 export default class LoadingScreen {
   constructor() {
-    this.init();
-  }
-
-  // Initialize the loading screen
-  init() {
     this.createLoadingScreen();
   }
 
-  // Create and inject the loading screen HTML
-  createLoadingScreen() {
+  private createLoadingScreen() {
     const app = document.getElementById('js-app');
     if (!app) return;
 
-    // Create loading screen HTML
-    const loadingHTML = `
-      <!-- Loading Screen -->
-      <div id="loadingScreen" class="loading-screen hidden">
-        <div class="loading-content">
-          <div class="loading-logo">
-            <div class="logo-icon">SP</div>
-          </div>
-          <div class="loading-text">SocialPro</div>
-          <div class="loading-spinner">
-            <div class="spinner-ring"></div>
-            <div class="spinner-ring"></div>
-            <div class="spinner-ring"></div>
-          </div>
-        </div>
-        <div class="floating-elements">
-          <div class="floating-element"></div>
-          <div class="floating-element"></div>
-          <div class="floating-element"></div>
-          <div class="floating-element"></div>
-          <div class="floating-element"></div>
-        </div>
+    const html = `
+      <div id="loadingScreen" class="linka-loader" role="status" aria-live="polite" aria-hidden="true">
+        <div class="linka-loader-mark">${STAR_SVG}</div>
+        <div class="linka-loader-brand">LINKA</div>
+        <div class="linka-loader-message"></div>
       </div>
     `;
-
-    // Insert at the beginning of the app container
-    app.insertAdjacentHTML('afterbegin', loadingHTML);
+    app.insertAdjacentHTML('afterbegin', html);
   }
 
-  // Loading Screen Management
   showLoadingScreen() {
-    const loadingScreen = document.getElementById('loadingScreen');
-    if (loadingScreen) {
-      loadingScreen.classList.remove('hidden');
-
-      // Add floating elements animation
-      this.animateFloatingElements();
-    }
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    el.classList.add('is-visible');
+    el.setAttribute('aria-hidden', 'false');
   }
 
   hideLoadingScreen() {
-    const loadingScreen = document.getElementById('loadingScreen');
-    if (loadingScreen) {
-      loadingScreen.classList.add('hidden');
-    }
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    el.classList.remove('is-visible');
+    el.setAttribute('aria-hidden', 'true');
   }
 
-  animateFloatingElements() {
-    const elements = document.querySelectorAll('.floating-element');
-    elements.forEach((element, index) => {
-      const htmlElement = element as HTMLElement;
-      htmlElement.style.animationDelay = `${index * 0.5}s`;
-    });
+  showWithMessage(message: string) {
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    const msgEl = el.querySelector<HTMLElement>('.linka-loader-message');
+    if (msgEl) msgEl.textContent = message;
+    this.showLoadingScreen();
   }
 
-  // Show loading screen for a specific duration
-  showForDuration(duration: number = 2000): Promise<void> {
+  /**
+   * Show the loader for `duration` ms, then hide.
+   * @returns a promise that resolves when the loader has been hidden.
+   */
+  showForDuration(duration: number = 1200): Promise<void> {
+    this.showLoadingScreen();
     return new Promise((resolve) => {
-      this.showLoadingScreen();
-
       setTimeout(() => {
         this.hideLoadingScreen();
         resolve();
@@ -85,22 +84,11 @@ export default class LoadingScreen {
     });
   }
 
-  // Show loading screen with custom message
-  showWithMessage(message: string) {
-    this.showLoadingScreen();
-
-    const loadingText = document.querySelector('.loading-text');
-    if (loadingText) {
-      loadingText.textContent = message;
-    }
-  }
-
-  // Reset loading screen to default state
   reset() {
-    const loadingText = document.querySelector('.loading-text');
-    if (loadingText) {
-      loadingText.textContent = 'SocialPro';
-    }
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    const msgEl = el.querySelector<HTMLElement>('.linka-loader-message');
+    if (msgEl) msgEl.textContent = '';
     this.hideLoadingScreen();
   }
 }

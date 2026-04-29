@@ -30,81 +30,29 @@ html.light-mode header a:hover span {
 /* Ensure proper dark mode setup */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Global body styling with theme support */
+/* Global body styling. Padding-top is added only when the navbar is
+   actually visible — see the `body:has(...)` rules below. */
 body {
-  @apply pt-16 transition-colors duration-300 min-h-screen bg-white text-gray-900;
+  @apply transition-colors duration-300 min-h-screen bg-white text-gray-900;
+  padding-top: 0;
 }
 
-/* Active navigation button styling */
-.nav-btn.active {
-  @apply -translate-y-0.5 text-slate-900 dark:text-white bg-slate-200 dark:bg-slate-700 shadow-md;
+/* Reserve room for the 60px fixed navbar on routes that show it.
+   The auth shell, intro page, and 404 use full-bleed layouts and
+   keep the default 0 padding. */
+body:has(.feed-page),
+body:has(.linka-profile) {
+  padding-top: 60px;
 }
 
-/* Mobile menu toggle icon animations */
-.mobile-menu-toggle {
-  @apply transition-all duration-300;
-}
-
-.mobile-menu-toggle:hover {
-  transform: scale(1.1);
-}
-
-/* Mobile menu slide-down animation */
-.mobile-menu {
-  @apply transition-all duration-300 ease-out;
-  transform-origin: top;
-}
-
-.mobile-menu.hidden {
-  @apply opacity-0;
-  transform: scaleY(0);
-}
-
-.mobile-menu:not(.hidden) {
-  @apply opacity-100;
-  transform: scaleY(1);
-}
-
-/* Logout notification styling */
-.logout-notification {
-  @apply fixed top-24 right-5 text-white px-6 py-4 rounded-xl z-50;
-  background: rgba(16, 185, 129, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  animation: slideInRight 0.3s ease-out;
-}
-
-.notification-content {
-  @apply flex items-center gap-2 font-medium;
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .mobile-menu {
-    overflow-y: auto;
-    max-height: calc(100vh - 4rem);
-  }
-}
+/* (Old navbar / mobile-menu / logout-notification CSS removed — see
+   `.linka-nav`, `.linka-mobile-menu`, and `.notification-toast` below.) */
 
 /* ==========================================================================
    AUTH SHELL (Login / Register split-screen)
    ========================================================================== */
-/* Cancel the global body pt-16 when an auth shell is on the page,
-   so the brand panel reaches the very top of the viewport. */
-body:has(.auth-shell) {
-  padding-top: 0 !important;
-}
+/* (Body padding is now opt-in — see the body rule near the top — so the
+   auth shell already gets `padding-top: 0` by default.) */
 
 .auth-shell {
   min-height: 100vh;
@@ -474,6 +422,16 @@ html.light-mode .auth-back-link {
   transform: translateX(-3px);
 }
 
+/* Visible focus rings on the auth-shell brand link + back link.
+   Browsers were giving these no `:focus-visible` outline because they're
+   color-shift-on-hover anchors with no border. */
+.auth-brand-logo:focus-visible,
+.auth-back-link:focus-visible {
+  outline: 2px solid rgb(249 115 22);
+  outline-offset: 4px;
+  border-radius: 0.35rem;
+}
+
 /* ==========================================================================
    INTRO PAGE CHROME (top strip + bottom strip + interactive star)
    ========================================================================== */
@@ -729,7 +687,7 @@ html:not(.light-mode) body:has(.feed-page) {
 }
 .feed-page {
   background: rgb(248 250 252);
-  min-height: calc(100vh - 4rem);
+  min-height: calc(100vh - 60px);
   width: 100%;
   box-sizing: border-box;
 }
@@ -1840,3 +1798,992 @@ html:not(.light-mode) body:has(.feed-page) {
   }
 }
 
+/* ==========================================================================
+   NAVBAR (editorial-flat top bar)
+   ========================================================================== */
+
+.linka-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 60px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.45);
+  color: rgb(248 250 252);
+  font-family: inherit;
+}
+html.light-mode .linka-nav {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom-color: rgba(203, 213, 225, 0.6);
+  color: rgb(15 23 42);
+}
+
+/* Width + horizontal padding match `.feed-column` so the brand and
+   sign-out button line up vertically with the content edges. */
+.linka-nav-inner {
+  height: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+@media (min-width: 768px) {
+  .linka-nav-inner {
+    gap: 2rem;
+  }
+}
+
+.linka-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+.linka-nav-mark {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.35));
+}
+.linka-nav-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.linka-nav-wordmark {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.linka-nav-brand:hover .linka-nav-wordmark {
+  color: rgb(249 115 22);
+}
+
+.linka-nav-search {
+  flex: 1;
+  display: none;
+  position: relative;
+  max-width: 380px;
+}
+@media (min-width: 768px) {
+  .linka-nav-search {
+    display: block;
+  }
+}
+.linka-nav-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 2.6rem 0 0.95rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: inherit;
+  outline: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.linka-nav-search-input::placeholder {
+  color: rgba(148, 163, 184, 0.7);
+}
+.linka-nav-search-input:focus {
+  border-color: rgb(249 115 22);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+}
+html.light-mode .linka-nav-search-input {
+  background: rgba(15, 23, 42, 0.04);
+  border-color: rgba(15, 23, 42, 0.12);
+}
+html.light-mode .linka-nav-search-input:focus {
+  background: rgba(255, 255, 255, 0.95);
+}
+.linka-nav-search-hint {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  padding: 0.18rem 0.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 0.3rem;
+  color: rgba(148, 163, 184, 0.8);
+  background: transparent;
+  pointer-events: none;
+}
+
+.linka-nav-links {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+@media (min-width: 768px) {
+  .linka-nav-links {
+    display: flex;
+  }
+}
+.linka-nav-link {
+  position: relative;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: inherit;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.linka-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1.5px;
+  background: rgb(249 115 22);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+.linka-nav-link:hover {
+  color: rgb(249 115 22);
+}
+.linka-nav-link:hover::after,
+.linka-nav-link.is-active::after {
+  transform: scaleX(1);
+}
+.linka-nav-link.is-active {
+  color: rgb(249 115 22);
+}
+
+.linka-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  color: #fff;
+  border-radius: 0.5rem;
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -10px rgba(249, 115, 22, 0.6);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.linka-nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -10px rgba(249, 115, 22, 0.75);
+}
+
+.linka-nav-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 0;
+  border-radius: 0.4rem;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+.linka-nav-icon-btn:hover {
+  color: rgb(249 115 22);
+  background: rgba(249, 115, 22, 0.08);
+}
+
+/* Mobile toggle (3-line burger built from a single span + ::before/::after) */
+.linka-nav-mobile-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+}
+@media (min-width: 768px) {
+  .linka-nav-mobile-toggle {
+    display: none;
+  }
+}
+.linka-nav-burger,
+.linka-nav-burger::before,
+.linka-nav-burger::after {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: currentColor;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+  position: relative;
+}
+.linka-nav-burger::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 0;
+}
+.linka-nav-burger::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 0;
+}
+.linka-nav-mobile-toggle.is-open .linka-nav-burger {
+  background: transparent;
+}
+.linka-nav-mobile-toggle.is-open .linka-nav-burger::before {
+  transform: translateY(7px) rotate(45deg);
+}
+.linka-nav-mobile-toggle.is-open .linka-nav-burger::after {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile drawer */
+.linka-mobile-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 60px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem 1.5rem;
+}
+.linka-mobile-menu[hidden] {
+  display: none;
+}
+html.light-mode .linka-mobile-menu {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom-color: rgba(203, 213, 225, 0.6);
+}
+.linka-nav-search-mobile {
+  display: block;
+  max-width: 100%;
+  margin-bottom: 0.75rem;
+}
+.linka-mobile-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  padding: 0.7rem 0.4rem;
+  border: 0;
+  background: transparent;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.linka-mobile-link:last-child {
+  border-bottom: 0;
+}
+.linka-mobile-link:hover,
+.linka-mobile-link.is-active {
+  color: rgb(249 115 22);
+}
+.linka-mobile-link-primary {
+  margin-top: 0.6rem;
+  text-align: center;
+  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  color: #fff !important;
+  border-radius: 0.5rem;
+  padding: 0.7rem 1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.85rem;
+  border-bottom: 0;
+}
+
+/* ==========================================================================
+   LOADING SCREEN
+   ========================================================================== */
+
+.linka-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  background: rgb(15 23 42);
+  color: rgb(248 250 252);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.linka-loader.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+html.light-mode .linka-loader {
+  background: rgb(248 250 252);
+  color: rgb(15 23 42);
+}
+.linka-loader-mark {
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(0 0 18px rgba(249, 115, 22, 0.45));
+  animation: linka-loader-pulse 1.6s ease-in-out infinite;
+}
+.linka-loader-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.linka-loader-brand {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* visually balance the trailing letter-spacing */
+  text-transform: uppercase;
+}
+.linka-loader-message {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.75);
+  min-height: 1em;
+}
+.linka-loader-message:empty {
+  display: none;
+}
+@keyframes linka-loader-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .linka-loader-mark {
+    animation: none;
+  }
+  .linka-loader {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   404 PAGE
+   ========================================================================== */
+
+.linka-404 {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 4rem 1.5rem;
+  text-align: center;
+  background: rgb(15 23 42);
+  color: rgb(248 250 252);
+}
+html.light-mode .linka-404 {
+  background: rgb(248 250 252);
+  color: rgb(15 23 42);
+}
+.linka-404-eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgb(249 115 22);
+}
+.linka-404-title {
+  margin: 0;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(8rem, 28vw, 18rem);
+  line-height: 0.85;
+  letter-spacing: 0.01em;
+  color: rgb(249 115 22);
+  text-shadow: 0 6px 40px rgba(249, 115, 22, 0.18);
+}
+.linka-404-body {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(148, 163, 184, 0.95);
+}
+html.light-mode .linka-404-body {
+  color: rgba(71, 85, 105, 0.95);
+}
+.linka-404-actions {
+  margin-top: 0.85rem;
+}
+.linka-404-cta {
+  /* inherits from .intro-cta-secondary */
+}
+
+/* ==========================================================================
+   PROFILE
+   ========================================================================== */
+
+body:has(.linka-profile) {
+  background-color: rgb(248 250 252) !important;
+}
+html:not(.light-mode) body:has(.linka-profile) {
+  background-color: rgb(15 23 42) !important;
+}
+
+.linka-profile {
+  background: rgb(248 250 252);
+  min-height: calc(100vh - 60px);
+  width: 100%;
+  box-sizing: border-box;
+}
+.dark .linka-profile {
+  background: rgb(15 23 42);
+}
+
+.linka-profile-column {
+  /* `.feed-column` already supplies max-width 1060px, padding, etc. */
+}
+
+.linka-profile-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  flex-wrap: wrap;
+}
+.dark .linka-profile-header {
+  border-bottom-color: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  min-width: 0;
+}
+.linka-profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 9999px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+}
+.linka-profile-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+.linka-profile-name-block {
+  min-width: 0;
+}
+.linka-profile-eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(249 115 22);
+}
+.linka-profile-name {
+  margin: 0;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: rgb(15 23 42);
+  word-break: break-word;
+}
+.dark .linka-profile-name {
+  color: rgb(248 250 252);
+}
+.linka-profile-handle {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: rgb(100 116 139);
+}
+.linka-profile-follow.is-following {
+  background: rgba(15, 23, 42, 0.08);
+  color: rgb(15 23 42);
+  background-image: none;
+  box-shadow: none;
+}
+.dark .linka-profile-follow.is-following {
+  background: rgba(248, 250, 252, 0.08);
+  color: rgb(248 250 252);
+}
+
+.linka-profile-bio {
+  margin: 1.5rem 0 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgb(51 65 85);
+  max-width: 60ch;
+}
+.dark .linka-profile-bio {
+  color: rgb(203 213 225);
+}
+
+.linka-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 2rem 0 0;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(203, 213, 225, 0.55);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  gap: 0;
+}
+.dark .linka-profile-stats {
+  border-color: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-stat {
+  text-align: center;
+  position: relative;
+  padding: 0 0.5rem;
+  margin: 0;
+}
+.linka-profile-stat + .linka-profile-stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 1px;
+  background: rgba(203, 213, 225, 0.55);
+}
+.dark .linka-profile-stat + .linka-profile-stat::before {
+  background: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-stat dt {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(100 116 139);
+  margin: 0 0 0.4rem;
+}
+.linka-profile-stat dd {
+  margin: 0;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 1.85rem;
+  line-height: 1;
+  color: rgb(15 23 42);
+  letter-spacing: 0.02em;
+}
+.dark .linka-profile-stat dd {
+  color: rgb(248 250 252);
+}
+
+.linka-profile-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 2rem;
+  padding: 0 0.25rem;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.linka-profile-tabs::-webkit-scrollbar {
+  display: none;
+}
+/* On narrow viewports the four tabs would overflow if forced to centre,
+   so let them flow from the left and scroll horizontally instead. */
+@media (max-width: 520px) {
+  .linka-profile-tabs {
+    justify-content: flex-start;
+  }
+}
+.dark .linka-profile-tabs {
+  border-bottom-color: rgba(51, 65, 85, 0.55);
+}
+
+.linka-profile-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  background: transparent;
+  border: 0;
+  padding: 1rem 1.1rem 0.95rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(100 116 139);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+.linka-profile-tab:hover {
+  color: rgb(15 23 42);
+  background: rgba(249, 115, 22, 0.06);
+}
+.dark .linka-profile-tab:hover {
+  color: rgb(248 250 252);
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.linka-profile-tab-count {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: inherit;
+  opacity: 0.65;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+.linka-profile-tab:hover .linka-profile-tab-count {
+  opacity: 1;
+}
+
+.linka-profile-tab.is-active {
+  color: rgb(15 23 42);
+}
+.dark .linka-profile-tab.is-active {
+  color: rgb(248 250 252);
+}
+.linka-profile-tab.is-active .linka-profile-tab-count {
+  color: rgb(249 115 22);
+  opacity: 1;
+}
+
+/* Active underline — thicker, slightly inset, with a small orange-glow */
+.linka-profile-tab::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -1px;
+  height: 3px;
+  background: rgb(249 115 22);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+.linka-profile-tab.is-active::after {
+  transform: scaleX(1);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.45);
+}
+
+/* Active tab gets a small dot leading the label, like an editorial bullet */
+.linka-profile-tab.is-active::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: rgb(249 115 22);
+  margin-right: 0.55rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linka-profile-tab,
+  .linka-profile-tab::after {
+    transition: none;
+  }
+}
+
+.linka-profile-tab-content {
+  margin-top: 0;
+}
+
+.linka-profile-empty {
+  text-align: center;
+  padding: 3.5rem 1rem;
+}
+.linka-profile-empty-title {
+  margin: 0 0 0.45rem;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: rgb(15 23 42);
+}
+.dark .linka-profile-empty-title {
+  color: rgb(248 250 252);
+}
+.linka-profile-empty-body {
+  margin: 0 auto;
+  max-width: 36ch;
+  color: rgb(100 116 139);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.linka-profile-error {
+  padding-top: 6rem;
+}
+.linka-profile-error .intro-cta {
+  margin-top: 1rem;
+}
+
+.linka-profile-media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 640px) {
+  .linka-profile-media-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+  }
+}
+.linka-profile-media-tile {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: rgba(203, 213, 225, 0.4);
+  position: relative;
+}
+.dark .linka-profile-media-tile {
+  background: rgba(51, 65, 85, 0.5);
+}
+.linka-profile-media-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+}
+.linka-profile-media-tile:hover img {
+  opacity: 0.8;
+}
+
+.linka-profile-userlist {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+.linka-profile-userlist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+.dark .linka-profile-userlist-row {
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+.linka-profile-userlist-row:hover {
+  color: rgb(249 115 22);
+}
+.linka-profile-userlist-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+.linka-profile-userlist-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.linka-profile-userlist-email {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: rgb(100 116 139);
+}
+
+/* ==========================================================================
+   CONFIRM DIALOG
+   ========================================================================== */
+
+.linka-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.linka-confirm.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.linka-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.linka-confirm-panel {
+  position: relative;
+  width: min(420px, 100%);
+  background: #fff;
+  color: rgb(15 23 42);
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  border-radius: 0.85rem;
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.45);
+  transform: translateY(8px) scale(0.98);
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+.linka-confirm.is-visible .linka-confirm-panel {
+  transform: translateY(0) scale(1);
+}
+.dark .linka-confirm-panel {
+  background: rgb(30 41 59);
+  color: rgb(248 250 252);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+
+.linka-confirm-title {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.45rem;
+  line-height: 1.1;
+}
+
+.linka-confirm-body {
+  margin: 0 0 1.25rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgb(71 85 105);
+}
+.dark .linka-confirm-body {
+  color: rgb(203 213 225);
+}
+
+.linka-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.linka-confirm-cancel,
+.linka-confirm-confirm {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 0.55rem;
+  padding: 0.65rem 1.1rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.linka-confirm-cancel {
+  background: transparent;
+  color: inherit;
+  border-color: rgba(148, 163, 184, 0.4);
+}
+.linka-confirm-cancel:hover {
+  border-color: rgba(148, 163, 184, 0.7);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.linka-confirm-confirm {
+  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  color: #fff;
+  border: 0;
+  box-shadow: 0 8px 18px -8px rgba(249, 115, 22, 0.55);
+}
+.linka-confirm-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px -8px rgba(249, 115, 22, 0.7);
+}
+.linka-confirm-confirm.is-danger {
+  background: linear-gradient(to right, rgb(239 68 68), rgb(220 38 38));
+  box-shadow: 0 8px 18px -8px rgba(239, 68, 68, 0.5);
+}
+.linka-confirm-confirm.is-danger:hover {
+  box-shadow: 0 12px 22px -8px rgba(239, 68, 68, 0.65);
+}
+
+.linka-confirm-cancel:focus-visible,
+.linka-confirm-confirm:focus-visible {
+  outline: 2px solid rgb(249 115 22);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linka-confirm,
+  .linka-confirm-panel {
+    transition: none;
+  }
+}
