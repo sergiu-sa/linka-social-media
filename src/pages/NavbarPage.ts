@@ -680,6 +680,7 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
 
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light-mode');
       if (sunIcon) sunIcon.style.display = 'inline';
       if (moonIcon) moonIcon.style.display = 'none';
       if (mobileThemeIcon)
@@ -687,6 +688,7 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
       if (mobileThemeText) mobileThemeText.textContent = 'Light Mode';
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light-mode');
       if (sunIcon) sunIcon.style.display = 'none';
       if (moonIcon) moonIcon.style.display = 'inline';
       if (mobileThemeIcon)
@@ -696,11 +698,15 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
   };
 
   // Toggle theme function
+  // Keeps the navbar's `.dark` system AND the intro/feed `.light-mode`
+  // system in sync so a single toggle flips every page consistently.
   const toggleTheme = () => {
-    const isDark = document.documentElement.classList.contains('dark');
+    const isDark = !document.documentElement.classList.contains('light-mode');
 
     if (isDark) {
+      // → switch to light
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light-mode');
       localStorage.setItem('theme', 'light');
       if (sunIcon) sunIcon.style.display = 'none';
       if (moonIcon) moonIcon.style.display = 'inline';
@@ -710,7 +716,9 @@ function setupGlobalEventListeners(searchInput: HTMLInputElement | null) {
       const btn = document.getElementById('theme-toggle');
       if (btn) btn.setAttribute('aria-pressed', 'false');
     } else {
+      // → switch to dark
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light-mode');
       localStorage.setItem('theme', 'dark');
       if (sunIcon) sunIcon.style.display = 'inline';
       if (moonIcon) moonIcon.style.display = 'none';

@@ -11,6 +11,7 @@ import type {
   LoginCredentials,
   ApiResponse,
   LoginResponse,
+  RegisterData,
 } from '../../types/index';
 
 export type AuthMode = 'login' | 'register';
@@ -29,8 +30,8 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
     const email = String(fd.get('email') || '');
     const password = String(fd.get('password') || '');
     const name = String(fd.get('name') || '');
-    const avatar = (fd.get('avatar') as string) || undefined;
-    const bio = (fd.get('bio') as string) || undefined;
+    const avatarUrl = (fd.get('avatar') as string)?.trim() || '';
+    const bio = (fd.get('bio') as string)?.trim() || undefined;
 
     try {
       let token: string | undefined;
@@ -44,7 +45,10 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
         token = res?.data?.accessToken;
         loggedInName = res?.data?.name;
       } else {
-        await registerUser({ name, email, password, avatar, bio } as any);
+        const payload: RegisterData = { name, email, password };
+        if (bio) payload.bio = bio;
+        if (avatarUrl) payload.avatar = { url: avatarUrl, alt: `${name} avatar` };
+        await registerUser(payload);
         const res = (await loginUser({
           email,
           password,

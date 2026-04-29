@@ -139,26 +139,31 @@ export const del = (endpoint: Endpoint) =>
 /*                          Auth Helper Functions                             */
 /* -------------------------------------------------------------------------- */
 
-export async function registerUser(
-  data: RegisterData
-): Promise<ApiResponse<RegisterResponse>> {
-  const response = await fetch('https://v2.api.noroff.dev/auth/register', {
+async function authPost<T>(path: string, data: object): Promise<T> {
+  const response = await fetch(`https://v2.api.noroff.dev${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(data),
   });
-  return response.json();
+  const json = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      json?.errors?.[0]?.message || `HTTP Error: ${response.status}`;
+    throw new ApiError(message, response.status);
+  }
+  return json as T;
 }
 
-export async function loginUser(
+export function registerUser(
+  data: RegisterData
+): Promise<ApiResponse<RegisterResponse>> {
+  return authPost<ApiResponse<RegisterResponse>>('/auth/register', data);
+}
+
+export function loginUser(
   data: LoginCredentials
 ): Promise<ApiResponse<LoginResponse>> {
-  const response = await fetch('https://v2.api.noroff.dev/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(data),
-  });
-  return response.json();
+  return authPost<ApiResponse<LoginResponse>>('/auth/login', data);
 }
 
 /**

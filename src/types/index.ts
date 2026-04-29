@@ -47,6 +47,7 @@ export interface RegisterData {
   email: string;
   password: string;
   bio?: string;
+  avatar?: { url: string; alt: string };
 }
 
 // ## API Response interfaces
