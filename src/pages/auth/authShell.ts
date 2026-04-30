@@ -4,6 +4,9 @@
  *              Pure HTML rendering — no DOM mounting, no event wiring.
  */
 
+import { iconSvg } from '../../utils/icon';
+import { ArrowLeft, ArrowRight } from 'lucide';
+
 export type AuthShellConfig = {
   title: string;
   subhead: string;
@@ -61,7 +64,7 @@ export function renderAuthShell(cfg: AuthShellConfig): string {
 
       <section class="auth-form-panel">
         <a href="/" class="auth-back-link" data-link aria-label="Back to intro">
-          <span aria-hidden="true">←</span> Back to intro
+          <span class="auth-back-icon" aria-hidden="true">${iconSvg(ArrowLeft, { size: 14, strokeWidth: 2 })}</span><span>Back to intro</span>
         </a>
         <label class="theme-toggle auth-theme-toggle relative inline-flex items-center cursor-pointer">
           <input id="themeToggle" type="checkbox" class="sr-only peer" />
@@ -80,7 +83,7 @@ export function renderAuthShell(cfg: AuthShellConfig): string {
 
           <p class="auth-crosslink">
             ${cfg.crosslinkText}
-            <a href="${cfg.crosslinkHref}" data-link>${cfg.crosslinkLabel} →</a>
+            <a href="${cfg.crosslinkHref}" data-link><span>${cfg.crosslinkLabel}</span><span class="auth-crosslink-icon" aria-hidden="true">${iconSvg(ArrowRight, { size: 13, strokeWidth: 2 })}</span></a>
           </p>
         </div>
       </section>

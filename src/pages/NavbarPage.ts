@@ -20,6 +20,8 @@ import {
   getInitialTheme,
 } from '../utils/theme';
 import { confirmDialog } from '../utils/confirm';
+import { iconSvg } from '../utils/icon';
+import { Sun, Moon } from 'lucide';
 import '../types/index';
 
 type SearchResult =
@@ -50,8 +52,8 @@ const STAR_SVG = `
   </svg>
 `;
 
-const SUN_ICON = `<svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 4V1h0v3zm0 19v-3h0v3zM4 12H1v0h3zm19 0h-3v0h3zM6.76 4.84 4.96 3.05 3.55 4.46l1.79 1.8 1.42-1.42zm10.48 14.32 1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM6.76 19.16 5.34 20.58 3.55 18.79l1.41-1.41 1.8 1.78zM19.16 6.76l1.4-1.4 1.8 1.78-1.41 1.42-1.79-1.8zM12 6a6 6 0 1 0 0 12A6 6 0 0 0 12 6z"/></svg>`;
-const MOON_ICON = `<svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const SUN_ICON = `<span class="icon-sun" aria-hidden="true">${iconSvg(Sun, { size: 18, strokeWidth: 2 })}</span>`;
+const MOON_ICON = `<span class="icon-moon" aria-hidden="true">${iconSvg(Moon, { size: 18, strokeWidth: 2 })}</span>`;
 
 export default function NavbarPage() {
   const userLoggedIn = isLoggedIn();

@@ -8,6 +8,8 @@ import { loginUser, registerUser, fetchApiKey } from '../api/client';
 import { setLocalItem } from '../../utils/storage';
 import { renderRoute } from '../../router';
 import { warn, error as logError } from '../../utils/log';
+import { iconSvg } from '../../utils/icon';
+import { Check, X } from 'lucide';
 import type {
   LoginCredentials,
   ApiResponse,
@@ -70,7 +72,7 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
         warn('Could not fetch API key yet:', e);
       }
 
-      btn.textContent = '✓ Success';
+      btn.innerHTML = `<span class="auth-btn-state">${iconSvg(Check, { size: 16, strokeWidth: 2.6 })}<span>Success</span></span>`;
       document.dispatchEvent(new Event('auth:changed'));
       setTimeout(() => {
         document.body.style.overflow = 'auto';
@@ -86,7 +88,7 @@ export function wireAuthForm(form: HTMLFormElement, mode: AuthMode): void {
       logError(err);
       msg.textContent =
         err?.message || 'Something went wrong. Please try again.';
-      btn.textContent = '✗ Error';
+      btn.innerHTML = `<span class="auth-btn-state">${iconSvg(X, { size: 16, strokeWidth: 2.6 })}<span>Error</span></span>`;
       setTimeout(() => {
         btn.textContent = original;
         btn.disabled = false;

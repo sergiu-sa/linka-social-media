@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 import { renderRoute } from '../router';
 import { isLoggedIn } from '../utils/auth';
 import { initTheme } from '../utils/theme';
+import { iconSvg } from '../utils/icon';
+import { MousePointer2, Sparkles } from 'lucide';
 
 const HEADER_LOGO_SVG = `
   <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-700 ease-out group-hover:scale-125 group-hover:rotate-[360deg] group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]" aria-label="LINKA Logo">
@@ -140,7 +142,9 @@ function showDiscoveryHint() {
 
   const el = document.createElement('div');
   el.className = 'intro-hint-label';
-  el.textContent = '↺ drag · ✦ click to break it';
+  const drag = iconSvg(MousePointer2, { size: 11, strokeWidth: 1.8 });
+  const spark = iconSvg(Sparkles, { size: 11, strokeWidth: 1.8 });
+  el.innerHTML = `${drag}<span>drag</span><span class="intro-hint-sep">·</span>${spark}<span>click to break it</span>`;
   document.body.appendChild(el);
 
   // Fade in

@@ -8,6 +8,8 @@
 import type { NoroffPost } from '../services/posts/posts';
 import { getLocalItem } from '../utils/storage';
 import { getTimeAgo } from '../utils/date';
+import { iconSvg } from '../utils/icon';
+import { Heart, MessageCircle } from 'lucide';
 import '../types/index';
 
 function escAttr(s: string): string {
@@ -166,7 +168,7 @@ export default function postCard(
             data-emoji="❤️"
             aria-haspopup="menu"
           >
-            <i class="fa-solid fa-heart" aria-hidden="true"></i>
+            <i class="feed-action-icon" aria-hidden="true">${iconSvg(Heart, { size: 17, strokeWidth: 2.2 })}</i>
             <span class="action-count-compact">${reactionCount}</span>
           </button>
           <div class="feed-reaction-picker" id="reactions-${id}" role="menu" aria-label="Pick a reaction" style="display:none;">
@@ -180,7 +182,7 @@ export default function postCard(
         </div>
 
         <button type="button" class="feed-action comment-btn" data-post-id="${id}" data-action="comments-toggle">
-          <i class="fa-regular fa-comment" aria-hidden="true"></i>
+          <i class="feed-action-icon" aria-hidden="true">${iconSvg(MessageCircle, { size: 17, strokeWidth: 2 })}</i>
           <span class="action-count-compact">${_count.comments}</span>
         </button>
 

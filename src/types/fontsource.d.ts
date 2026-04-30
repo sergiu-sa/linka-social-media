@@ -11,4 +11,3 @@ declare module '@fontsource/open-sans/500-italic.css';
 declare module '@fontsource/open-sans/600-italic.css';
 declare module '@fontsource/open-sans/700-italic.css';
 declare module '@fontsource/open-sans/800-italic.css';
-declare module '@fortawesome/fontawesome-free/css/all.css';

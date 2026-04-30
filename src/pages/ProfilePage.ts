@@ -11,6 +11,8 @@ import { getLocalItem, setLocalItem } from '../utils/storage';
 import { isLoggedIn } from '../utils/auth';
 import { get, put, fetchApiKey } from '../services/api/client';
 import { error as logError, warn } from '../utils/log';
+import { iconSvg } from '../utils/icon';
+import { UserPlus, ArrowLeft } from 'lucide';
 import type {
   UserProfile,
   FollowResponse,
@@ -128,7 +130,7 @@ function renderProfileHeader(
   const initial = profile.name.charAt(0).toUpperCase();
   const followAction =
     !isOwnProfile && isLoggedIn()
-      ? `<button id="follow-btn" class="feed-cta linka-profile-follow" data-username="${escAttr(profile.name)}">Follow</button>`
+      ? `<button id="follow-btn" class="feed-cta linka-profile-follow" data-username="${escAttr(profile.name)}"><span class="btn-icon">${iconSvg(UserPlus, { size: 15, strokeWidth: 2 })}</span><span>Follow</span></button>`
       : '';
 
   return `
@@ -295,7 +297,7 @@ function renderErrorState(message: string): string {
           <p class="linka-profile-eyebrow">Error</p>
           <h1 class="linka-profile-empty-title">Unable to load profile</h1>
           <p class="linka-profile-empty-body">${escHtml(message)}</p>
-          <button class="intro-cta intro-cta-secondary" onclick="history.back()">← Go back</button>
+          <button class="intro-cta intro-cta-secondary" onclick="history.back()"><span class="btn-icon">${iconSvg(ArrowLeft, { size: 16, strokeWidth: 2 })}</span><span>Go back</span></button>
         </div>
       </div>
     </main>

@@ -9,6 +9,8 @@
 import { renderRoute } from '../router';
 import { isLoggedIn, logout } from '../utils/auth';
 import { confirmDialog } from '../utils/confirm';
+import { iconSvg } from '../utils/icon';
+import { ArrowUp } from 'lucide';
 
 const YEAR = new Date().getFullYear();
 
@@ -88,7 +90,7 @@ const FOOTER_HTML = `
           aria-label="Back to top"
         >
           <span class="linka-footer-top-label">Back to top</span>
-          <span class="linka-footer-top-arrow" aria-hidden="true">↑</span>
+          <span class="linka-footer-top-arrow" aria-hidden="true">${iconSvg(ArrowUp, { size: 14, strokeWidth: 2.2 })}</span>
         </button>
       </div>
 

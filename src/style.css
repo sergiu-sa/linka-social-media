@@ -347,6 +347,15 @@ html.light-mode .auth-field textarea:focus {
   opacity: 0.6;
   cursor: not-allowed;
 }
+.auth-btn-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.auth-btn-state svg {
+  display: block;
+}
 
 .auth-msg {
   margin-top: 1rem;
@@ -373,6 +382,9 @@ html.light-mode .auth-msg {
   opacity: 0.75;
 }
 .auth-crosslink a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   color: rgb(249 115 22);
   font-weight: 700;
   text-decoration: none;
@@ -380,6 +392,14 @@ html.light-mode .auth-msg {
 }
 .auth-crosslink a:hover {
   text-decoration: underline;
+}
+.auth-crosslink a .auth-crosslink-icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+.auth-crosslink a:hover .auth-crosslink-icon {
+  transform: translateX(2px);
 }
 
 /* Theme toggle position on auth pages */
@@ -413,12 +433,17 @@ html.light-mode .auth-back-link {
   color: rgb(249 115 22);
   transform: translateX(-2px);
 }
-.auth-back-link span {
-  display: inline-block;
-  margin-right: 0.25rem;
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.auth-back-link .auth-back-icon {
+  display: inline-flex;
+  align-items: center;
   transition: transform 0.2s ease;
 }
-.auth-back-link:hover span {
+.auth-back-link:hover .auth-back-icon {
   transform: translateX(-3px);
 }
 
@@ -544,6 +569,7 @@ html.light-mode .intro-enter-hint kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.6rem;
   border-radius: 0.6rem;
   font-family: 'Bebas Neue', system-ui, sans-serif;
@@ -637,6 +663,17 @@ html.light-mode .intro-cta-secondary:hover {
   opacity: 0;
   transition: opacity 0.4s ease;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.intro-hint-label svg {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+.intro-hint-label .intro-hint-sep {
+  opacity: 0.5;
+  letter-spacing: 0;
 }
 html.light-mode .intro-hint-label {
   color: rgba(15, 23, 42, 0.4);
@@ -736,6 +773,9 @@ html:not(.light-mode) body:has(.feed-page) {
   color: rgb(100 116 139);
 }
 .feed-header-meta .feed-meta-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   color: rgb(249 115 22);
   text-decoration: none;
   margin-left: 0.5rem;
@@ -1057,6 +1097,9 @@ html:not(.light-mode) body:has(.feed-page) {
   color: rgb(100 116 139);
 }
 .feed-composer-extras button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   background: transparent;
   border: 0;
   color: inherit;
@@ -1103,6 +1146,9 @@ html:not(.light-mode) body:has(.feed-page) {
   align-items: center;
 }
 .feed-composer-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   background: transparent;
   border: 0;
   color: rgb(100 116 139);
@@ -1120,6 +1166,7 @@ html:not(.light-mode) body:has(.feed-page) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0.55rem 1.5rem;
   border: 0;
   border-radius: 0.6rem;
@@ -1442,6 +1489,15 @@ html:not(.light-mode) body:has(.feed-page) {
 .feed-action.is-pulsing i {
   animation: feed-heart-pulse 150ms ease-out;
 }
+.feed-action-icon {
+  display: inline-flex;
+  align-items: center;
+  font-style: normal;
+  line-height: 0;
+}
+.feed-action-icon svg {
+  display: block;
+}
 @keyframes feed-heart-pulse {
   50% {
     transform: scale(1.25);
@@ -1608,6 +1664,9 @@ html:not(.light-mode) body:has(.feed-page) {
   opacity: 1;
 }
 .feed-thread .comment-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   background: transparent;
   border: 0;
   font-family: inherit;
@@ -1657,6 +1716,9 @@ html:not(.light-mode) body:has(.feed-page) {
 }
 .feed-thread .reply-submit-btn,
 .feed-thread .reply-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   background: transparent;
   border: 0;
   font-family: inherit;
@@ -1760,6 +1822,9 @@ html:not(.light-mode) body:has(.feed-page) {
    and footer link treatment. */
 .feed-pag-link {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -1996,6 +2061,14 @@ html:not(.light-mode) body:has(.feed-page) {
   font-size: 2rem;
   opacity: 0.6;
   margin-bottom: 1rem;
+  color: rgb(100 116 139);
+}
+.feed-empty-icon svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.dark .feed-empty-icon {
+  color: rgb(148 163 184);
 }
 .feed-empty-title {
   font-family: 'Bebas Neue', system-ui, sans-serif;
@@ -2059,12 +2132,13 @@ html:not(.light-mode) body:has(.feed-page) {
   color: rgb(248 250 252);
 }
 .feed-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: 0;
   color: rgb(100 116 139);
   cursor: pointer;
-  font-size: 1.4rem;
-  line-height: 1;
   padding: 0.25rem 0.5rem;
 }
 .feed-modal-close:hover {
@@ -2355,6 +2429,15 @@ html.light-mode .linka-nav-search-input:focus {
 .linka-nav-icon-btn:hover {
   color: rgb(249 115 22);
   background: rgba(249, 115, 22, 0.08);
+}
+.linka-nav-icon-btn .icon-sun,
+.linka-nav-icon-btn .icon-moon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.linka-nav-icon-btn svg {
+  display: block;
 }
 
 /* Mobile toggle (3-line burger built from a single span + ::before/::after) */
@@ -3455,10 +3538,13 @@ body:has(.linka-profile) .linka-footer {
   justify-self: end;
 }
 .linka-footer-top-arrow {
-  font-family: inherit;
-  font-size: 1rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.25s ease;
+}
+.linka-footer-top-arrow svg {
+  display: block;
 }
 .linka-footer-top:hover,
 .linka-footer-top:focus-visible {
@@ -3497,4 +3583,21 @@ body:has(.linka-profile) .linka-footer {
   .linka-footer-top {
     transition: none;
   }
+}
+
+/* Lucide icon wrappers used inside text buttons (icon + label) */
+.btn-icon,
+.composer-extra-icon,
+.pag-icon,
+.comment-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.btn-icon svg,
+.composer-extra-icon svg,
+.pag-icon svg,
+.comment-action-icon svg {
+  display: block;
 }

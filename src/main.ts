@@ -11,7 +11,6 @@ import '@fontsource/open-sans/500-italic.css';
 import '@fontsource/open-sans/600-italic.css';
 import '@fontsource/open-sans/700-italic.css';
 import '@fontsource/open-sans/800-italic.css';
-import '@fortawesome/fontawesome-free/css/all.css';
 import './style.css';
 import { renderRoute } from './router';
 import LoadingScreen from './pages/LoadingScreen.js';

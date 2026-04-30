@@ -25,6 +25,24 @@ import { renderRoute } from '../router';
 import { fetchApiKey } from '../services/api/client';
 import { warn, error as logError } from '../utils/log';
 import { confirmDialog } from '../utils/confirm';
+import { iconSvg } from '../utils/icon';
+import {
+  Search,
+  Telescope,
+  TriangleAlert,
+  X,
+  Send,
+  Tag,
+  ImagePlus,
+  Check,
+  RotateCw,
+  LogIn,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
+  Reply,
+  Trash2,
+} from 'lucide';
 
 const tokenFromAnyKey = () =>
   localStorage.getItem('accessToken') ||
@@ -140,7 +158,7 @@ export default async function FeedPage(): Promise<string> {
             <p class="feed-header-meta">
               ${
                 isSearchMode
-                  ? `Searching for "${searchQuery}" <a href="#" class="feed-meta-clear" onclick="event.preventDefault(); window.searchQuery = undefined; window.searchResults = undefined; navigateToPage(1);">clear ×</a>`
+                  ? `Searching for "${searchQuery}" <a href="#" class="feed-meta-clear" onclick="event.preventDefault(); window.searchQuery = undefined; window.searchResults = undefined; navigateToPage(1);"><span class="feed-meta-clear-label">clear</span>${iconSvg(X, { size: 13, strokeWidth: 2.4 })}</a>`
                   : `page ${meta.currentPage} of ${meta.pageCount} · ${meta.totalCount} posts`
               }
             </p>
@@ -194,8 +212,8 @@ export default async function FeedPage(): Promise<string> {
                       ></textarea>
 
                       <div class="feed-composer-extras">
-                        <button type="button" id="composer-toggle-tags">+ add tag</button>
-                        <button type="button" id="composer-toggle-image">+ add image</button>
+                        <button type="button" id="composer-toggle-tags"><span class="composer-extra-icon">${iconSvg(Tag, { size: 14, strokeWidth: 2 })}</span><span>add tag</span></button>
+                        <button type="button" id="composer-toggle-image"><span class="composer-extra-icon">${iconSvg(ImagePlus, { size: 14, strokeWidth: 2 })}</span><span>add image</span></button>
                       </div>
 
                       <div class="feed-composer-optional" id="composer-tags-row">
@@ -211,8 +229,8 @@ export default async function FeedPage(): Promise<string> {
                       </div>
 
                       <div class="feed-composer-actions">
-                        <button type="button" id="cancel-post-btn" class="feed-composer-cancel">Cancel</button>
-                        <button type="submit" class="feed-cta">Post</button>
+                        <button type="button" id="cancel-post-btn" class="feed-composer-cancel"><span class="btn-icon">${iconSvg(X, { size: 15, strokeWidth: 2.2 })}</span><span>Cancel</span></button>
+                        <button type="submit" class="feed-cta"><span class="btn-icon">${iconSvg(Send, { size: 15, strokeWidth: 2.2 })}</span><span>Post</span></button>
                       </div>
                     </div>
                   </div>
@@ -228,15 +246,19 @@ export default async function FeedPage(): Promise<string> {
               posts.length > 0
                 ? posts.map((post, index) => postCard(post, index * 0.05)).join('')
                 : isSearchMode
-                  ? renderEmptyState('🔍', 'No posts found', 'Try a different search.')
+                  ? renderEmptyState(
+                      iconSvg(Search, { size: 36, strokeWidth: 1.6 }),
+                      'No posts found',
+                      'Try a different search.'
+                    )
                   : renderEmptyState(
-                      '🔭',
+                      iconSvg(Telescope, { size: 36, strokeWidth: 1.6 }),
                       'No posts available',
                       isUserLoggedIn
                         ? 'Start following people to see their posts.'
                         : 'No posts to display right now.',
                       !isUserLoggedIn
-                        ? `<button class="feed-cta" onclick="window.location.href='/login'">Sign in for more</button>`
+                        ? `<button class="feed-cta" onclick="window.location.href='/login'"><span class="btn-icon">${iconSvg(LogIn, { size: 15, strokeWidth: 2.2 })}</span><span>Sign in for more</span></button>`
                         : ''
                     )
             }
@@ -251,7 +273,7 @@ export default async function FeedPage(): Promise<string> {
         <div class="feed-modal-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="flex justify-between items-center px-6 py-5 border-b border-slate-200/60 dark:border-slate-700/60">
             <h3 class="feed-modal-title">Edit post</h3>
-            <button class="feed-modal-close" onclick="closeEditModal()" aria-label="Close">×</button>
+            <button class="feed-modal-close" onclick="closeEditModal()" aria-label="Close">${iconSvg(X, { size: 18, strokeWidth: 2.2 })}</button>
           </div>
           <form id="editPostForm" class="px-6 py-6 space-y-5">
             <div>
@@ -282,8 +304,8 @@ export default async function FeedPage(): Promise<string> {
                      class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-orange-500" />
             </div>
             <div class="flex justify-end gap-3 pt-4 border-t border-slate-200/60 dark:border-slate-700/60">
-              <button type="button" class="feed-composer-cancel" onclick="closeEditModal()">Cancel</button>
-              <button type="submit" class="feed-cta">Update post</button>
+              <button type="button" class="feed-composer-cancel" onclick="closeEditModal()"><span class="btn-icon">${iconSvg(X, { size: 15, strokeWidth: 2.2 })}</span><span>Cancel</span></button>
+              <button type="submit" class="feed-cta"><span class="btn-icon">${iconSvg(Check, { size: 15, strokeWidth: 2.6 })}</span><span>Update post</span></button>
             </div>
           </form>
         </div>
@@ -318,10 +340,10 @@ function renderErrorState(): string {
     <div class="feed-page">
       <main class="feed-column">
         <div class="feed-empty">
-          <div class="feed-empty-icon">⚠️</div>
+          <div class="feed-empty-icon">${iconSvg(TriangleAlert, { size: 36, strokeWidth: 1.6 })}</div>
           <h2 class="feed-empty-title">Something went wrong</h2>
           <p class="feed-empty-body">We couldn't load the posts right now. Please try again.</p>
-          <button class="feed-cta" onclick="window.location.reload()">Try again</button>
+          <button class="feed-cta" onclick="window.location.reload()"><span class="btn-icon">${iconSvg(RotateCw, { size: 15, strokeWidth: 2.2 })}</span><span>Try again</span></button>
         </div>
       </main>
     </div>
@@ -354,7 +376,7 @@ function renderPaginationControls(meta: any): string {
   return `
     <nav class="feed-pagination" aria-label="Pagination">
       <div class="feed-pagination-row">
-        <button class="feed-pag-link" onclick="navigateToPage(${currentPage - 1})" ${!hasPrev ? 'disabled' : ''}>← Previous</button>
+        <button class="feed-pag-link" onclick="navigateToPage(${currentPage - 1})" ${!hasPrev ? 'disabled' : ''}><span class="pag-icon">${iconSvg(ChevronLeft, { size: 15, strokeWidth: 2.2 })}</span><span>Previous</span></button>
 
         ${pageNumbers
           .map((pageNum) => {
@@ -364,7 +386,7 @@ function renderPaginationControls(meta: any): string {
           })
           .join('')}
 
-        <button class="feed-pag-link" onclick="navigateToPage(${currentPage + 1})" ${!hasNext ? 'disabled' : ''}>Next →</button>
+        <button class="feed-pag-link" onclick="navigateToPage(${currentPage + 1})" ${!hasNext ? 'disabled' : ''}><span>Next</span><span class="pag-icon">${iconSvg(ChevronRight, { size: 15, strokeWidth: 2.2 })}</span></button>
       </div>
 
       <p class="feed-pag-meta">Page ${padded(currentPage)} / ${padded(totalPages)} · ${meta.totalCount} posts</p>
@@ -382,7 +404,7 @@ function renderPaginationControls(meta: any): string {
             id="pageJumpInput"
             onkeypress="if(event.key === 'Enter') { const val = parseInt(event.target.value); if(val >= 1 && val <= ${totalPages}) navigateToPage(val); }"
           />
-          <button class="feed-pag-link" onclick="const val = parseInt(document.getElementById('pageJumpInput').value); if(val >= 1 && val <= ${totalPages}) navigateToPage(val);">Go →</button>
+          <button class="feed-pag-link" onclick="const val = parseInt(document.getElementById('pageJumpInput').value); if(val >= 1 && val <= ${totalPages}) navigateToPage(val);"><span>Go</span><span class="pag-icon">${iconSvg(ArrowRight, { size: 15, strokeWidth: 2.2 })}</span></button>
         </div>
         `
           : ''
@@ -990,12 +1012,12 @@ function addCommentToUI(postId: number, comment: any): void {
           <button type="button" class="comment-action-btn reply-btn"
                   data-action="reply-start"
                   data-comment-id="${comment.id}"
-                  data-author-name="${safeAuthor}">Reply</button>
+                  data-author-name="${safeAuthor}"><span class="comment-action-icon">${iconSvg(Reply, { size: 13, strokeWidth: 2 })}</span><span>Reply</span></button>
           ${
             isOwner
               ? `<button type="button" class="comment-action-btn delete-btn"
                          data-action="comment-delete"
-                         data-comment-id="${comment.id}">Delete</button>`
+                         data-comment-id="${comment.id}"><span class="comment-action-icon">${iconSvg(Trash2, { size: 13, strokeWidth: 2 })}</span><span>Delete</span></button>`
               : ''
           }
         </div>
@@ -1005,9 +1027,9 @@ function addCommentToUI(postId: number, comment: any): void {
                    placeholder="Write a reply..." maxlength="280"
                    data-action="reply-input" data-comment-id="${comment.id}">
             <button type="button" class="reply-submit-btn"
-                    data-action="reply-submit" data-comment-id="${comment.id}">Send</button>
+                    data-action="reply-submit" data-comment-id="${comment.id}"><span class="btn-icon">${iconSvg(Send, { size: 13, strokeWidth: 2.2 })}</span><span>Send</span></button>
             <button type="button" class="reply-cancel-btn"
-                    data-action="reply-cancel" data-comment-id="${comment.id}">Cancel</button>
+                    data-action="reply-cancel" data-comment-id="${comment.id}"><span class="btn-icon">${iconSvg(X, { size: 13, strokeWidth: 2.2 })}</span><span>Cancel</span></button>
           </div>
         </div>
       </div>

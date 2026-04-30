@@ -3,6 +3,9 @@
  * @description Editorial-flat 404 page. CSS in style.css under `.linka-404`.
  */
 
+import { iconSvg } from '../utils/icon';
+import { ArrowLeft } from 'lucide';
+
 export default async function NotFoundPage() {
   setTimeout(() => {
     const link = document.querySelector<HTMLAnchorElement>('[data-link-home]');
@@ -23,7 +26,7 @@ export default async function NotFoundPage() {
       </p>
       <div class="linka-404-actions">
         <a href="/" class="intro-cta intro-cta-secondary linka-404-cta" data-link-home>
-          ← Back to home
+          <span class="btn-icon">${iconSvg(ArrowLeft, { size: 16, strokeWidth: 2 })}</span><span>Back to home</span>
         </a>
       </div>
     </section>
