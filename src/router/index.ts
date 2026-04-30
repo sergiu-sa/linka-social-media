@@ -1,6 +1,8 @@
 /**
  * @file router/index.ts
- * @description App routing + render. Uses LINKA IntroAuthPage for /, /login, /register.
+ * @description Custom client-side router. Resolves a path to a page
+ *              component, performs auth-gated redirects, and mounts the
+ *              resulting HTML into `#js-app`.
  */
 
 import IntroAuthPage from '../pages/IntroAuthPage.js';
@@ -68,9 +70,7 @@ export default async function router(
   return { html: await currentRoute.component(), path: currentPath };
 }
 
-/**
- * Render a given path into the app container and run post-render hooks.
- */
+/** Render a given path into the app container and run post-render hooks. */
 export async function renderRoute(path?: string) {
   const targetPath = path ?? window.location.pathname;
   const contentContainer = document.getElementById(APP_CONTAINER_CLASSNAME);

@@ -1,12 +1,12 @@
 /**
- * @file posts.ts
- * @description Service layer for fetching and managing social media posts (CRUD) from Noroff API v2
+ * @file services/posts/posts.ts
+ * @description Posts service. CRUD against the Noroff Social v2 API plus
+ *              the `getPostComments` helper used by the feed thread.
  */
 
 import { get, post, put, del } from "../api/client";
 import { error as logError } from "../../utils/log";
 
-// Define the Post interface according to Noroff API v2 structure
 export interface NoroffPost {
   id: number;
   title: string;
@@ -52,13 +52,8 @@ export interface PostsApiResponse {
 
 const BASE_URL = "/social/posts";
 
-/* -------------------------------------------------------------------------- */
-/*                                READ METHODS                                */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Read -------------------------------------- */
 
-/**
- * Fetch all posts from the Noroff Social API
- */
 export async function getAllPosts(
   limit: number = 50,
   page: number = 1
@@ -79,9 +74,7 @@ export async function getAllPosts(
   }
 }
 
-/**
- * Fetch posts for public viewing without authentication
- */
+/** Public-view fallback used when the user is not logged in. */
 export async function getPublicPosts(
   limit: number = 50,
   page: number = 1
@@ -103,10 +96,7 @@ export interface NoroffComment {
   };
 }
 
-/**
- * Fetch a single post with its comments embedded.
- * Used by the feed thread to populate existing comments on open.
- */
+/** Fetch a post with its comments embedded (used by the feed thread). */
 export async function getPostComments(
   postId: number
 ): Promise<NoroffComment[]> {
@@ -121,13 +111,8 @@ export async function getPostComments(
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               WRITE METHODS                                */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Write -------------------------------------- */
 
-/**
- * Create a new post
- */
 export async function createPost(payload: {
   title: string;
   body: string;
@@ -141,7 +126,8 @@ export async function createPost(payload: {
 
   const newPost = (response as any).data || response;
 
-  // ✅ Normalize missing fields so UI doesn’t crash
+  // Normalise: the create endpoint occasionally omits collections that the
+  // post-card renderer expects. Without these defaults the new card crashes.
   return {
     ...newPost,
     tags: newPost.tags || [],
@@ -154,10 +140,6 @@ export async function createPost(payload: {
   };
 }
 
-
-/**
- * Update an existing post
- */
 export async function updatePost(
   postId: number,
   payload: {
@@ -171,16 +153,11 @@ export async function updatePost(
   return (response as any).data || response;
 }
 
-/**
- * Delete a post
- */
 export async function deletePost(postId: number): Promise<void> {
   return del(`${BASE_URL}/${postId}`);
 }
 
-/* -------------------------------------------------------------------------- */
-/*                          SAMPLE POSTS (Public View)                        */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Sample data (public view) -------------------------------------- */
 
 function getSamplePosts(limit: number, page: number): PostsApiResponse {
   const samplePosts: NoroffPost[] = [

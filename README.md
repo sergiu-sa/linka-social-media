@@ -1,77 +1,67 @@
-# LINKA – Social Media Platform
+# LINKA — Social Media Platform
 
-A modern, responsive social media application built with TypeScript, Vite, Tailwind CSS v4, and the Noroff Social API v2.  
-This project demonstrates contemporary web development practices: CSS framework integration, authenticated API consumption, CRUD operations, modular architecture, and production-ready deployment..
+A responsive social media SPA built with TypeScript, Vite, Tailwind CSS v4, and the Noroff Social API v2. Designed for portfolio: editorial-flat aesthetic, single orange accent, distinctive 3D intro, accessible interactions throughout.
 
 **Final submission for Noroff FED2-24 CSS Frameworks Course Assignment.**
 
-## Live Project & Repository
+## Live project
 
-**Production Deploy:** [https://linka-social.netlify.app/](https://linka-social.netlify.app/)  
-**API Base URL:** `https://v2.api.noroff.dev`
+- **Production:** <https://linka-social.netlify.app/>
+- **API base URL:** `https://v2.api.noroff.dev`
 
 ## Features
 
 ### Authentication
+- Registration requires a `@stud.noroff.no` email address
+- JWT-based login persisted to `localStorage`
+- Client-side `pattern` validation on the username field
+- Logged-in users hitting any auth route are redirected to `/feed`; unauthenticated users hitting protected routes are redirected to `/`
 
-- User registration requiring a `@stud.noroff.no` email address  
-- JWT-based login and secure local storage  
-- Client-side validation and helpful error messages  
-- Auto-redirects based on login status  
+### Feed & posts
+- Editorial single-column feed with inline post expansion
+- Composer with optional tags, image URL, and image alt text
+- Pagination (prev / page numbers / next, plus a "jump to" input on long ranges)
+- Real-time search across posts and authors (falls back to public sample posts for guests)
 
-### Feed & Posts
-
-- Interactive post cards with click-to-view details  
-- Real-time search (users, posts, hashtags)  
-- Pagination with next/previous navigation  
-- Responsive grid layout  
-- Sample demo posts for guests  
-
-### Post Management
-
-- Create, edit, delete posts  
-- View posts of other users  
-- Full single post display with author details  
-
-### Post Interactions
-
-- Emoji reactions with hover modal  
-- Comment system (view and create comments)  
-- Reply to comments  
-- Share functionality (native + clipboard fallback)  
-- Media support (responsive images)  
-- Hashtags with styling indicators  
+### Post interactions
+- Emoji reactions (like + extended picker) with optimistic UI
+- Threaded comments and replies, fetched on-demand from the API
+- Owner-only edit/delete with focus-trapped confirmation modal
 
 ### Navigation & UX
+- Editorial-flat top navbar with text-only links and orange-underline active state
+- Custom 404 with single Bebas Neue display
+- Loading overlay branded with the LINKA mark
+- Toast notifications with `role="status"` / `role="alert"` for screen readers
+- `prefers-reduced-motion` honoured throughout
 
-- Custom client-side routing  
-- Responsive navbar with search  
-- Custom animated 404 page  
-- Loading states and error handling  
+### Accessibility
+- Reaction picker reachable via keyboard (Tab opens it; Tab cycles emoji)
+- Author rows are `role="button"` with Enter/Space support
+- All destructive confirmations use a focus-trapped modal (ESC cancels, focus returns to trigger)
+- Single global theme system: toggling theme on any page propagates via the `linka-theme-changed` event
 
-## Tech Stack
+## Tech stack
 
-- **Frontend:** TypeScript (Vite)
-- **CSS Framework:** Tailwind CSS v4 (via npm, @tailwindcss/vite)
-- **Fonts:** @fontsource (Bebas Neue, Open Sans)
-- **Icons:** Font Awesome Free (via npm)
-- **3D Graphics:** Three.js + GSAP
+- **Language:** TypeScript (strict)
+- **Bundler:** Vite
+- **CSS:** Tailwind CSS v4 (`@tailwindcss/vite`, no `tailwind.config.js`) + scoped custom CSS in `src/style.css`
+- **Fonts:** `@fontsource/bebas-neue` (display) + `@fontsource/open-sans` (body)
+- **Icons:** Font Awesome Free
+- **3D / motion:** Three.js + GSAP (intro page only)
 - **API:** Noroff Social API v2
-- **Authentication:** JWT + Local Storage
-- **Routing:** Custom client-side router
-- **Testing:** Vitest
-- **Code Formatting:** Prettier
+- **Tests:** Vitest + jsdom
+- **Formatter:** Prettier
 - **Deployment:** Netlify
 
-## Quick Start
+## Quick start
 
 ### Prerequisites
+- Node.js v18+
+- npm
+- A Noroff `@stud.noroff.no` account
 
-- Node.js v16+
-- npm or yarn
-- Noroff @stud.noroff.no account
-
-### Installation
+### Install
 
 ```bash
 git clone https://github.com/R3N8/social_platform.git
@@ -80,11 +70,9 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` with your configuration.
+### Environment variables
 
-### Environment Variables
-
-Copy `.env.example` to `.env`. The only required variable is the API base URL:
+Only one variable is needed:
 
 ```bash
 VITE_API_URL=https://v2.api.noroff.dev
@@ -98,51 +86,67 @@ If `VITE_API_URL` is not set, the app falls back to the production Noroff API.
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open <http://localhost:5173>.
 
-### Build for Production
+### Build
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Project Structure
+### Tests
 
-```md
-src/
-├── components/        # Reusable UI (postCard)
-├── pages/             # Intro, Login, Register, Feed, Profile, Navbar, 404, Loading
-│   └── auth/          # Shared editorial split-screen shell
-├── services/          # API and business logic
-│   ├── api/           # HTTP client
-│   ├── auth/          # Auth form submit handler
-│   ├── error/         # ApiError class
-│   ├── posts/         # Posts API integration
-│   └── interactions/  # Comments & reactions
-├── router/            # Client-side routing
-├── types/             # TypeScript definitions
-├── utils/             # Helpers (auth, storage, theme, ui, date)
-├── constant.ts        # App constants
-├── main.ts            # Application entry point
-└── style.css          # Global styles
+```bash
+npm test        # watch mode
+npx vitest run  # one-shot
 ```
 
-## Alignment with Course Brief
+Smoke tests live next to the source they cover (`src/utils/date.test.ts`, `src/utils/storage.test.ts`).
 
-- CSS Framework used: **Tailwind CSS v4** installed via npm (no CDN)  
-- At least **three pages** styled with the framework: IntroAuth, Feed, Profile  
-- One page includes **HTML validation** on a form (Register form)  
-- Work completed in branch: `css-frameworks`  
-- Deployed production build (Netlify) using Vite configuration  
-- Responsive and accessible: focus states, semantic labels, and adaptive layout  
+## Project structure
 
-## Team & Contributions
+```text
+src/
+├── components/         # Reusable UI (postCard + delegated event handler)
+├── pages/              # Intro, Login, Register, Feed, Profile, Navbar, 404, Loading
+│   └── auth/           # Shared editorial split-screen shell
+├── services/
+│   ├── api/            # HTTP client (apiClient + authPost)
+│   ├── auth/           # Login/register form submit handler
+│   ├── error/          # ApiError class
+│   ├── posts/          # Posts CRUD + comments fetch
+│   └── interactions/   # Comments + reactions
+├── router/             # Custom SPA router with auth-gated redirects
+├── types/              # TypeScript definitions (incl. unified Window globals)
+├── utils/
+│   ├── auth.ts         # isLoggedIn / logout / token helpers
+│   ├── confirm.ts      # Focus-trapped Promise-based confirm dialog
+│   ├── date.ts         # getTimeAgo (covered by tests)
+│   ├── log.ts          # Dev-only console wrapper (no-op in production)
+│   ├── storage.ts      # localStorage shim (covered by tests)
+│   └── theme.ts        # Single source of truth for light/dark theme
+├── constant.ts         # API_URL + APP_CONTAINER_CLASSNAME
+├── main.ts             # Application entry point
+└── style.css           # Tailwind + all custom CSS (sectioned)
+```
 
-- Muhammad Hammad Khan (@Hammadniazi)  
-- Renate Pedersen (@03-renate)  
+## Alignment with course brief
+
+- CSS Framework: **Tailwind CSS v4** via npm (no CDN)
+- Three+ pages styled with the framework: Intro, Feed, Profile, plus Login/Register/Profile/404
+- HTML validation on a form: register form (`pattern`, `minlength`, `maxlength`, `title`)
+- Branch: `main`
+- Production build deployed on Netlify
+- Responsive: mobile drawer navbar, fluid type, `clamp()` headlines
+- Accessible: focus rings, ARIA roles, screen-reader announcements, keyboard reachability for every action
+
+## Team
+
+- Muhammad Hammad Khan (@Hammadniazi)
+- Renate Pedersen (@03-renate)
 - Sergiu Sarbu (@sergiu-sa)
 
 ## License
 
-This project is for educational purposes as part of the **Noroff FED2-24 Front-End Development** program.
+Educational use — Noroff FED2-24 Front-End Development program.

@@ -35,9 +35,6 @@ const HEADER_LOGO_SVG = `
 const prefersReducedMotion = (): boolean =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-/* =========================================
-   Page (HTML + bootstrapping)
-========================================= */
 export default async function IntroAuthPage(): Promise<string> {
   setTimeout(() => {
     if (isLoggedIn()) {
@@ -75,9 +72,8 @@ export default async function IntroAuthPage(): Promise<string> {
   `;
 }
 
-/* =========================================
-   Chrome (top + bottom strip wiring)
-========================================= */
+/* -------------------------------------- Chrome strips -------------------------------------- */
+
 function setupChrome() {
   const reduced = prefersReducedMotion();
   const navigate = (path: '/login' | '/register') => {
@@ -136,9 +132,8 @@ function setupChrome() {
   }, 1700);
 }
 
-/* =========================================
-   Discovery hint (one per session)
-========================================= */
+/* -------------------------------------- Discovery hint -------------------------------------- */
+
 function showDiscoveryHint() {
   if (prefersReducedMotion()) return;
   if (sessionStorage.getItem('linka:hint-shown') === '1') return;
@@ -159,9 +154,8 @@ function showDiscoveryHint() {
   sessionStorage.setItem('linka:hint-shown', '1');
 }
 
-/* =========================================
-   Starfield (2D)
-========================================= */
+/* -------------------------------------- Starfield (2D canvas) -------------------------------------- */
+
 function setupStarfield() {
   const canvas = document.getElementById('starfield') as HTMLCanvasElement | null;
   if (!canvas) return;
@@ -250,9 +244,8 @@ function setupStarfield() {
   })();
 }
 
-/* =========================================
-   3D star (Three.js)
-========================================= */
+/* -------------------------------------- 3D star (Three.js) -------------------------------------- */
+
 function setupThreeStar() {
   const canvas = document.getElementById('canvas3d') as HTMLCanvasElement | null;
   if (!canvas) return;
@@ -310,7 +303,6 @@ function setupThreeStar() {
   star.rotation.set(-0.3, 0.2, 0);
   star.position.y = 0.2;
 
-  // ---- State ----
   let isDragging = false;
   let lastX = 0,
     lastY = 0;
@@ -322,7 +314,6 @@ function setupThreeStar() {
   const hoverRef: { value: Hover | null } = { value: null };
   let autoReassembleTimer: number | null = null;
 
-  // ---- Page-load assembly: scatter, then reassemble ----
   if (!reduced) {
     arms.forEach((mesh) => {
       const dir = new THREE.Vector3(
@@ -359,7 +350,6 @@ function setupThreeStar() {
     });
   }
 
-  // ---- Pointer drag (canvas-scoped, not window-scoped) ----
   canvas.addEventListener('pointerdown', (e) => {
     isDragging = true;
     lastX = e.clientX;
@@ -404,7 +394,6 @@ function setupThreeStar() {
 
   let tapStart: { t: number; x: number; y: number } | null = null;
 
-  // ---- Hover raycast (canvas-scoped, throttled in render loop) ----
   // Listening on `canvas` (not `window`) so chrome elements (top/bottom
   // strips, CTAs) don't keep updating the hover state when the cursor is
   // over them. Pointer events on those siblings don't bubble through the
@@ -444,7 +433,6 @@ function setupThreeStar() {
     }
   };
 
-  // ---- Particles on explode ----
   const spawnParticles = () => {
     const count = 18;
     const positions = new Float32Array(count * 3);
@@ -497,7 +485,6 @@ function setupThreeStar() {
     });
   };
 
-  // ---- Explode / reassemble toggle (with auto-reassemble timer) ----
   const explode = () => {
     starBroken = true;
     spawnParticles();
@@ -558,11 +545,9 @@ function setupThreeStar() {
     lastInputAt = performance.now();
   });
 
-  // ---- Theme reactivity ----
   const applyMat = () => mat.color.setHex(getColor());
   document.addEventListener('linka-theme-changed', applyMat);
 
-  // ---- Idle breath ----
   if (!reduced) {
     setInterval(() => {
       if (starBroken || isDragging || hovering) return;
@@ -577,10 +562,8 @@ function setupThreeStar() {
     }, 5000);
   }
 
-  // ---- Discovery hint after orchestration ----
   setTimeout(showDiscoveryHint, reduced ? 500 : 3000);
 
-  // ---- Render loop ----
   let last = performance.now();
   (function loop(now = performance.now()) {
     const dt = Math.min(0.033, (now - last) / 1000);

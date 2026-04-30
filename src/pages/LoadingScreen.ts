@@ -69,26 +69,4 @@ export default class LoadingScreen {
     if (msgEl) msgEl.textContent = message;
     this.showLoadingScreen();
   }
-
-  /**
-   * Show the loader for `duration` ms, then hide.
-   * @returns a promise that resolves when the loader has been hidden.
-   */
-  showForDuration(duration: number = 1200): Promise<void> {
-    this.showLoadingScreen();
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        this.hideLoadingScreen();
-        resolve();
-      }, duration);
-    });
-  }
-
-  reset() {
-    const el = document.getElementById('loadingScreen');
-    if (!el) return;
-    const msgEl = el.querySelector<HTMLElement>('.linka-loader-message');
-    if (msgEl) msgEl.textContent = '';
-    this.hideLoadingScreen();
-  }
 }

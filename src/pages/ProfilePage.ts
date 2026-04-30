@@ -7,15 +7,32 @@
 
 import postCard, { wirePostCardActions } from '../components/postCard';
 import { type NoroffPost } from '../services/posts/posts';
-import { getLocalItem } from '../utils/storage';
+import { getLocalItem, setLocalItem } from '../utils/storage';
 import { isLoggedIn } from '../utils/auth';
-import { get, put } from '../services/api/client';
-import { error as logError } from '../utils/log';
+import { get, put, fetchApiKey } from '../services/api/client';
+import { error as logError, warn } from '../utils/log';
 import type {
   UserProfile,
   FollowResponse,
   ProfileWithFollowData,
 } from '../types/index';
+
+/**
+ * Defensive: the profile endpoints require both the JWT and the API key.
+ * If the key is missing (e.g. user landed on /profile without going through
+ * /feed first) we'd silently 401 and render an empty profile.
+ */
+async function ensureApiKey(): Promise<void> {
+  const token = getLocalItem('accessToken');
+  if (typeof token !== 'string' || !token) return;
+  if (getLocalItem('apiKey')) return;
+  try {
+    const key = await fetchApiKey(token);
+    if (key) setLocalItem('apiKey', key);
+  } catch (e) {
+    warn('ensureApiKey(): failed to fetch API key', e);
+  }
+}
 
 export default async function ProfilePage(): Promise<string> {
   try {
@@ -28,6 +45,8 @@ export default async function ProfilePage(): Promise<string> {
     if (!profileUsername) return renderErrorState('Please log in to view profiles');
 
     const username = profileUsername as string;
+
+    if (isLoggedIn()) await ensureApiKey();
 
     const [profileData, userPosts] = await Promise.all([
       fetchUserProfile(username),
@@ -43,6 +62,12 @@ export default async function ProfilePage(): Promise<string> {
       followers: profileData._count.followers,
     };
 
+    // Profile says there are posts but the posts endpoint came back empty
+    // — usually a transient API error or a missing API key. Surface it so
+    // the user knows it isn't a "no posts yet" situation.
+    const postsLoadFailed =
+      profileData._count.posts > 0 && userPosts.length === 0;
+
     return `
       <main class="linka-profile">
         <div class="feed-column linka-profile-column">
@@ -51,7 +76,7 @@ export default async function ProfilePage(): Promise<string> {
           ${renderStatsBar(profileData)}
           ${renderTabs(counts)}
           <div id="profile-tab-content" class="linka-profile-tab-content">
-            ${renderPostsTab(userPosts)}
+            ${renderPostsTab(userPosts, postsLoadFailed)}
           </div>
         </div>
       </main>
@@ -62,14 +87,15 @@ export default async function ProfilePage(): Promise<string> {
   }
 }
 
-/* --------------------- Data Fetching --------------------- */
+/* -------------------------------------- Data fetch -------------------------------------- */
 async function fetchUserProfile(username: string): Promise<ProfileWithFollowData> {
   try {
     const response = await get<{ data: ProfileWithFollowData }>(
-      `/social/profiles/${username}?_followers=true&_following=true`
+      `/social/profiles/${encodeURIComponent(username)}?_followers=true&_following=true`
     );
     return response.data;
-  } catch {
+  } catch (err) {
+    logError(`fetchUserProfile(${username}) failed:`, err);
     return {
       name: username,
       email: `${username}@stud.noroff.no`,
@@ -84,15 +110,16 @@ async function fetchUserProfile(username: string): Promise<ProfileWithFollowData
 async function fetchUserPosts(username: string): Promise<NoroffPost[]> {
   try {
     const response = await get<{ data: NoroffPost[] }>(
-      `/social/profiles/${username}/posts?_author=true&_reactions=true`
+      `/social/profiles/${encodeURIComponent(username)}/posts?_author=true&_reactions=true&_comments=true&limit=100`
     );
     return response.data || [];
-  } catch {
+  } catch (err) {
+    logError(`fetchUserPosts(${username}) failed:`, err);
     return [];
   }
 }
 
-/* --------------------- Render Functions --------------------- */
+/* -------------------------------------- Renderers -------------------------------------- */
 function renderProfileHeader(
   profile: ProfileWithFollowData,
   isOwnProfile: boolean
@@ -183,8 +210,14 @@ function renderTabs(counts: TabCounts): string {
   `;
 }
 
-function renderPostsTab(posts: NoroffPost[]): string {
+function renderPostsTab(posts: NoroffPost[], loadFailed = false): string {
   if (!posts.length) {
+    if (loadFailed) {
+      return renderEmptyState(
+        "Couldn't load posts",
+        "We couldn't fetch this profile's posts right now. Reload the page or try again in a moment."
+      );
+    }
     return renderEmptyState(
       'No posts yet',
       "When this user shares posts, they'll show up here."
@@ -269,7 +302,7 @@ function renderErrorState(message: string): string {
   `;
 }
 
-/* --------------------- Utility --------------------- */
+/* -------------------------------------- Utility -------------------------------------- */
 function escAttr(s: string): string {
   return String(s).replace(/"/g, '&quot;');
 }
@@ -309,7 +342,7 @@ function getStoredUsername(): string | null {
   return null;
 }
 
-/* --------------------- Interactions --------------------- */
+/* -------------------------------------- Interactions -------------------------------------- */
 function initializeProfileInteractions(username: string, isOwnProfile: boolean): void {
   wirePostCardActions();
   initializeTabs(username);
@@ -387,12 +420,18 @@ async function switchTab(
     '<div class="linka-profile-empty"><p class="linka-profile-empty-body">Loading…</p></div>';
 
   try {
-    if (tab === 'posts') {
-      const posts = await fetchUserPosts(username);
-      container.innerHTML = renderPostsTab(posts);
-    } else if (tab === 'media') {
-      const posts = await fetchUserPosts(username);
-      container.innerHTML = renderMediaTab(posts);
+    if (tab === 'posts' || tab === 'media') {
+      // We need both the posts list AND the profile's count to detect a
+      // load failure (count > 0 but list empty = transient error, not "no posts").
+      const [posts, profile] = await Promise.all([
+        fetchUserPosts(username),
+        fetchUserProfile(username),
+      ]);
+      const loadFailed = profile._count.posts > 0 && posts.length === 0;
+      container.innerHTML =
+        tab === 'posts'
+          ? renderPostsTab(posts, loadFailed)
+          : renderMediaTab(posts);
     } else if (tab === 'following' || tab === 'followers') {
       const profile = await fetchUserProfile(username);
       const users =

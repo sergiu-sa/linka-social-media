@@ -1,6 +1,8 @@
 /**
- * Enhanced FeedPage with full CRUD, Comments, and Reactions functionality
- * @file Enhanced FeedPage.ts - COMPLETE VERSION
+ * @file pages/FeedPage.ts
+ * @description Authenticated + public feed surface. Handles the composer,
+ *              CRUD, comments, reactions, and pagination. Post-card
+ *              interactivity is delegated through `components/postCard.ts`.
  */
 
 import postCard, { wirePostCardActions } from '../components/postCard';
@@ -24,7 +26,6 @@ import { fetchApiKey } from '../services/api/client';
 import { warn, error as logError } from '../utils/log';
 import { confirmDialog } from '../utils/confirm';
 
-/* ---------- Auth helpers (token from any key) ---------- */
 const tokenFromAnyKey = () =>
   localStorage.getItem('accessToken') ||
   localStorage.getItem('token') ||
@@ -149,8 +150,12 @@ export default async function FeedPage(): Promise<string> {
             isUserLoggedIn
               ? `
             <section class="feed-composer" id="create-post-box">
+              <p class="feed-composer-eyebrow">
+                <span class="feed-composer-eyebrow-dot" aria-hidden="true"></span>
+                Compose · New post
+              </p>
               <form id="create-post-form">
-                <div class="feed-composer-row">
+                <div class="feed-composer-row" role="button" tabindex="0" aria-label="Open composer">
                   <div class="feed-composer-avatar">${userInitial}</div>
                   <input
                     type="text"
@@ -158,8 +163,13 @@ export default async function FeedPage(): Promise<string> {
                     placeholder="What's on your mind?"
                     readonly
                     class="feed-composer-input"
+                    tabindex="-1"
+                    aria-hidden="true"
                   >
-                  <span class="feed-composer-arrow">↗</span>
+                  <span class="feed-composer-cta-chip">
+                    <span class="feed-composer-cta-label">Write</span>
+                    <span class="feed-composer-cta-arrow" aria-hidden="true">→</span>
+                  </span>
                 </div>
 
                 <div class="feed-composer-expanded">
@@ -285,9 +295,7 @@ export default async function FeedPage(): Promise<string> {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               Helper Functions                             */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Renderers -------------------------------------- */
 
 function renderEmptyState(
   icon: string,
@@ -341,29 +349,31 @@ function renderPaginationControls(meta: any): string {
     pageNumbers.push(totalPages);
   }
 
+  const padded = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+
   return `
     <nav class="feed-pagination" aria-label="Pagination">
       <div class="feed-pagination-row">
-        <button class="feed-pag-link" onclick="navigateToPage(${currentPage - 1})" ${!hasPrev ? 'disabled' : ''}>← prev</button>
+        <button class="feed-pag-link" onclick="navigateToPage(${currentPage - 1})" ${!hasPrev ? 'disabled' : ''}>← Previous</button>
 
         ${pageNumbers
           .map((pageNum) => {
-            if (pageNum === '...') return `<span class="feed-pag-ellipsis">…</span>`;
+            if (pageNum === '...') return `<span class="feed-pag-ellipsis" aria-hidden="true"></span>`;
             const isActive = pageNum === currentPage;
-            return `<button class="feed-pag-num ${isActive ? 'is-active' : ''}" onclick="navigateToPage(${pageNum})" ${isActive ? 'disabled' : ''}>${pageNum}</button>`;
+            return `<button class="feed-pag-num ${isActive ? 'is-active' : ''}" onclick="navigateToPage(${pageNum})" ${isActive ? 'disabled aria-current="page"' : ''} aria-label="Page ${pageNum}">${pageNum}</button>`;
           })
           .join('')}
 
-        <button class="feed-pag-link" onclick="navigateToPage(${currentPage + 1})" ${!hasNext ? 'disabled' : ''}>next →</button>
+        <button class="feed-pag-link" onclick="navigateToPage(${currentPage + 1})" ${!hasNext ? 'disabled' : ''}>Next →</button>
       </div>
 
-      <p class="feed-pag-meta">page ${currentPage} of ${totalPages} · ${meta.totalCount} posts</p>
+      <p class="feed-pag-meta">Page ${padded(currentPage)} / ${padded(totalPages)} · ${meta.totalCount} posts</p>
 
       ${
         totalPages > 10
           ? `
         <div class="feed-pag-jump">
-          <label for="pageJumpInput">jump to</label>
+          <label for="pageJumpInput">Jump to page</label>
           <input
             type="number"
             min="1"
@@ -372,7 +382,7 @@ function renderPaginationControls(meta: any): string {
             id="pageJumpInput"
             onkeypress="if(event.key === 'Enter') { const val = parseInt(event.target.value); if(val >= 1 && val <= ${totalPages}) navigateToPage(val); }"
           />
-          <button class="feed-pag-link" onclick="const val = parseInt(document.getElementById('pageJumpInput').value); if(val >= 1 && val <= ${totalPages}) navigateToPage(val);">go</button>
+          <button class="feed-pag-link" onclick="const val = parseInt(document.getElementById('pageJumpInput').value); if(val >= 1 && val <= ${totalPages}) navigateToPage(val);">Go →</button>
         </div>
         `
           : ''
@@ -381,9 +391,7 @@ function renderPaginationControls(meta: any): string {
   `;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                            Interactions / Events                           */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Interactions -------------------------------------- */
 
 function initializeFeedInteractions(): void {
   wirePostCardActions();
@@ -402,11 +410,32 @@ function initializeFeedInteractions(): void {
   const cancelBtn = document.getElementById('cancel-post-btn');
 
   if (postBox && composerRow) {
-    composerRow.addEventListener('click', () => {
+    const expand = () => {
       postBox.classList.add('is-expanded');
       const titleInput = document.getElementById('post-title') as HTMLInputElement | null;
       titleInput?.focus();
+    };
+    composerRow.addEventListener('click', expand);
+    composerRow.addEventListener('keydown', (e: Event) => {
+      const ke = e as KeyboardEvent;
+      if (ke.key === 'Enter' || ke.key === ' ') {
+        ke.preventDefault();
+        expand();
+      }
     });
+
+    // First-arrival pulse to draw the eye to the composer. Skips on
+    // subsequent feed renders within the same session, and on
+    // prefers-reduced-motion.
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced && sessionStorage.getItem('linka:composer-pulsed') !== '1') {
+      setTimeout(() => {
+        postBox.classList.add('is-pulsing');
+        setTimeout(() => postBox.classList.remove('is-pulsing'), 1400);
+      }, 700);
+      sessionStorage.setItem('linka:composer-pulsed', '1');
+    }
+
     cancelBtn?.addEventListener('click', () => {
       postBox.classList.remove('is-expanded');
       createForm?.reset();
@@ -478,7 +507,6 @@ function initializeFeedInteractions(): void {
   window.selectReaction = selectReaction;
   window.viewFullPost = viewFullPost;
   window.closeEditModal = closeEditModal;
-  window.closeFullPostModal = closeFullPostModal;
   window.showReactionsModal = showReactionsModal;
   window.hideReactionsModal = hideReactionsModal;
 
@@ -500,9 +528,7 @@ function initializeFeedInteractions(): void {
 /* (Delegated post-card event handling lives in `components/postCard.ts`
    so both the feed and the profile posts tab share the same dispatcher.) */
 
-/* -------------------------------------------------------------------------- */
-/*                                Post Create                                 */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Post: create -------------------------------------- */
 
 async function handleCreatePost(event: Event): Promise<void> {
   event.preventDefault();
@@ -589,9 +615,7 @@ async function handleCreatePost(event: Event): Promise<void> {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           Post Edit / Delete                               */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Post: edit / delete -------------------------------------- */
 
 function togglePostMenu(postId: number): void {
   // Close all other menus first
@@ -798,9 +822,7 @@ function closeEditModal(): void {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           Comments Functionality                           */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Comments -------------------------------------- */
 
 async function toggleComments(postId: number): Promise<void> {
   const commentsSection = document.getElementById(`comments-${postId}`);
@@ -885,11 +907,12 @@ async function submitComment(postId: number): Promise<void> {
   const submitBtn = article?.querySelector<HTMLButtonElement>(
     '[data-action="comment-submit"]'
   ) ?? null;
+  const originalSubmitInner = submitBtn?.innerHTML ?? '';
 
   try {
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<div class="loading-spinner-small"></div>';
+      submitBtn.setAttribute('aria-busy', 'true');
     }
 
     const response = await createComment(postId.toString(), commentText);
@@ -934,12 +957,8 @@ async function submitComment(postId: number): Promise<void> {
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
-        </svg>
-      `;
+      submitBtn.removeAttribute('aria-busy');
+      submitBtn.innerHTML = originalSubmitInner;
     }
   }
 }
@@ -998,9 +1017,7 @@ function addCommentToUI(postId: number, comment: any): void {
   commentsList.insertAdjacentHTML('beforeend', commentHTML);
 }
 
-/* -------------------------------------------------------------------------- */
-/*                            Reply Functionality                             */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Replies -------------------------------------- */
 
 function startReply(commentId: number, authorName: string): void {
   document.querySelectorAll('.reply-form').forEach((form) => {
@@ -1091,10 +1108,6 @@ async function submitReply(
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           Delete Comment                                   */
-/* -------------------------------------------------------------------------- */
-
 async function deleteCommentFunction(
   postId: number,
   commentId: number
@@ -1138,9 +1151,7 @@ async function deleteCommentFunction(
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                          Reactions Functionality                           */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Reactions -------------------------------------- */
 
 async function handleToggleReaction(
   postId: number,
@@ -1202,13 +1213,11 @@ function hideReactionsModal(postId: number): void {
   }, 200);
 }
 
-/* -------------------------------------------------------------------------- */
-/*                           Full Post View                                   */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Full-post inline expand -------------------------------------- */
 
 /**
- * Toggles inline-expand on a post article. Replaces the previous full-post modal.
- * Closes any other expanded post first so only one is open at a time.
+ * Toggles inline-expand on a post article. Closes any other expanded
+ * post first so only one is open at a time.
  */
 function viewFullPost(postId: number): void {
   const article = document.getElementById(`post-${postId}`);
@@ -1236,11 +1245,7 @@ function viewFullPost(postId: number): void {
   }
 }
 
-/**
- * Backward-compat alias: any leftover inline `onclick="closeFullPostModal()"`
- * (e.g., the body of a post that was edited recently) just collapses the
- * currently-expanded article via the new path.
- */
+/** Collapses any currently-expanded article (called from the Esc handler). */
 function closeFullPostModal(): void {
   const expanded = document.querySelector('.feed-article.is-expanded');
   if (expanded) (expanded as HTMLElement).classList.remove('is-expanded');
@@ -1248,9 +1253,7 @@ function closeFullPostModal(): void {
   container?.classList.remove('has-expanded');
 }
 
-/* -------------------------------------------------------------------------- */
-/*                          Utility Functions                                */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Toast helper -------------------------------------- */
 
 function showNotification(
   message: string,

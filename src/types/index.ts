@@ -112,12 +112,7 @@ declare global {
     selectReaction?: (postId: number, emoji: string) => void;
     viewFullPost?: (postId: number) => void;
     closeEditModal?: () => void;
-    closeFullPostModal?: () => void;
     showReactionsModal?: (postId: number) => void;
     hideReactionsModal?: (postId: number) => void;
-
-    // Generic close hooks read by the navbar's outside-click listener
-    closeModal?: () => void;
-    createPost?: () => void;
   }
 }

@@ -1,6 +1,6 @@
 /**
- * Fixed Interactions Service for Comments and Reactions
- * @file interactions.ts - Fixed version
+ * @file services/interactions/interactions.ts
+ * @description Comment + reaction service against the Noroff Social v2 API.
  */
 
 import { post, put, del } from '../api/client';
@@ -24,40 +24,10 @@ export interface Comment {
   };
 }
 
-export interface Reaction {
-  symbol: string;
-  count: number;
-  reactors?: Array<{
-    name: string;
-    email: string;
-  }>;
-}
-
-export interface CommentsResponse {
-  data: Comment[];
-  meta: {
-    isFirstPage: boolean;
-    isLastPage: boolean;
-    currentPage: number;
-    previousPage: number | null;
-    nextPage: number | null;
-    pageCount: number;
-    totalCount: number;
-  };
-}
-
 export interface CreateCommentResponse {
   data: Comment;
 }
 
-
-/**
- * Create a new comment on a post
- * @param postId The ID of the post to comment on
- * @param body The comment text
- * @param replyToId Optional ID of comment to reply to
- * @returns Promise with created comment
- */
 export async function createComment(
   postId: string,
   body: string,
@@ -72,7 +42,9 @@ export async function createComment(
   try {
     const response = await post(`/social/posts/${postId}/comment`, commentData);
 
-    // Handle the response according to the API docs
+    // The API mostly returns `{ data: {...} }` but a couple of edge paths
+    // (e.g. retried requests after a transient 5xx) come back as the raw
+    // comment object. Accept both shapes.
     if (response?.data) {
       return { data: response.data };
     } else if (response?.id) {
@@ -88,12 +60,6 @@ export async function createComment(
   }
 }
 
-/**
- * Delete a comment (only works for your own comments)
- * @param postId The ID of the post
- * @param commentId The ID of the comment to delete
- * @returns Promise that resolves when comment is deleted
- */
 export async function deleteComment(
   postId: string,
   commentId: string
@@ -115,9 +81,6 @@ export async function deleteComment(
   }
 }
 
-/**
- * React to a post with an emoji (internal helper for toggleReaction)
- */
 async function reactToPost(
   postId: string,
   symbol: string
@@ -142,9 +105,6 @@ async function reactToPost(
   }
 }
 
-/**
- * Remove reaction from a post (internal helper for toggleReaction)
- */
 async function removeReaction(
   postId: string,
   symbol: string
@@ -167,10 +127,8 @@ async function removeReaction(
 }
 
 /**
- * Toggle reaction on a post (add if not exists, remove if exists)
- * @param postId The ID of the post
- * @param symbol The emoji symbol to toggle
- * @returns Promise that resolves to true if reaction was added, false if removed
+ * Add the reaction; if the API says it already exists, remove it instead.
+ * Returns `true` when added, `false` when removed.
  */
 export async function toggleReaction(
   postId: string,

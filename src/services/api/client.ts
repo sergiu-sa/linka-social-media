@@ -1,7 +1,7 @@
 /**
- * @file client.ts
- * @description API client for handling requests to the Noroff API (v2).
- * Handles authentication, API keys, JSON parsing, and errors.
+ * @file services/api/client.ts
+ * @description HTTP client for the Noroff API v2. Owns auth header
+ *              attachment, JSON body handling, and error normalisation.
  */
 
 import { API_URL } from '../../constant';
@@ -23,28 +23,20 @@ type Endpoint = string;
 
 const API_KEY_HEADER = 'X-Noroff-API-Key';
 
-/** Resolve access token from any key shape used in the app */
+/** Read the access token from any key shape the app might have written. */
 function resolveAccessToken(): string | undefined {
-  // Preferred
   const fromHelper = getLocalItem('accessToken') as string | null;
-
-  // Fallbacks some older modules might use
   const rawToken = localStorage.getItem('token');
   let fromAuthObj: string | undefined;
   try {
-    const auth = JSON.parse(localStorage.getItem('auth') || 'null');
-    fromAuthObj = auth?.accessToken;
+    fromAuthObj = JSON.parse(localStorage.getItem('auth') || 'null')
+      ?.accessToken;
   } catch {
-    // ignore JSON errors
+    /* ignore — malformed JSON is the same as no token here */
   }
-
   return fromHelper || rawToken || fromAuthObj || undefined;
 }
 
-/**
- * Generic API client for making HTTP requests.
- * Automatically attaches headers for JSON, API key, and access token.
- */
 async function apiClient(endpoint: string, options: ApiClientOptions = {}) {
   const { body, ...customOptions } = options;
 
@@ -119,9 +111,7 @@ async function apiClient(endpoint: string, options: ApiClientOptions = {}) {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               Helper Methods                               */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- HTTP verb helpers -------------------------------------- */
 
 export const get = <T = unknown>(endpoint: Endpoint): Promise<T> =>
   apiClient(endpoint);
@@ -135,10 +125,11 @@ export const put = (endpoint: Endpoint, body: object) =>
 export const del = (endpoint: Endpoint) =>
   apiClient(endpoint, { method: 'DELETE' });
 
-/* -------------------------------------------------------------------------- */
-/*                          Auth Helper Functions                             */
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------- Auth (login / register / api-key) -------------------------------------- */
 
+/* `authPost` and friends bypass the main `apiClient` because /auth/* must
+   not send the `X-Noroff-API-Key` header — that header is what the auth
+   endpoints *issue*, so attaching it here causes the API to 401. */
 async function authPost<T>(path: string, data: object): Promise<T> {
   const response = await fetch(`https://v2.api.noroff.dev${path}`, {
     method: 'POST',
@@ -166,9 +157,6 @@ export function loginUser(
   return authPost<ApiResponse<LoginResponse>>('/auth/login', data);
 }
 
-/**
- * Fetches a new API key using the Noroff Auth API.
- */
 export async function fetchApiKey(
   accessToken: string
 ): Promise<string | undefined> {

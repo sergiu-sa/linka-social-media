@@ -44,8 +44,8 @@ export function applyTheme(kind: ThemeKind): void {
   document.dispatchEvent(new Event(EVENT_NAME));
 }
 
-/** Persist + apply. Use this when the user explicitly picks a theme. */
-export function setTheme(kind: ThemeKind): void {
+/** Persist + apply. Used by toggleTheme and initTheme. */
+function setTheme(kind: ThemeKind): void {
   localStorage.setItem(STORAGE_KEY, kind);
   applyTheme(kind);
 }

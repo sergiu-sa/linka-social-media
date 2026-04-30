@@ -16,6 +16,7 @@ import './style.css';
 import { renderRoute } from './router';
 import LoadingScreen from './pages/LoadingScreen.js';
 import NavbarPage, { initNavbar } from './pages/NavbarPage.js';
+import { mountFooter } from './pages/FooterPage';
 import { error as logError } from './utils/log';
 
 // Initialize loading screen
@@ -80,6 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
     updateNavbarVisibility(window.location.pathname);
   }, 100);
+
+  // Mount the footer once. Visibility is CSS-driven via body:has(...) so
+  // it appears only on the routes that should show it.
+  mountFooter();
 
   renderRoute(window.location.pathname);
 
