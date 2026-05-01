@@ -8,32 +8,39 @@ export type ThreeStarMode = 'intro' | 'hero';
 export interface ThreeStarOptions {
   mode: ThreeStarMode;
   cameraZ?: { mobile: number; tablet: number; desktop: number };
+  armLabels?: string[];                 // 6-tuple — used for tooltips
+  onArmClick?: (index: number) => void; // hero — fires on arm raycast hit
+  onCoreClick?: () => void;             // both modes; default = explode
+  decorativeOnly?: boolean;             // hero: true (no auto-breath)
+  pauseWhenHidden?: boolean;            // hero: true (IntersectionObserver gating)
 }
 
 export interface ThreeStarHandle {
   pause(): void;
   resume(): void;
   dispose(): void;
+  explode(): void;
+  reassemble(): void;
 }
 
 const prefersReducedMotion = (): boolean =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 const DEFAULT_INTRO_CAMERA = { mobile: 8.5, tablet: 6.5, desktop: 5.5 };
+const DEFAULT_HERO_CAMERA  = { mobile: 7.0, tablet: 6.0, desktop: 6.0 };
 
 export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions): ThreeStarHandle {
-  if (opts.mode !== 'intro') {
-    throw new Error(`mountThreeStar: mode '${opts.mode}' not implemented yet`);
-  }
-  const cameraConf = opts.cameraZ ?? DEFAULT_INTRO_CAMERA;
+  const isHero = opts.mode === 'hero';
+  const decorativeOnly = isHero ? (opts.decorativeOnly ?? true) : (opts.decorativeOnly ?? false);
+  const cameraConf = opts.cameraZ ?? (isHero ? DEFAULT_HERO_CAMERA : DEFAULT_INTRO_CAMERA);
 
   const cleanups: Array<() => void> = [];
   let running = true;
+  let externallyPaused = false;
 
   const reduced = prefersReducedMotion();
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
   const scene = new THREE.Scene();
@@ -41,6 +48,20 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
   const cameraZ = () =>
     innerWidth < 640 ? cameraConf.mobile : innerWidth < 1024 ? cameraConf.tablet : cameraConf.desktop;
   camera.position.set(0, 0.5, cameraZ());
+
+  const sizeRenderer = () => {
+    if (isHero) {
+      const rect = canvas.getBoundingClientRect();
+      renderer.setSize(rect.width, rect.height, false); // false = don't write attrs
+      camera.aspect = rect.width / Math.max(rect.height, 1);
+    } else {
+      renderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+    }
+    camera.position.z = cameraZ();
+    camera.updateProjectionMatrix();
+  };
+  sizeRenderer();
 
   const key = new THREE.DirectionalLight(0xffffff, reduced ? 1.4 : 0.0);
   key.position.set(5, 7, 4);
@@ -96,7 +117,7 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
   let autoReassembleTimer: number | null = null;
   let tapStart: { t: number; x: number; y: number } | null = null;
 
-  if (!reduced) {
+  if (!reduced && !decorativeOnly) {
     arms.forEach((mesh) => {
       const dir = new THREE.Vector3(
         (Math.random() - 0.5) * 1.5,
@@ -205,8 +226,9 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
   cleanups.push(() => canvas.removeEventListener('pointerleave', onPointerLeave));
 
   const raycastHit = (clientX: number, clientY: number) => {
-    mouse.x = (clientX / innerWidth) * 2 - 1;
-    mouse.y = -(clientY / innerHeight) * 2 + 1;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     ray.setFromCamera(mouse, camera);
     return ray.intersectObject(star, true).length > 0;
   };
@@ -226,6 +248,57 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
       gsap.to(rim, { intensity: 0.35, duration: 0.7 });
     }
   };
+
+  // — Tooltip layer (hero only) —
+  let tooltipEl: HTMLDivElement | null = null;
+  let tooltipArmIdx: number | null = null;
+
+  if (isHero && opts.armLabels && opts.armLabels.length === 6 && canvas.parentElement) {
+    tooltipEl = document.createElement('div');
+    tooltipEl.className = 'feed-hero-tooltip';
+    tooltipEl.setAttribute('role', 'tooltip');
+    canvas.parentElement.appendChild(tooltipEl);
+    cleanups.push(() => tooltipEl?.remove());
+  }
+
+  const updateTooltip = (clientX: number, clientY: number) => {
+    if (!tooltipEl || !opts.armLabels) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    ray.setFromCamera(mouse, camera);
+    const hits = ray.intersectObject(star, true);
+    const idx = hits.length ? arms.indexOf(hits[0].object as THREE.Object3D) : -1;
+    if (idx >= 0 && idx < 6) {
+      if (tooltipArmIdx !== idx) {
+        tooltipArmIdx = idx;
+        tooltipEl.textContent = opts.armLabels[idx] ?? '';
+      }
+      tooltipEl.style.left = `${clientX - rect.left + 12}px`;
+      tooltipEl.style.top  = `${clientY - rect.top  + 12}px`;
+      tooltipEl.classList.add('is-visible');
+    } else {
+      tooltipEl.classList.remove('is-visible');
+      tooltipArmIdx = null;
+    }
+  };
+
+  const onTooltipMove = (e: PointerEvent) => {
+    if (!isHero || e.pointerType === 'touch') return;
+    updateTooltip(e.clientX, e.clientY);
+  };
+  const onTooltipLeave = () => {
+    if (!tooltipEl) return;
+    tooltipEl.classList.remove('is-visible');
+    tooltipArmIdx = null;
+  };
+
+  if (isHero) {
+    canvas.addEventListener('pointermove', onTooltipMove);
+    canvas.addEventListener('pointerleave', onTooltipLeave);
+    cleanups.push(() => canvas.removeEventListener('pointermove', onTooltipMove));
+    cleanups.push(() => canvas.removeEventListener('pointerleave', onTooltipLeave));
+  }
 
   const spawnParticles = () => {
     const count = 18;
@@ -332,9 +405,25 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
     else reassemble();
   };
 
-  const onClick = () => {
+  const onClick = (e: MouseEvent) => {
     if (!hovering) return;
-    toggleExplode();
+    // canvas-relative coords (works for both fixed and contained canvases)
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    ray.setFromCamera(mouse, camera);
+    const hits = ray.intersectObject(star, true);
+    if (!hits.length) return;
+    const hitIdx = arms.indexOf(hits[0].object as THREE.Object3D);
+    // arms[6] is the core sphere; arms[0..5] are the box arms.
+    if (isHero && hitIdx >= 0 && hitIdx < 6 && opts.onArmClick) {
+      opts.onArmClick(hitIdx);
+    } else if (isHero && hitIdx === 6) {
+      (opts.onCoreClick ?? toggleExplode)();
+    } else {
+      // intro mode — any hit explodes
+      (opts.onCoreClick ?? toggleExplode)();
+    }
     lastInputAt = performance.now();
   };
   canvas.addEventListener('click', onClick);
@@ -344,7 +433,7 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
   document.addEventListener('linka-theme-changed', applyMat);
   cleanups.push(() => document.removeEventListener('linka-theme-changed', applyMat));
 
-  if (!reduced) {
+  if (!reduced && !decorativeOnly) {
     const breathId = setInterval(() => {
       if (starBroken || isDragging || hovering) return;
       if (performance.now() - lastInputAt < 1000) return;
@@ -390,24 +479,48 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
       rafId = requestAnimationFrame(tick);
     }
   };
+  // IntersectionObserver pause-when-hidden (hero only)
+  let observer: IntersectionObserver | null = null;
+  if (isHero && (opts.pauseWhenHidden ?? true)) {
+    observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.intersectionRatio >= 0.1) {
+          if (externallyPaused) continue; // consumer wins
+          if (!running) {
+            running = true;
+            rafId = requestAnimationFrame(tick);
+          }
+        } else {
+          if (running) {
+            running = false;
+            cancelAnimationFrame(rafId);
+          }
+        }
+      }
+    }, { threshold: [0, 0.1, 1] });
+    observer.observe(canvas);
+    cleanups.push(() => observer?.disconnect());
+  }
+
   rafId = requestAnimationFrame(tick);
 
   const onResize = () => {
-    renderer.setSize(innerWidth, innerHeight);
-    camera.aspect = innerWidth / innerHeight;
-    camera.position.z = cameraZ();
-    camera.updateProjectionMatrix();
+    sizeRenderer();
   };
   window.addEventListener('resize', onResize);
   cleanups.push(() => window.removeEventListener('resize', onResize));
 
   return {
     pause() {
+      if (externallyPaused) return;
+      externallyPaused = true;
       if (!running) return;
       running = false;
       cancelAnimationFrame(rafId);
     },
     resume() {
+      if (!externallyPaused) return;
+      externallyPaused = false;
       if (running) return;
       running = true;
       rafId = requestAnimationFrame(tick);
@@ -419,6 +532,8 @@ export function mountThreeStar(canvas: HTMLCanvasElement, opts: ThreeStarOptions
       gsap.killTweensOf([...star.children, key, rim]);
       renderer.dispose();
     },
+    explode,
+    reassemble,
   };
 }
 
