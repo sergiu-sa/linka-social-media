@@ -43,6 +43,7 @@ import {
   Reply,
   Trash2,
 } from 'lucide';
+import { feedHeroMarkup, mountFeedHero, type FeedHeroData } from '../components/feedHero';
 
 const tokenFromAnyKey = () =>
   localStorage.getItem('accessToken') ||
@@ -128,9 +129,26 @@ export default async function FeedPage(): Promise<string> {
       }
     }
 
+    const meta = postsResponse.meta;
+    const userInitial = (getLocalItem('user') || 'Y').charAt(0).toUpperCase();
+
+    const heroData: FeedHeroData = {
+      posts,
+      meta: {
+        currentPage: meta.currentPage,
+        pageCount: meta.pageCount,
+        totalCount: meta.totalCount,
+      },
+      isUserLoggedIn,
+      userInitial,
+      searchQuery: searchQuery ?? undefined,
+    };
+
     // Initialize event listeners after DOM is rendered
     setTimeout(() => {
       initializeFeedInteractions();
+
+      const heroHandle = mountFeedHero(heroData);
 
       // If auth state changes (login/register on Intro page), re-render feed
       const onAuthChanged = () => renderRoute('/feed?ts=' + Date.now());
@@ -143,26 +161,15 @@ export default async function FeedPage(): Promise<string> {
         (container as any)._cleanup = () => {
           document.removeEventListener('auth:changed', onAuthChanged);
           window.removeEventListener('storage', onAuthChanged);
+          heroHandle.dispose();
         };
       }
     }, 100);
 
-    const meta = postsResponse.meta;
-    const userInitial = (getLocalItem('user') || 'Y').charAt(0).toUpperCase();
-
     return `
       <div class="feed-page">
         <main class="feed-column">
-          <header>
-            <h1 class="feed-header-title">${isUserLoggedIn ? 'Your Feed' : 'Social Feed'}</h1>
-            <p class="feed-header-meta">
-              ${
-                isSearchMode
-                  ? `Searching for "${searchQuery}" <a href="#" class="feed-meta-clear" onclick="event.preventDefault(); window.searchQuery = undefined; window.searchResults = undefined; navigateToPage(1);"><span class="feed-meta-clear-label">clear</span>${iconSvg(X, { size: 13, strokeWidth: 2.4 })}</a>`
-                  : `page ${meta.currentPage} of ${meta.pageCount} · ${meta.totalCount} posts`
-              }
-            </p>
-          </header>
+          ${feedHeroMarkup(heroData)}
 
           ${
             isUserLoggedIn
