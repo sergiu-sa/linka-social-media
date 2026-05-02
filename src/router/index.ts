@@ -91,6 +91,17 @@ export async function renderRoute(path?: string) {
   }
 
   const { html, path: resolvedPath } = await router(targetPath);
+
+  // Run any cleanup hooks attached to outgoing page elements before swapping HTML.
+  // Pages that own long-lived resources (e.g. WebGL renderers, observers) attach
+  // a `_cleanup` function to a well-known container; today the only host is
+  // FeedPage's `#posts-container`. Extend this list when other pages need it.
+  const outgoingCleanupHost = contentContainer.querySelector<HTMLElement>('#posts-container');
+  const outgoingCleanup = (outgoingCleanupHost as any)?._cleanup;
+  if (typeof outgoingCleanup === 'function') {
+    try { outgoingCleanup(); } catch { /* swallow — cleanup must not block navigation */ }
+  }
+
   contentContainer.innerHTML = html;
 
   // Update navbar visibility based on the *resolved* path (post-redirect),

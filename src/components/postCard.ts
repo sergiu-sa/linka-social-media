@@ -28,15 +28,22 @@ export default function postCard(
 ): string {
   const {
     id,
-    title = '',
-    body = '',
-    tags = [],
+    title: rawTitle,
+    body: rawBody,
+    tags: rawTags,
     media,
     created,
     author = { name: 'Unknown', email: 'unknown@mail.com' },
     _count = { comments: 0, reactions: 0 },
-    reactions = [],
+    reactions: rawReactions,
   } = post;
+
+  // Destructuring defaults only catch `undefined`; the Noroff API also
+  // returns `null` for missing scalar/array fields. Coalesce explicitly.
+  const title = rawTitle ?? '';
+  const body = rawBody ?? '';
+  const tags = rawTags ?? [];
+  const reactions = rawReactions ?? [];
 
   const currentUser = getLocalItem('user');
   const isOwner = currentUser && author.name === currentUser;

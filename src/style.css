@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 /* ==========================================================================
@@ -755,33 +756,364 @@ html:not(.light-mode) body:has(.feed-page) {
   }
 }
 
-.feed-header-title {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  letter-spacing: 0.02em;
-  color: rgb(15 23 42);
-  margin: 0;
-  line-height: 1;
+/* ==========================================================================
+   FEED HERO — Constellation Console
+   ========================================================================== */
+
+.feed-hero {
+  position: relative;
+  margin: 0 0 1.5rem;
+  padding: 28px 26px 0;
+  background: rgb(11 18 32);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  isolation: isolate;
 }
-.dark .feed-header-title {
-  color: rgb(248 250 252);
+html.light-mode .feed-hero {
+  background: linear-gradient(to bottom right, #fff7f2, #ffffff);
+  color: #0e0d0a;
+  border-color: rgba(14, 13, 10, 0.12);
 }
 
-.feed-header-meta {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: rgb(100 116 139);
+.feed-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 18%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 78% 12%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.4px 1.4px at 42% 60%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(2px 2px at 88% 78%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 22% 84%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 64% 32%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.2px 1.2px at 8% 56%, rgba(255,255,255,0.45), transparent),
+    radial-gradient(1px 1px at 92% 44%, rgba(255,255,255,0.4), transparent);
 }
-.feed-header-meta .feed-meta-clear {
-  display: inline-flex;
+html.light-mode .feed-hero-bg {
+  opacity: 0.7;
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 18%, rgba(14,13,10,0.5), transparent),
+    radial-gradient(1px 1px at 78% 12%, rgba(14,13,10,0.35), transparent),
+    radial-gradient(1.4px 1.4px at 42% 60%, rgba(14,13,10,0.4), transparent),
+    radial-gradient(1.6px 1.6px at 88% 78%, rgba(14,13,10,0.45), transparent),
+    radial-gradient(1px 1px at 22% 84%, rgba(14,13,10,0.3), transparent),
+    radial-gradient(1px 1px at 64% 32%, rgba(14,13,10,0.35), transparent);
+}
+
+.feed-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 720px) {
+  .feed-hero-grid {
+    grid-template-columns: 1fr 1.3fr;
+    gap: 24px;
+  }
+}
+
+/* PULSE COLUMN */
+.feed-hero-meta {
+  border-left: 2px solid rgb(249 115 22);
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feed-hero-eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+html.light-mode .feed-hero-eyebrow {
+  color: rgba(14, 13, 10, 0.6);
+}
+.feed-hero-eyebrow-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px #4ade80;
+}
+.feed-hero-eyebrow-clear {
+  margin-left: auto;
   color: rgb(249 115 22);
   text-decoration: none;
-  margin-left: 0.5rem;
 }
-.feed-header-meta .feed-meta-clear:hover {
+.feed-hero-eyebrow-clear:hover {
   text-decoration: underline;
+}
+
+.feed-hero-title {
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 44px;
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: #f8fafc;
+}
+html.light-mode .feed-hero-title {
+  color: #0e0d0a;
+}
+.feed-hero-title .acc {
+  color: rgb(249 115 22);
+}
+@media (min-width: 720px) {
+  .feed-hero-title {
+    font-size: 60px;
+  }
+}
+
+.feed-hero-pulse {
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.feed-hero-pulse-row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+.feed-hero-pulse-k {
+  margin: 0;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+html.light-mode .feed-hero-pulse-k {
+  color: rgba(14, 13, 10, 0.5);
+}
+.feed-hero-pulse-v {
+  margin: 0;
+  color: #fff;
+}
+html.light-mode .feed-hero-pulse-v {
+  color: #0e0d0a;
+}
+
+/* GRAPH PANEL */
+.feed-hero-graph {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  min-height: 180px;
+}
+html.light-mode .feed-hero-graph {
+  border-color: rgba(14, 13, 10, 0.12);
+  background: rgba(255, 255, 255, 0.4);
+}
+@media (min-width: 720px) {
+  .feed-hero-graph {
+    min-height: 220px;
+  }
+}
+
+.feed-hero-graph canvas {
+  display: block;
+  width: 100%;
+  height: 220px;
+  position: relative;
+  z-index: 0;
+}
+@media (max-width: 719px) {
+  .feed-hero-graph canvas {
+    height: 180px;
+  }
+}
+
+.feed-hero-graph-label {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  margin: 0;
+  z-index: 1;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+html.light-mode .feed-hero-graph-label {
+  color: rgba(14, 13, 10, 0.5);
+}
+.feed-hero-graph-pulse {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: rgb(249 115 22);
+  border-radius: 50%;
+  animation: feed-hero-pulse 2s ease-in-out infinite;
+}
+@keyframes feed-hero-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+/* TOOLTIP */
+.feed-hero-tooltip {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  background: rgb(11 18 32);
+  color: #fff;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 5px 8px;
+  border: 1px solid rgba(249, 115, 22, 0.5);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+html.light-mode .feed-hero-tooltip {
+  background: #fff;
+  color: #0e0d0a;
+  border-color: rgba(249, 115, 22, 0.6);
+}
+.feed-hero-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* SCREEN READER ARM LIST */
+.feed-hero-arms-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* COMPOSE RAIL */
+.feed-hero-compose-rail {
+  margin: 22px -26px 0;
+  padding: 16px 26px;
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background: rgba(11, 18, 32, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+html.light-mode .feed-hero-compose-rail {
+  background: rgba(255, 255, 255, 0.65);
+  border-top-color: rgba(14, 13, 10, 0.12);
+}
+.feed-hero-compose-rail:hover,
+.feed-hero-compose-rail:focus-visible {
+  background: rgba(11, 18, 32, 1);
+}
+html.light-mode .feed-hero-compose-rail:hover,
+html.light-mode .feed-hero-compose-rail:focus-visible {
+  background: #fff;
+}
+.feed-hero-compose-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgb(249 115 22);
+  color: #000;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-size: 18px;
+}
+.feed-hero-compose-input {
+  margin: 0;
+  font-family: 'Open Sans', system-ui, sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 14px;
+}
+html.light-mode .feed-hero-compose-input {
+  color: rgba(14, 13, 10, 0.55);
+  border-color: rgba(14, 13, 10, 0.15);
+  background: rgba(255, 255, 255, 0.7);
+}
+.feed-hero-compose-cta {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  background: rgb(249 115 22);
+  color: #000;
+  padding: 10px 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+.feed-hero-compose-cta:hover {
+  background: rgb(255 122 46);
+}
+.feed-hero-compose-cta:focus-visible {
+  outline: 2px solid rgb(249 115 22);
+  outline-offset: 2px;
+}
+
+/* PULSE COLUMN STAGGERED REVEAL (chrome animation, gated by reduced-motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .feed-hero-meta > * {
+    animation: feed-hero-fade-up 350ms ease-out both;
+  }
+  .feed-hero-meta > *:nth-child(1) { animation-delay: 0ms; }
+  .feed-hero-meta > *:nth-child(2) { animation-delay: 60ms; }
+  .feed-hero-meta > *:nth-child(3) { animation-delay: 120ms; }
+}
+@keyframes feed-hero-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed-hero-graph-pulse { animation: none; }
+  .feed-hero-tooltip,
+  .feed-hero-compose-rail {
+    transition: none;
+  }
+}
+
+/* MOBILE PADDING TWEAK */
+@media (max-width: 719px) {
+  .feed-hero {
+    padding: 20px 18px 0;
+  }
+  .feed-hero-compose-rail {
+    margin: 18px -18px 0;
+    padding: 14px 18px;
+  }
 }
 
 /* -------------------------------------- Composer -------------------------------------- */
