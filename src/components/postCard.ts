@@ -357,6 +357,22 @@ function handlePostCardKeydown(e: KeyboardEvent): void {
     e.preventDefault();
     const username = target.dataset.username;
     if (username) window.navigateToProfile?.(username);
+    return;
+  }
+
+  // Escape inside the reaction picker (or on the like button while picker is open)
+  // closes the picker immediately and returns focus to the like button.
+  if (e.key === 'Escape') {
+    const found = reactionsWrapAndPostId(target);
+    if (found) {
+      const picker = document.getElementById(`reactions-${found.postId}`);
+      if (picker && picker.style.display !== 'none') {
+        e.preventDefault();
+        picker.style.display = 'none';
+        const likeBtn = found.wrap.querySelector<HTMLElement>('.like-btn');
+        likeBtn?.focus();
+      }
+    }
   }
 }
 

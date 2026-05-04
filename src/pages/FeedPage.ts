@@ -206,6 +206,7 @@ export default async function FeedPage(): Promise<string> {
                         id="post-title"
                         name="title"
                         placeholder="Title"
+                        aria-label="Post title"
                         required
                         class="feed-composer-input-large"
                       >
@@ -213,6 +214,7 @@ export default async function FeedPage(): Promise<string> {
                         id="post-body"
                         name="body"
                         placeholder="What do you want to share?"
+                        aria-label="Post body"
                         required
                         class="feed-composer-textarea"
                         rows="3"
@@ -224,15 +226,15 @@ export default async function FeedPage(): Promise<string> {
                       </div>
 
                       <div class="feed-composer-optional" id="composer-tags-row">
-                        <input type="text" id="post-tags" name="tags" placeholder="tags, comma, separated">
+                        <input type="text" id="post-tags" name="tags" placeholder="tags, comma, separated" aria-label="Tags (comma-separated)">
                       </div>
 
                       <div class="feed-composer-optional" id="composer-image-row">
-                        <input type="url" id="post-image-url" name="imageUrl" placeholder="image URL">
+                        <input type="url" id="post-image-url" name="imageUrl" placeholder="image URL" aria-label="Image URL">
                       </div>
 
                       <div class="feed-composer-optional" id="composer-image-alt-row">
-                        <input type="text" id="post-image-alt" name="imageAlt" placeholder="image alt text">
+                        <input type="text" id="post-image-alt" name="imageAlt" placeholder="image alt text" aria-label="Image alt text">
                       </div>
 
                       <div class="feed-composer-actions">
@@ -276,10 +278,10 @@ export default async function FeedPage(): Promise<string> {
       </div>
 
       <!-- Edit Post Modal (restyled flat) -->
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 feed-modal-backdrop" id="editPostModal" style="display: none;">
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 feed-modal-backdrop" id="editPostModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="editPostModalTitle" aria-hidden="true">
         <div class="feed-modal-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="flex justify-between items-center px-6 py-5 border-b border-slate-200/60 dark:border-slate-700/60">
-            <h3 class="feed-modal-title">Edit post</h3>
+            <h3 class="feed-modal-title" id="editPostModalTitle">Edit post</h3>
             <button class="feed-modal-close" onclick="closeEditModal()" aria-label="Close">${iconSvg(X, { size: 18, strokeWidth: 2.2 })}</button>
           </div>
           <form id="editPostForm" class="px-6 py-6 space-y-5">
@@ -692,10 +694,69 @@ function editPostFunction(postId: number): void {
   if (editModal) {
     editModal.dataset.postId = postId.toString();
     editModal.style.display = 'flex';
+    editModal.setAttribute('aria-hidden', 'false');
+    installEditModalFocusTrap();
   }
 
   // Close post menu
   togglePostMenu(postId);
+}
+
+/* Focus trap + ESC + focus-restore for the edit-post modal. Mirrors the
+   pattern in utils/confirm.ts. */
+let editModalReturnFocus: HTMLElement | null = null;
+let editModalKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+
+function installEditModalFocusTrap(): void {
+  const modal = document.getElementById('editPostModal');
+  if (!modal) return;
+
+  editModalReturnFocus = (document.activeElement as HTMLElement) || null;
+
+  const focusables = () =>
+    Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => !el.hasAttribute('disabled'));
+
+  // Initial focus on the first input (title) for predictable keyboard entry.
+  setTimeout(() => {
+    const titleInput = document.getElementById('editPostTitle') as HTMLInputElement | null;
+    titleInput?.focus();
+  }, 0);
+
+  editModalKeyHandler = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeEditModal();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const list = focusables();
+      if (list.length === 0) return;
+      const first = list[0];
+      const last = list[list.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+  document.addEventListener('keydown', editModalKeyHandler);
+}
+
+function uninstallEditModalFocusTrap(): void {
+  if (editModalKeyHandler) {
+    document.removeEventListener('keydown', editModalKeyHandler);
+    editModalKeyHandler = null;
+  }
+  editModalReturnFocus?.focus();
+  editModalReturnFocus = null;
 }
 
 async function handleEditPost(event: Event): Promise<void> {
@@ -847,8 +908,10 @@ function closeEditModal(): void {
   const modal = document.getElementById('editPostModal');
   if (modal) {
     modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
     delete (modal as any).dataset.postId;
   }
+  uninstallEditModalFocusTrap();
 }
 
 /* -------------------------------------- Comments -------------------------------------- */
@@ -1032,6 +1095,7 @@ function addCommentToUI(postId: number, comment: any): void {
           <div class="reply-input-container">
             <input type="text" id="reply-input-${comment.id}" class="reply-input"
                    placeholder="Write a reply..." maxlength="280"
+                   aria-label="Reply to ${(comment.author?.name || comment.owner || 'comment').replace(/"/g, '&quot;')}"
                    data-action="reply-input" data-comment-id="${comment.id}">
             <button type="button" class="reply-submit-btn"
                     data-action="reply-submit" data-comment-id="${comment.id}"><span class="btn-icon">${iconSvg(Send, { size: 13, strokeWidth: 2.2 })}</span><span>Send</span></button>

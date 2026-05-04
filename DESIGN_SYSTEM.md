@@ -85,7 +85,9 @@ Eight design decisions were resolved before tokens were defined. Each is recorde
 
 ## Accessibility commitments
 
-The audit caught real WCAG failures. The fixes shipped:
+The audit caught real WCAG failures. The fixes shipped across two waves:
+
+**Wave 1:**
 
 - **Vestibular safety** — `auth-rotate` 30s perpetual spin gets `prefers-reduced-motion: reduce` override.
 - **WCAG 2.4.7 Focus Visible** — three borderless composer inputs (`#post-title`, `#post-body`, `.feed-thread-compose input`) gained underline focus indicators. 20 buttons that lacked any focus style gained a shared `:focus-visible` rule using `--shadow-focus-ring`.
@@ -93,11 +95,11 @@ The audit caught real WCAG failures. The fixes shipped:
 - **Skip-to-main link** — keyboard users tab onto a focusable orange "Skip to main content" anchor before the navbar.
 - **Toast live-region semantics** — both toast helpers (`FeedPage.ts`, `NavbarPage.ts`) gained explicit `aria-live` (`polite` / `assertive` per type) + `aria-atomic`.
 
-Deferred to a follow-up wave:
+**Wave 2:**
 
-- Edit-post modal `role="dialog"` + `aria-modal` + focus trap (the confirm dialog already does this correctly).
-- Reactions modal keyboard accessibility (today: mouseenter/leave open/close — needs a click + keyboard rewrite).
-- 7 composer inputs that rely on `placeholder` only, no associated `<label>` or `aria-label`.
+- **Composer / reply input labels** — 6 inputs (post title, body, tags, image URL, image alt, reply input) gained `aria-label`s. Reply input includes the comment author's name in its label.
+- **Edit-post modal as proper dialog** — `role="dialog"` + `aria-modal="true"` + `aria-labelledby`. Focus trap installed on open (Tab cycles within the modal; Shift+Tab from first wraps to last). Title input receives initial focus. Escape closes. Focus returns to the element that opened the modal.
+- **Reactions picker keyboard support** — Tab from the like button opens the picker (focusin); Tab through emoji buttons; Escape closes the picker and returns focus to the like button.
 
 ---
 
@@ -108,7 +110,9 @@ Deferred to a follow-up wave:
 | Phase 1 — Audit | ✅ Complete | Catalogued every visual + technical inconsistency; proposed 112-token taxonomy; recorded 8 user-decision items. |
 | Phase 2 — Token foundation (minimal) | ✅ Complete | 59 tokens + 6 light-mode overrides declared in `src/style.tokens.css`. Tokens declared but mostly unused — Phase 3+ surface waves consume them. |
 | Hotfix — dark/light parity | ✅ Complete | Three broken surfaces (`.feed-page`, `.linka-profile`, `.linka-confirm-panel`) now use `var(--color-bg-base)` and swap correctly. First real consumption of Phase 2 tokens. |
-| Wave — A11y blockers | ✅ Complete | 6 WCAG fixes shipped (see Accessibility commitments above). |
+| Wave — A11y blockers (round 1) | ✅ Complete | 6 WCAG fixes shipped (see Accessibility commitments above). |
+| Wave — A11y blockers (round 2) | ✅ Complete | Composer/reply input labels, edit-post modal focus trap + dialog semantics, reactions picker Escape support. |
+| Bundle code-split | ✅ Complete | Three.js + GSAP moved to a lazy chunk. Main bundle reduced from ~658 KB to ~101 KB. |
 | Phase 3 — Surface migrations | 📋 Planned | Surface-by-surface tokenization. Order: feed → modals → profile → auth shell → navbar/footer → fringe. ~7 waves. |
 | Phase 4 — Optional refactor | 📋 Optional | `FeedPage.ts` (1,300 lines) → smaller files using the explicit `markup() + mount()` split (the pattern established by `feedHero.ts` / `threeStar.ts`). High cost vs payoff; defer until file becomes painful. |
 

@@ -1,6 +1,6 @@
-@import './style.tokens.css';
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
+@import './style.tokens.css';
 
 /* ==========================================================================
    SOCIAL MEDIA PLATFORM - REFACTORED CSS
@@ -91,9 +91,6 @@ html.light-mode .auth-brand-logo {
 html.light-mode .auth-brand-quote {
   color: #0f172a;
 }
-html.light-mode .auth-brand-sub {
-  color: rgba(15, 23, 42, 0.6);
-}
 html.light-mode .auth-brand-footer {
   color: rgba(15, 23, 42, 0.55);
 }
@@ -166,13 +163,6 @@ html.light-mode .auth-brand canvas.auth-starfield {
 .auth-brand-quote .accent {
   color: rgb(249 115 22);
 }
-.auth-brand-sub {
-  margin-top: 1rem;
-  font-size: 0.95rem;
-  color: rgba(248, 250, 252, 0.6);
-  max-width: 38ch;
-  line-height: 1.55;
-}
 
 .auth-brand-footer {
   align-items: center;
@@ -195,16 +185,12 @@ html.light-mode .auth-brand canvas.auth-starfield {
   display: block;
   font-size: clamp(1.75rem, 8vw, 2.5rem);
 }
-.auth-brand-sub,
 .auth-brand-footer {
   display: none;
 }
 @media (min-width: 768px) {
   .auth-brand-quote {
     font-size: clamp(2.25rem, 6vw, 5rem);
-  }
-  .auth-brand-sub {
-    display: block;
   }
   .auth-brand-footer {
     display: flex;
