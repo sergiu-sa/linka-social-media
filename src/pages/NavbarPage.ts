@@ -59,6 +59,7 @@ export default function NavbarPage() {
   const userLoggedIn = isLoggedIn();
 
   return `
+    <a href="#js-app" class="sr-only sr-only-focusable">Skip to main content</a>
     <nav id="app-navbar" class="linka-nav" aria-label="Primary">
       <div class="linka-nav-inner">
         <a href="/feed" class="linka-nav-brand" data-nav="feed">
@@ -348,6 +349,8 @@ function showLogoutMessage() {
   const el = document.createElement('div');
   el.className = 'notification-toast notification-success';
   el.setAttribute('role', 'status');
+  el.setAttribute('aria-live', 'polite');
+  el.setAttribute('aria-atomic', 'true');
   el.textContent = 'Signed out';
   document.body.appendChild(el);
   setTimeout(() => {

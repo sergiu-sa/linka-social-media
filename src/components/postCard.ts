@@ -174,6 +174,7 @@ export default function postCard(
             data-action="reaction-toggle"
             data-emoji="❤️"
             aria-haspopup="menu"
+            aria-label="${reactionCount} ${reactionCount === 1 ? 'reaction' : 'reactions'} — pick a reaction"
           >
             <i class="feed-action-icon" aria-hidden="true">${iconSvg(Heart, { size: 17, strokeWidth: 2.2 })}</i>
             <span class="action-count-compact">${reactionCount}</span>
@@ -188,7 +189,7 @@ export default function postCard(
           </div>
         </div>
 
-        <button type="button" class="feed-action comment-btn" data-post-id="${id}" data-action="comments-toggle">
+        <button type="button" class="feed-action comment-btn" data-post-id="${id}" data-action="comments-toggle" aria-label="${_count.comments} ${_count.comments === 1 ? 'comment' : 'comments'} — toggle thread">
           <i class="feed-action-icon" aria-hidden="true">${iconSvg(MessageCircle, { size: 17, strokeWidth: 2 })}</i>
           <span class="action-count-compact">${_count.comments}</span>
         </button>

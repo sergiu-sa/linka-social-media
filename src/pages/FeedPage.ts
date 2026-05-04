@@ -1291,6 +1291,8 @@ function showNotification(
   const el = document.createElement('div');
   el.className = `notification-toast notification-${type}`;
   el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+  el.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+  el.setAttribute('aria-atomic', 'true');
   el.textContent = message;
   document.body.appendChild(el);
 
