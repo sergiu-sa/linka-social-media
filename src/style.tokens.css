@@ -1,0 +1,110 @@
+/* ==========================================================================
+   LINKA — Design Tokens (Phase 2-Minimal)
+   ==========================================================================
+   Single source of truth for design tokens. Defined as CSS custom properties
+   at :root with html.light-mode overrides for theme-dependent values.
+
+   Audit reference: docs/superpowers/specs/2026-05-02-design-audit-findings.md
+   Design spec:     docs/superpowers/specs/2026-05-02-tokens-phase2-minimal-design.md
+
+   Tokens declared here are NOT YET CONSUMED by surface CSS — Phase 3+ surface
+   migrations will replace literal values with var(--*) references.
+   ========================================================================== */
+
+:root {
+  /* ----- Color ----- */
+  /* Brand */
+  --color-orange: rgb(249 115 22);
+  --color-orange-hover: rgb(234 88 12);
+
+  /* Semantic */
+  --color-success: #4ade80;
+  --color-error: #ef4444;
+
+  /* Backgrounds — dark theme defaults */
+  --color-bg-base: rgb(15 23 42);
+  --color-bg-elevated: #1a1f2e;
+  --color-bg-deep: #0b1220;
+
+  /* Foregrounds — dark theme defaults */
+  --color-fg-base: rgb(248 250 252);
+  --color-fg-muted: rgb(100 116 139);
+  --color-fg-subtle: rgb(148 163 184);
+
+  /* ----- Alpha ladder ----- */
+  --alpha-faint: 0.08;
+  --alpha-soft: 0.18;
+  --alpha-medium: 0.35;
+  --alpha-strong: 0.55;
+  --alpha-bold: 0.75;
+
+  /* ----- Typography ----- */
+  --font-display: 'Bebas Neue', system-ui, sans-serif;
+  --font-body: 'Open Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --text-xs: 0.65rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.85rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-4xl: 3.75rem;
+
+  /* ----- Spacing (4px-based) ----- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* ----- Radius ----- */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.4rem;
+  --radius-md: 0.6rem;
+  --radius-lg: 0.85rem;
+  --radius-xl: 1rem;
+  --radius-pill: 9999px;
+  --radius-circle: 50%;
+
+  /* ----- Shadow families ----- */
+  --shadow-card-rest: 0 10px 30px -10px rgba(15, 23, 42, 0.2);
+  --shadow-card-hover: 0 14px 34px -10px rgba(15, 23, 42, 0.28);
+  --shadow-cta-rest: 0 8px 20px -8px rgba(249, 115, 22, 0.55);
+  --shadow-cta-hover: 0 12px 26px -8px rgba(249, 115, 22, 0.7);
+  --shadow-focus-ring: 0 0 0 3px rgba(249, 115, 22, 0.25);
+
+  /* ----- Motion ----- */
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-slower: 500ms;
+
+  /* ----- Z-index ladder ----- */
+  --z-base: 0;
+  --z-graph: 1;
+  --z-fixed: 50;
+  --z-tooltip: 100;
+  --z-modal: 1000;
+  --z-toast: 2000;
+}
+
+html.light-mode {
+  /* ----- Color overrides ----- */
+  /* Override only the tokens that differ in light mode. Everything else
+     inherits the :root dark default. */
+  --color-bg-base: #fff7f2;
+  --color-bg-elevated: #ffffff;
+  --color-bg-deep: #fff7f2;
+
+  --color-fg-base: #0e0d0a;
+  --color-fg-muted: rgba(14, 13, 10, 0.6);
+  --color-fg-subtle: rgba(14, 13, 10, 0.45);
+}
