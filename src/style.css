@@ -722,7 +722,7 @@ body:has(.feed-page) {
 .feed-column {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 6rem 1.5rem 4rem;
+  padding: var(--space-24) var(--space-6) var(--space-16);
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -738,7 +738,7 @@ body:has(.feed-page) {
 }
 @media (min-width: 640px) {
   .feed-column {
-    padding: 6rem 1.5rem 4rem;
+    padding: var(--space-24) var(--space-6) var(--space-16);
   }
 }
 
@@ -748,24 +748,24 @@ body:has(.feed-page) {
 
 .feed-hero {
   position: relative;
-  margin: 0 0 1.5rem;
+  margin: 0 0 var(--space-6);
   padding: 28px 26px 0;
-  background: rgb(11 18 32);
-  color: #f8fafc;
+  background: var(--color-bg-deep);
+  color: var(--color-fg-base);
   border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
   isolation: isolate;
 }
 html.light-mode .feed-hero {
   background: linear-gradient(to bottom right, #fff7f2, #ffffff);
-  color: #0e0d0a;
+  color: var(--color-fg-base);
   border-color: rgba(14, 13, 10, 0.12);
 }
 
 .feed-hero-bg {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: var(--z-base);
   pointer-events: none;
   opacity: 0.55;
   background-image:
@@ -807,7 +807,7 @@ html.light-mode .feed-hero-bg {
 
 .feed-hero-grid {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-graph);
   display: grid;
   grid-template-columns: 1fr;
   gap: 18px;
@@ -821,7 +821,7 @@ html.light-mode .feed-hero-bg {
 
 /* PULSE COLUMN */
 .feed-hero-meta {
-  border-left: 2px solid rgb(249 115 22);
+  border-left: 2px solid var(--color-orange);
   padding-left: 14px;
   display: flex;
   flex-direction: column;
@@ -829,7 +829,7 @@ html.light-mode .feed-hero-bg {
 }
 
 .feed-hero-eyebrow {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -847,13 +847,13 @@ html.light-mode .feed-hero-eyebrow {
   display: inline-block;
   width: 6px;
   height: 6px;
-  border-radius: 50%;
-  background: #4ade80;
+  border-radius: var(--radius-circle);
+  background: var(--color-success);
   box-shadow: 0 0 6px #4ade80;
 }
 .feed-hero-eyebrow-clear {
   margin-left: auto;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   text-decoration: none;
 }
 .feed-hero-eyebrow-clear:hover {
@@ -861,18 +861,18 @@ html.light-mode .feed-hero-eyebrow {
 }
 
 .feed-hero-title {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 44px;
   line-height: 0.92;
   letter-spacing: 0.01em;
   margin: 0;
-  color: #f8fafc;
+  color: var(--color-fg-base);
 }
 html.light-mode .feed-hero-title {
-  color: #0e0d0a;
+  color: var(--color-fg-base);
 }
 .feed-hero-title .acc {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 @media (min-width: 720px) {
   .feed-hero-title {
@@ -885,7 +885,7 @@ html.light-mode .feed-hero-title {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.7;
 }
@@ -909,7 +909,7 @@ html.light-mode .feed-hero-pulse-k {
   color: #fff;
 }
 html.light-mode .feed-hero-pulse-v {
-  color: #0e0d0a;
+  color: var(--color-fg-base);
 }
 
 /* GRAPH PANEL */
@@ -934,7 +934,7 @@ html.light-mode .feed-hero-graph {
   width: 100%;
   height: 220px;
   position: relative;
-  z-index: 0;
+  z-index: var(--z-base);
 }
 @media (max-width: 719px) {
   .feed-hero-graph canvas {
@@ -947,8 +947,8 @@ html.light-mode .feed-hero-graph {
   bottom: 8px;
   left: 10px;
   margin: 0;
-  z-index: 1;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  z-index: var(--z-graph);
+  font-family: var(--font-mono);
   font-size: 9px;
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: 0.14em;
@@ -964,8 +964,8 @@ html.light-mode .feed-hero-graph-label {
   display: inline-block;
   width: 5px;
   height: 5px;
-  background: rgb(249 115 22);
-  border-radius: 50%;
+  background: var(--color-orange);
+  border-radius: var(--radius-circle);
   animation: feed-hero-pulse 2s ease-in-out infinite;
 }
 @keyframes feed-hero-pulse {
@@ -983,9 +983,9 @@ html.light-mode .feed-hero-graph-label {
   position: absolute;
   z-index: 5;
   pointer-events: none;
-  background: rgb(11 18 32);
+  background: var(--color-bg-deep);
   color: #fff;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.08em;
   padding: 5px 8px;
@@ -999,7 +999,7 @@ html.light-mode .feed-hero-graph-label {
 }
 html.light-mode .feed-hero-tooltip {
   background: #fff;
-  color: #0e0d0a;
+  color: var(--color-fg-base);
   border-color: rgba(249, 115, 22, 0.6);
 }
 .feed-hero-tooltip.is-visible {
@@ -1048,19 +1048,19 @@ html.light-mode .feed-hero-compose-rail:focus-visible {
 .feed-hero-compose-avatar {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: rgb(249 115 22);
+  border-radius: var(--radius-circle);
+  background: var(--color-orange);
   color: #000;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
 }
 .feed-hero-compose-input {
   margin: 0;
-  font-family: 'Open Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   color: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1073,9 +1073,9 @@ html.light-mode .feed-hero-compose-input {
   background: rgba(255, 255, 255, 0.7);
 }
 .feed-hero-compose-cta {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
-  background: rgb(249 115 22);
+  background: var(--color-orange);
   color: #000;
   padding: 10px 16px;
   letter-spacing: 0.12em;
@@ -1088,7 +1088,7 @@ html.light-mode .feed-hero-compose-input {
   background: rgb(255 122 46);
 }
 .feed-hero-compose-cta:focus-visible {
-  outline: 2px solid rgb(249 115 22);
+  outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
 
@@ -1145,12 +1145,12 @@ html.light-mode .feed-hero-compose-input {
 
 .feed-composer {
   position: relative;
-  margin: 2rem 0 0.5rem;
-  padding: 1.25rem 1.5rem 1.4rem;
+  margin: var(--space-8) 0 var(--space-2);
+  padding: var(--space-5) var(--space-6) 1.4rem;
   background: #ffffff;
   border: 1px solid rgba(203, 213, 225, 0.7);
   border-left: 3px solid rgba(203, 213, 225, 0.7);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-md);
   transition:
     border-left-color 0.25s ease,
     box-shadow 0.25s ease,
@@ -1163,7 +1163,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-composer:hover,
 .feed-composer:focus-within {
-  border-left-color: rgb(249 115 22);
+  border-left-color: var(--color-orange);
   box-shadow: 0 10px 28px -18px rgba(15, 23, 42, 0.18);
 }
 .dark .feed-composer:hover,
@@ -1176,18 +1176,18 @@ html.light-mode .feed-hero-compose-input {
   align-items: center;
   gap: 0.55rem;
   margin: 0 0 0.85rem;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 0.78rem;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
 }
 .feed-composer-eyebrow-dot {
   display: inline-block;
   width: 6px;
   height: 6px;
-  border-radius: 9999px;
-  background: rgb(249 115 22);
+  border-radius: var(--radius-pill);
+  background: var(--color-orange);
   box-shadow: 0 0 10px rgba(249, 115, 22, 0.6);
 }
 
@@ -1197,11 +1197,11 @@ html.light-mode .feed-hero-compose-input {
   gap: 0.95rem;
   cursor: pointer;
   outline: none;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   min-width: 0;
 }
 .feed-composer-row:focus-visible {
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+  box-shadow: var(--shadow-focus-ring);
 }
 .feed-composer-row .feed-composer-input {
   flex: 1 1 auto;
@@ -1209,7 +1209,7 @@ html.light-mode .feed-hero-compose-input {
   background: transparent;
   border: 0;
   outline: 0;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.4rem;
   letter-spacing: 0.02em;
   color: rgb(15 23 42);
@@ -1220,35 +1220,35 @@ html.light-mode .feed-hero-compose-input {
   overflow: hidden;
 }
 .dark .feed-composer-row .feed-composer-input {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-composer-row .feed-composer-input::placeholder {
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   transition: color 0.2s ease;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   letter-spacing: 0.02em;
 }
 .feed-composer-row:hover .feed-composer-input::placeholder {
   color: rgb(15 23 42);
 }
 .dark .feed-composer-row:hover .feed-composer-input::placeholder {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 
 .feed-composer-cta-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-shrink: 0;
-  padding: 0.5rem 0.9rem;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 0.85rem;
+  padding: var(--space-2) 0.9rem;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   background: rgba(249, 115, 22, 0.08);
   border: 1px solid rgba(249, 115, 22, 0.3);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -1261,7 +1261,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-composer-row:hover .feed-composer-cta-chip,
 .feed-composer-row:focus-visible .feed-composer-cta-chip {
-  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   border-color: transparent;
   color: #fff;
   transform: translateY(-1px);
@@ -1286,7 +1286,7 @@ html.light-mode .feed-hero-compose-input {
     box-shadow:
       0 0 0 6px rgba(249, 115, 22, 0.18),
       0 10px 28px -18px rgba(15, 23, 42, 0.18);
-    border-left-color: rgb(249 115 22);
+    border-left-color: var(--color-orange);
   }
   100% {
     box-shadow:
@@ -1309,7 +1309,7 @@ html.light-mode .feed-hero-compose-input {
     box-shadow:
       0 0 0 6px rgba(249, 115, 22, 0.22),
       0 10px 28px -18px rgba(0, 0, 0, 0.6);
-    border-left-color: rgb(249 115 22);
+    border-left-color: var(--color-orange);
   }
   100% {
     box-shadow:
@@ -1329,7 +1329,7 @@ html.light-mode .feed-hero-compose-input {
    below 420px. */
 @media (max-width: 640px) {
   .feed-composer {
-    padding: 1rem 1.1rem 1.1rem;
+    padding: var(--space-4) 1.1rem 1.1rem;
   }
   .feed-composer-eyebrow {
     font-size: 0.72rem;
@@ -1351,7 +1351,7 @@ html.light-mode .feed-hero-compose-input {
 }
 @media (max-width: 420px) {
   .feed-composer {
-    padding: 0.9rem 0.95rem 1rem;
+    padding: 0.9rem 0.95rem var(--space-4);
   }
   .feed-composer-row {
     gap: 0.55rem;
@@ -1367,19 +1367,19 @@ html.light-mode .feed-hero-compose-input {
     height: 36px;
     padding: 0;
     justify-content: center;
-    border-radius: 9999px;
+    border-radius: var(--radius-pill);
     gap: 0;
   }
   .feed-composer-cta-arrow {
-    font-size: 1rem;
+    font-size: var(--text-md);
   }
 }
 
 .feed-composer-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
   color: white;
   display: flex;
   align-items: center;
@@ -1395,14 +1395,14 @@ html.light-mode .feed-hero-compose-input {
   display: none;
 }
 .feed-composer.is-expanded {
-  border-left-color: rgb(249 115 22);
+  border-left-color: var(--color-orange);
 }
 .feed-composer.is-expanded .feed-composer-expanded {
   display: block;
 }
 .feed-composer-expanded {
   display: none;
-  padding-top: 0.25rem;
+  padding-top: var(--space-1);
 }
 .feed-composer-form-grid {
   display: flex;
@@ -1426,22 +1426,22 @@ html.light-mode .feed-hero-compose-input {
 }
 .dark .feed-composer-input-large,
 .dark .feed-composer-textarea {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-composer-input-large {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
   letter-spacing: 0.01em;
 }
 .feed-composer-textarea {
-  font-size: 1rem;
+  font-size: var(--text-md);
   line-height: 1.55;
   min-height: 4.5rem;
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
 }
 .feed-composer-input-large::placeholder,
 .feed-composer-textarea::placeholder {
-  color: rgb(148 163 184);
+  color: var(--color-fg-subtle);
 }
 .feed-composer-input-large:focus,
 .feed-composer-textarea:focus {
@@ -1451,10 +1451,10 @@ html.light-mode .feed-hero-compose-input {
 
 .feed-composer-extras {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   margin-top: 0.6rem;
   font-size: 0.8rem;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
 }
 .feed-composer-extras button {
   display: inline-flex;
@@ -1469,7 +1469,7 @@ html.light-mode .feed-hero-compose-input {
   padding: 0;
 }
 .feed-composer-extras button:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-composer-optional {
   margin-top: 0.6rem;
@@ -1493,16 +1493,16 @@ html.light-mode .feed-hero-compose-input {
 .dark .feed-composer-optional input {
   background: rgba(30, 41, 59, 0.6);
   border-color: rgba(51, 65, 85, 0.6);
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-composer-optional input:focus {
-  border-color: rgb(249 115 22);
+  border-color: var(--color-orange);
 }
 .feed-composer-actions {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: center;
 }
 .feed-composer-cancel {
@@ -1511,8 +1511,8 @@ html.light-mode .feed-hero-compose-input {
   gap: 0.4rem;
   background: transparent;
   border: 0;
-  color: rgb(100 116 139);
-  font-size: 0.85rem;
+  color: var(--color-fg-muted);
+  font-size: var(--text-base);
   cursor: pointer;
   font-family: inherit;
 }
@@ -1520,24 +1520,24 @@ html.light-mode .feed-hero-compose-input {
   color: rgb(15 23 42);
 }
 .dark .feed-composer-cancel:hover {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.5rem;
+  gap: var(--space-2);
+  padding: 0.55rem var(--space-6);
   border: 0;
-  border-radius: 0.6rem;
-  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  border-radius: var(--radius-md);
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   color: white;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 0.9rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 8px 20px -8px rgba(249, 115, 22, 0.55);
+  box-shadow: var(--shadow-cta-rest);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -1545,7 +1545,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 26px -8px rgba(249, 115, 22, 0.7);
+  box-shadow: var(--shadow-cta-hover);
 }
 .feed-cta:disabled {
   opacity: 0.6;
@@ -1563,7 +1563,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-article {
   position: relative;
-  padding: 2rem 0;
+  padding: var(--space-8) 0;
   border-bottom: 1px solid rgba(203, 213, 225, 0.55);
   transition: opacity 0.3s ease;
   display: block;
@@ -1595,13 +1595,13 @@ html.light-mode .feed-hero-compose-input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 .feed-article-author {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   min-width: 0;
   flex: 1;
 }
@@ -1609,13 +1609,13 @@ html.light-mode .feed-hero-compose-input {
 .feed-article-author .feed-avatar-fallback {
   width: 40px;
   height: 40px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   object-fit: cover;
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 .feed-avatar-fallback {
-  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
   color: white;
   display: flex;
   align-items: center;
@@ -1637,14 +1637,14 @@ html.light-mode .feed-hero-compose-input {
   text-decoration: none;
 }
 .dark .feed-article-author-name {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-article-author-name:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-article-author-meta {
-  font-size: 0.75rem;
-  color: rgb(100 116 139);
+  font-size: var(--text-sm);
+  color: var(--color-fg-muted);
   margin-top: 0.1rem;
 }
 
@@ -1654,16 +1654,16 @@ html.light-mode .feed-hero-compose-input {
 .feed-owner-trigger {
   background: transparent;
   border: 0;
-  padding: 0.25rem 0.4rem;
+  padding: var(--space-1) 0.4rem;
   border-radius: 0.5rem;
-  color: rgb(148 163 184);
+  color: var(--color-fg-subtle);
   cursor: pointer;
   transition:
     color 0.2s ease,
     background 0.2s ease;
 }
 .feed-owner-trigger:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   background: rgba(249, 115, 22, 0.08);
 }
 .feed-owner-dropdown {
@@ -1673,8 +1673,8 @@ html.light-mode .feed-hero-compose-input {
   min-width: 11rem;
   background: white;
   border: 1px solid rgba(203, 213, 225, 0.6);
-  border-radius: 0.6rem;
-  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.2);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card-rest);
   overflow: hidden;
   display: none;
   z-index: 30;
@@ -1690,8 +1690,8 @@ html.light-mode .feed-hero-compose-input {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.7rem 1rem;
-  font-size: 0.85rem;
+  padding: 0.7rem var(--space-4);
+  font-size: var(--text-base);
   color: rgb(51 65 85);
   text-decoration: none;
   font-weight: 600;
@@ -1704,7 +1704,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-owner-dropdown a:hover {
   background: rgba(249, 115, 22, 0.1);
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-owner-dropdown a + a {
   border-top: 1px solid rgba(203, 213, 225, 0.55);
@@ -1714,8 +1714,8 @@ html.light-mode .feed-hero-compose-input {
 }
 
 .feed-article-title {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
   line-height: 1.1;
   letter-spacing: 0.01em;
   color: rgb(15 23 42);
@@ -1724,10 +1724,10 @@ html.light-mode .feed-hero-compose-input {
   transition: color 0.2s ease;
 }
 .dark .feed-article-title {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-article-title:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-article-body {
   font-size: 0.95rem;
@@ -1770,7 +1770,7 @@ html.light-mode .feed-hero-compose-input {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
 }
 .feed-article-tag {
   background: rgba(241, 245, 249, 0.7);
@@ -1778,7 +1778,7 @@ html.light-mode .feed-hero-compose-input {
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   text-decoration: none;
 }
 .dark .feed-article-tag {
@@ -1787,7 +1787,7 @@ html.light-mode .feed-hero-compose-input {
 }
 
 .feed-article-media {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -1813,13 +1813,13 @@ html.light-mode .feed-hero-compose-input {
   align-items: center;
   gap: 1.4rem;
   margin-top: 1.1rem;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
 }
 .feed-action {
   background: transparent;
   border: 0;
   padding: 0;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -1831,7 +1831,7 @@ html.light-mode .feed-hero-compose-input {
   position: relative;
 }
 .feed-action:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   font-weight: 600;
 }
 .feed-action.action-count-compact {
@@ -1841,13 +1841,13 @@ html.light-mode .feed-hero-compose-input {
   font-weight: 600;
 }
 .feed-action.like-btn.reacted {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-action.like-btn.reacted i {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-action.is-pulsing i {
-  animation: feed-heart-pulse 150ms ease-out;
+  animation: feed-heart-pulse var(--motion-fast) ease-out;
 }
 .feed-action-icon {
   display: inline-flex;
@@ -1869,10 +1869,10 @@ html.light-mode .feed-hero-compose-input {
 .feed-action-read {
   background: transparent;
   border: 0;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -1914,7 +1914,7 @@ html.light-mode .feed-hero-compose-input {
   padding: 0.35rem;
   cursor: pointer;
   font-size: 1.1rem;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   transition:
     transform 0.15s ease,
     background 0.15s ease;
@@ -1928,8 +1928,8 @@ html.light-mode .feed-hero-compose-input {
 .feed-thread {
   display: none;
   margin-left: 36px;
-  margin-top: 1rem;
-  padding-left: 1rem;
+  margin-top: var(--space-4);
+  padding-left: var(--space-4);
   border-left: 2px solid rgba(249, 115, 22, 0.25);
 }
 .feed-thread.is-open {
@@ -1941,18 +1941,18 @@ html.light-mode .feed-hero-compose-input {
   align-items: center;
   margin-bottom: 0.6rem;
   font-size: 0.8rem;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
 }
 .feed-thread-header .feed-thread-close {
   background: transparent;
   border: 0;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   cursor: pointer;
   font-size: 0.8rem;
   font-family: inherit;
 }
 .feed-thread-header .feed-thread-close:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 
 .feed-thread .comment-item {
@@ -1973,13 +1973,13 @@ html.light-mode .feed-hero-compose-input {
 .feed-thread .comment-avatar-placeholder {
   width: 28px;
   height: 28px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   font-weight: 700;
 }
 .feed-thread .comment-content {
@@ -1988,21 +1988,21 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-thread .comment-header {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   align-items: baseline;
   margin-bottom: 0.2rem;
 }
 .feed-thread .comment-author {
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   font-weight: 700;
   color: rgb(15 23 42);
 }
 .dark .feed-thread .comment-author {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-thread .comment-time {
   font-size: 0.7rem;
-  color: rgb(148 163 184);
+  color: var(--color-fg-subtle);
 }
 .feed-thread .comment-text {
   font-size: 0.88rem;
@@ -2015,7 +2015,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-thread .comment-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   margin-top: 0.35rem;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -2034,22 +2034,22 @@ html.light-mode .feed-hero-compose-input {
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   text-transform: lowercase;
   letter-spacing: 0.04em;
 }
 .feed-thread .comment-action-btn.reply-btn:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-thread .comment-action-btn.delete-btn {
-  color: rgb(239 68 68);
+  color: var(--color-error);
 }
 .feed-thread .comment-action-btn.delete-btn:hover {
   color: rgb(220 38 38);
 }
 
 .feed-thread .reply-form {
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
 }
 .feed-thread .reply-input-container {
   display: flex;
@@ -2063,16 +2063,16 @@ html.light-mode .feed-hero-compose-input {
   border-radius: 0.5rem;
   padding: 0.4rem 0.7rem;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   color: rgb(15 23 42);
   outline: 0;
 }
 .dark .feed-thread .reply-input {
   border-color: rgba(51, 65, 85, 0.6);
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-thread .reply-input:focus {
-  border-color: rgb(249 115 22);
+  border-color: var(--color-orange);
 }
 .feed-thread .reply-submit-btn,
 .feed-thread .reply-cancel-btn {
@@ -2082,21 +2082,21 @@ html.light-mode .feed-hero-compose-input {
   background: transparent;
   border: 0;
   font-family: inherit;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem var(--space-2);
 }
 .feed-thread .reply-submit-btn {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .feed-thread .reply-cancel-btn {
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
 }
 
 .feed-thread .no-comments {
-  font-size: 0.85rem;
-  color: rgb(148 163 184);
+  font-size: var(--text-base);
+  color: var(--color-fg-subtle);
   padding: 0.6rem 0;
   font-style: italic;
 }
@@ -2105,8 +2105,8 @@ html.light-mode .feed-hero-compose-input {
   display: flex;
   gap: 0.65rem;
   align-items: center;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
   border-top: 1px solid rgba(203, 213, 225, 0.4);
 }
 .dark .feed-thread-compose {
@@ -2115,13 +2115,13 @@ html.light-mode .feed-hero-compose-input {
 .feed-thread-compose-avatar {
   width: 28px;
   height: 28px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -2135,10 +2135,10 @@ html.light-mode .feed-hero-compose-input {
   color: rgb(15 23 42);
 }
 .dark .feed-thread-compose input {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-thread-compose input::placeholder {
-  color: rgb(148 163 184);
+  color: var(--color-fg-subtle);
 }
 .feed-thread-compose input:focus {
   outline: none;
@@ -2147,10 +2147,10 @@ html.light-mode .feed-hero-compose-input {
 .feed-thread-compose-submit {
   background: transparent;
   border: 0;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   cursor: pointer;
   padding: 0.4rem;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2166,7 +2166,7 @@ html.light-mode .feed-hero-compose-input {
    feed and the profile tabs. */
 
 .feed-pagination {
-  margin-top: 3rem;
+  margin-top: var(--space-12);
   padding-top: 1.75rem;
   border-top: 1px solid rgba(203, 213, 225, 0.55);
 }
@@ -2188,7 +2188,7 @@ html.light-mode .feed-hero-compose-input {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -2197,8 +2197,8 @@ html.light-mode .feed-hero-compose-input {
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(100 116 139);
-  padding: 0.5rem 0.1rem;
+  color: var(--color-fg-muted);
+  padding: var(--space-2) 0.1rem;
   transition: color 0.2s ease;
 }
 .feed-pag-link::after {
@@ -2208,7 +2208,7 @@ html.light-mode .feed-hero-compose-input {
   right: 0.1rem;
   bottom: 0.25rem;
   height: 1px;
-  background: rgb(249 115 22);
+  background: var(--color-orange);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.2s ease;
@@ -2220,7 +2220,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .dark .feed-pag-link:hover:not(:disabled),
 .dark .feed-pag-link:focus-visible:not(:disabled) {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-pag-link:hover:not(:disabled)::after,
 .feed-pag-link:focus-visible:not(:disabled)::after {
@@ -2240,10 +2240,10 @@ html.light-mode .feed-hero-compose-input {
   background: transparent;
   border: 0;
   cursor: pointer;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.05rem;
   letter-spacing: 0.04em;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   padding: 0.85rem 0.55rem 0.6rem;
   min-width: 1.6rem;
   display: inline-flex;
@@ -2255,7 +2255,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-pag-num:hover:not(:disabled),
 .feed-pag-num:focus-visible:not(:disabled) {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   outline: none;
 }
 
@@ -2266,7 +2266,7 @@ html.light-mode .feed-hero-compose-input {
   cursor: default;
 }
 .dark .feed-pag-num.is-active {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-pag-num.is-active::before {
   content: '';
@@ -2276,8 +2276,8 @@ html.light-mode .feed-hero-compose-input {
   transform: translateX(-50%);
   width: 5px;
   height: 5px;
-  border-radius: 9999px;
-  background: rgb(249 115 22);
+  border-radius: var(--radius-pill);
+  background: var(--color-orange);
   box-shadow: 0 0 8px rgba(249, 115, 22, 0.55);
 }
 
@@ -2285,7 +2285,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-pag-ellipsis {
   color: rgba(148, 163, 184, 0.7);
   padding: 0 0.35rem;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   letter-spacing: 0.18em;
   user-select: none;
 }
@@ -2296,15 +2296,15 @@ html.light-mode .feed-hero-compose-input {
 /* Meta line: Bebas eyebrow, magazine page reference. */
 .feed-pag-meta {
   text-align: center;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 0.78rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   margin-top: 0.85rem;
 }
 .dark .feed-pag-meta {
-  color: rgb(148 163 184);
+  color: var(--color-fg-subtle);
 }
 
 /* Jump-to-page row: hairline-bordered editorial field with a chip submit. */
@@ -2315,7 +2315,7 @@ html.light-mode .feed-hero-compose-input {
   align-items: center;
   gap: 0.7rem;
   margin: 1.6rem auto 0;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem var(--space-4);
   max-width: 22rem;
   border-top: 1px solid rgba(203, 213, 225, 0.4);
   border-bottom: 1px solid rgba(203, 213, 225, 0.4);
@@ -2324,11 +2324,11 @@ html.light-mode .feed-hero-compose-input {
   border-color: rgba(51, 65, 85, 0.45);
 }
 .feed-pag-jump label {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
 }
 .feed-pag-jump input {
   width: 3.5rem;
@@ -2338,7 +2338,7 @@ html.light-mode .feed-hero-compose-input {
   border-bottom: 1px solid rgba(203, 213, 225, 0.7);
   border-radius: 0;
   text-align: center;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.15rem;
   letter-spacing: 0.04em;
   color: rgb(15 23 42);
@@ -2355,10 +2355,10 @@ html.light-mode .feed-hero-compose-input {
 }
 .dark .feed-pag-jump input {
   border-bottom-color: rgba(51, 65, 85, 0.7);
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-pag-jump input:focus {
-  border-bottom-color: rgb(249 115 22);
+  border-bottom-color: var(--color-orange);
 }
 
 /* "Go" submit chip — same shape language as the composer's WRITE chip. */
@@ -2367,14 +2367,14 @@ html.light-mode .feed-hero-compose-input {
   align-items: center;
   gap: 0.4rem;
   padding: 0.4rem 0.8rem;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 0.82rem;
   font-weight: 400;
   letter-spacing: 0.22em;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   background: rgba(249, 115, 22, 0.08);
   border: 1px solid rgba(249, 115, 22, 0.3);
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -2386,7 +2386,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-pag-jump .feed-pag-link:hover:not(:disabled),
 .feed-pag-jump .feed-pag-link:focus-visible:not(:disabled) {
-  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   border-color: transparent;
   color: #fff;
   transform: translateY(-1px);
@@ -2419,45 +2419,45 @@ html.light-mode .feed-hero-compose-input {
 /* Empty / error / inline-expand close */
 .feed-empty {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: var(--space-12) var(--space-4);
 }
 .feed-empty-icon {
-  font-size: 2rem;
+  font-size: var(--text-2xl);
   opacity: 0.6;
-  margin-bottom: 1rem;
-  color: rgb(100 116 139);
+  margin-bottom: var(--space-4);
+  color: var(--color-fg-muted);
 }
 .feed-empty-icon svg {
   display: inline-block;
   vertical-align: middle;
 }
 .dark .feed-empty-icon {
-  color: rgb(148 163 184);
+  color: var(--color-fg-subtle);
 }
 .feed-empty-title {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 1.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
   letter-spacing: 0.02em;
   color: rgb(15 23 42);
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
 }
 .dark .feed-empty-title {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-empty-body {
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   font-size: 0.9rem;
   max-width: 28rem;
-  margin: 0 auto 1.25rem;
+  margin: 0 auto var(--space-5);
   line-height: 1.55;
 }
 .feed-article-close {
   background: transparent;
   border: 0;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   display: none;
 }
 .feed-article.is-expanded .feed-action-read {
@@ -2467,7 +2467,7 @@ html.light-mode .feed-hero-compose-input {
   display: inline-flex;
 }
 .feed-article-close:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 
 /* Modal restyle (edit-post) */
@@ -2478,7 +2478,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-modal-panel {
   background: white;
   border: 1px solid rgba(203, 213, 225, 0.6);
-  border-radius: 1rem;
+  border-radius: var(--radius-xl);
   box-shadow: 0 25px 60px -20px rgba(15, 23, 42, 0.4);
 }
 .dark .feed-modal-panel {
@@ -2486,14 +2486,14 @@ html.light-mode .feed-hero-compose-input {
   border-color: rgba(51, 65, 85, 0.6);
 }
 .feed-modal-title {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.4rem;
   letter-spacing: 0.02em;
   color: rgb(15 23 42);
   margin: 0;
 }
 .dark .feed-modal-title {
-  color: rgb(248 250 252);
+  color: var(--color-fg-base);
 }
 .feed-modal-close {
   display: inline-flex;
@@ -2501,12 +2501,12 @@ html.light-mode .feed-hero-compose-input {
   justify-content: center;
   background: transparent;
   border: 0;
-  color: rgb(100 116 139);
+  color: var(--color-fg-muted);
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
 }
 .feed-modal-close:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 
 /* ==========================================================================
