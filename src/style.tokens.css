@@ -31,6 +31,10 @@
   --color-fg-muted: rgb(100 116 139);
   --color-fg-subtle: rgb(148 163 184);
 
+  /* Orange tint composites (standalone bg/border, not shadow-internal) */
+  --color-orange-tint: rgba(249, 115, 22, 0.08);
+  --color-orange-tint-hover: rgba(249, 115, 22, 0.1);
+
   /* ----- Alpha ladder ----- */
   --alpha-faint: 0.08;
   --alpha-soft: 0.18;

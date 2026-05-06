@@ -357,7 +357,7 @@ html.light-mode .auth-field textarea:focus {
   color: var(--color-error);
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   padding: 0.6rem;
 }
 html.light-mode .auth-msg {
@@ -1252,7 +1252,7 @@ html.light-mode .feed-hero-compose-input {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-orange);
-  background: rgba(249, 115, 22, 0.08);
+  background: var(--color-orange-tint);
   border: 1px solid rgba(249, 115, 22, 0.3);
   border-radius: var(--radius-pill);
   transition:
@@ -1488,7 +1488,7 @@ html.light-mode .feed-hero-compose-input {
   width: 100%;
   background: rgba(241, 245, 249, 0.6);
   border: 1px solid rgba(203, 213, 225, 0.6);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
   color: rgb(15 23 42);
@@ -1661,7 +1661,7 @@ html.light-mode .feed-hero-compose-input {
   background: transparent;
   border: 0;
   padding: var(--space-1) 0.4rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   color: var(--color-fg-subtle);
   cursor: pointer;
   transition:
@@ -1670,7 +1670,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-owner-trigger:hover {
   color: var(--color-orange);
-  background: rgba(249, 115, 22, 0.08);
+  background: var(--color-orange-tint);
 }
 .feed-owner-dropdown {
   position: absolute;
@@ -1709,7 +1709,7 @@ html.light-mode .feed-hero-compose-input {
   color: rgb(226 232 240);
 }
 .feed-owner-dropdown a:hover {
-  background: rgba(249, 115, 22, 0.1);
+  background: var(--color-orange-tint-hover);
   color: var(--color-orange);
 }
 .feed-owner-dropdown a + a {
@@ -2066,7 +2066,7 @@ html.light-mode .feed-hero-compose-input {
   flex: 1;
   background: transparent;
   border: 1px solid rgba(203, 213, 225, 0.6);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   padding: 0.4rem 0.7rem;
   font-family: inherit;
   font-size: var(--text-base);
@@ -2162,7 +2162,7 @@ html.light-mode .feed-hero-compose-input {
   justify-content: center;
 }
 .feed-thread-compose-submit:hover {
-  background: rgba(249, 115, 22, 0.1);
+  background: var(--color-orange-tint-hover);
 }
 
 /* -------------------------------------- Pagination -------------------------------------- */
@@ -2378,7 +2378,7 @@ html.light-mode .feed-hero-compose-input {
   font-weight: 400;
   letter-spacing: 0.22em;
   color: var(--color-orange);
-  background: rgba(249, 115, 22, 0.08);
+  background: var(--color-orange-tint);
   border: 1px solid rgba(249, 115, 22, 0.3);
   border-radius: var(--radius-pill);
   transition:
@@ -2768,7 +2768,7 @@ html.light-mode .linka-nav-search-input:focus {
   text-decoration: none;
   background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   color: #fff;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   border: 0;
   cursor: pointer;
   box-shadow: 0 8px 20px -10px rgba(249, 115, 22, 0.6);
@@ -2798,7 +2798,7 @@ html.light-mode .linka-nav-search-input:focus {
 }
 .linka-nav-icon-btn:hover {
   color: var(--color-orange);
-  background: rgba(249, 115, 22, 0.08);
+  background: var(--color-orange-tint);
 }
 .linka-nav-icon-btn .icon-sun,
 .linka-nav-icon-btn .icon-moon {
@@ -2917,7 +2917,7 @@ html.light-mode .linka-mobile-menu {
   text-align: center;
   background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   color: #fff !important;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   padding: 0.7rem var(--space-4);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -3254,7 +3254,7 @@ body:has(.linka-profile) {
     color 0.2s ease,
     background 0.2s ease,
     transform 0.2s ease;
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 .linka-profile-tab:hover {
   color: rgb(15 23 42);
@@ -3262,7 +3262,7 @@ body:has(.linka-profile) {
 }
 .dark .linka-profile-tab:hover {
   color: var(--color-fg-base);
-  background: rgba(249, 115, 22, 0.1);
+  background: var(--color-orange-tint-hover);
 }
 
 .linka-profile-tab-count {
@@ -3519,7 +3519,7 @@ html.light-mode .linka-confirm-panel {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  border-radius: 0.55rem;
+  border-radius: var(--radius-md);
   padding: 0.65rem 1.1rem;
   cursor: pointer;
   border: 1px solid transparent;

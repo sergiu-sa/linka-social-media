@@ -25,16 +25,16 @@ Tokens live in `src/style.tokens.css` and are imported as the first line of `src
 
 | Category | Count | Examples |
 |---|---|---|
-| Color | 10 + 6 light overrides | `--color-orange`, `--color-bg-base`, `--color-fg-base`, `--color-success`, `--color-error` |
+| Color | 12 + 6 light overrides | `--color-orange`, `--color-bg-base`, `--color-fg-base`, `--color-success`, `--color-error`, `--color-orange-tint`, `--color-orange-tint-hover` |
 | Alpha ladder | 5 | `--alpha-faint` (0.08) → `--alpha-bold` (0.75) |
 | Typography | 11 | `--font-display`, `--font-body`, `--font-mono`, `--text-xs` → `--text-4xl` |
 | Spacing | 11 | `--space-1` (4px) → `--space-24` (96px) — 4px-based scale |
 | Radius | 7 | `--radius-xs` → `--radius-xl`, `--radius-pill`, `--radius-circle` |
-| Shadow | 5 | `--shadow-card-rest/hover`, `--shadow-cta-rest/hover`, `--shadow-focus-ring` |
+| Shadow | 7 | `--shadow-card-rest/hover`, `--shadow-cta-rest/hover`, `--shadow-cta-danger-rest/hover`, `--shadow-focus-ring` |
 | Motion | 4 | `--motion-fast` (150ms) → `--motion-slower` (500ms) |
 | Z-index | 6 | `--z-base` (0) → `--z-toast` (2000) |
 
-**Total: 59 tokens** + 6 light-mode overrides = 65 declarations.
+**Total: 63 tokens** + 6 light-mode overrides = 69 declarations.
 
 ### Theme architecture
 
@@ -113,7 +113,8 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 | Wave — A11y blockers (round 1) | ✅ Complete | 6 WCAG fixes shipped (see Accessibility commitments above). |
 | Wave — A11y blockers (round 2) | ✅ Complete | Composer/reply input labels, edit-post modal focus trap + dialog semantics, reactions picker Escape support. |
 | Bundle code-split | ✅ Complete | Three.js + GSAP moved to a lazy chunk. Main bundle reduced from ~658 KB to ~101 KB. |
-| Phase 3 — Surface migrations | 📋 Planned | Surface-by-surface tokenization. Order: feed → modals → profile → auth shell → navbar/footer → fringe. ~7 waves. |
+| Phase 3 — Surface migrations | ✅ Complete | Surface-by-surface tokenization across 7 waves: feed (1a) → toast/confirm (1b) → profile (1c) → navbar/footer (1d) → auth shell (1e) → intro (1f) → loader/404/globals (1g). Token references grew from 16 → 402 across the file. |
+| Phase 3.5 — Audit resolutions | ✅ Complete | The five behavioral fixes from the audit decision list: rose-to-red error (#1), hero CTA convergence (#5), icon-label gap to scale (#6), auth radius round-up (#7), danger CTA shadow tokens (#8). Two new shadow tokens added. |
 | Phase 4 — Optional refactor | 📋 Optional | `FeedPage.ts` (1,300 lines) → smaller files using the explicit `markup() + mount()` split (the pattern established by `feedHero.ts` / `threeStar.ts`). High cost vs payoff; defer until file becomes painful. |
 
 ---
@@ -135,7 +136,7 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 
 - **Naming** — `<surface>-<element>[--<modifier>]` BEM-lite. Surface prefixes: `feed-`, `auth-`, `intro-`, `linka-` (shared shell), `notification-`.
 - **State classes** — `is-active`, `is-pulsing`, `is-loading`, `is-following`, `is-danger`.
-- **Tailwind vs custom CSS** — Tailwind utilities for one-off layout (chrome strips, ad-hoc spacing); custom CSS in `src/style.css` for component-scoped rules. Edit-post modal is the one inline-Tailwind exception (slated for a Phase 3 cleanup).
+- **Tailwind vs custom CSS** — Tailwind utilities for one-off layout (chrome strips, ad-hoc spacing); custom CSS in `src/style.css` for component-scoped rules. Edit-post modal is the one inline-Tailwind exception still standing.
 - **Components** — new components export `componentMarkup(data): string` AND `mountComponent(data): handle`. Existing pages stay implicit (`Promise<string>` + `setTimeout` post-render hook) unless they grow large enough to warrant the split.
 - **Comments** — default to none. Write one only when the *why* is non-obvious (workaround, hidden constraint, perf trick). No `@author`, no AI attribution, no "🤖 Generated" footers.
 - **Reduced motion** — every surface with `transition:` or `animation:` MUST also have a `prefers-reduced-motion: reduce` override that disables or shortens it.
