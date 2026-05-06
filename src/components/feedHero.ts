@@ -8,7 +8,7 @@
  * Spec: docs/superpowers/specs/2026-05-01-feed-hero-design.md
  */
 
-import { mountThreeStar, type ThreeStarHandle } from './threeStar';
+import type { ThreeStarHandle } from './threeStar';
 import { computePulseRows, computeArmLabels, getCurrentUsername, type ArmLabel } from '../utils/heroSignals';
 import { getLastVisit, setLastVisit } from '../utils/lastVisit';
 import type { NoroffPost } from '../services/posts/posts';
@@ -135,6 +135,7 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
   const armLabels: string[] = arms.map((a) => a.label);
 
   let starHandle: ThreeStarHandle | null = null;
+  let starDisposed = false;
 
   const onArmClick = (i: number) => {
     const a = arms[i];
@@ -155,12 +156,15 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
     }
   };
 
-  starHandle = mountThreeStar(canvas, {
-    mode: 'hero',
-    armLabels,
-    onArmClick,
-    decorativeOnly: true,
-    pauseWhenHidden: true,
+  void import('./threeStar').then(({ mountThreeStar }) => {
+    if (starDisposed) return;
+    starHandle = mountThreeStar(canvas, {
+      mode: 'hero',
+      armLabels,
+      onArmClick,
+      decorativeOnly: true,
+      pauseWhenHidden: true,
+    });
   });
 
   /* Compose rail → trigger existing composer */
@@ -214,6 +218,7 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
 
   return {
     dispose() {
+      starDisposed = true;
       starHandle?.dispose();
       rail?.removeEventListener('click', onRailClick);
       rail?.removeEventListener('keydown', onRailKey);

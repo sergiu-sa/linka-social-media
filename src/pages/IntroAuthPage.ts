@@ -1,7 +1,6 @@
 import { renderRoute } from '../router';
 import { isLoggedIn } from '../utils/auth';
 import { initTheme } from '../utils/theme';
-import { mountThreeStar, showDiscoveryHint } from '../components/threeStar';
 
 const HEADER_LOGO_SVG = `
   <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-700 ease-out group-hover:scale-125 group-hover:rotate-[360deg] group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.8)]" aria-label="LINKA Logo">
@@ -45,8 +44,10 @@ export default async function IntroAuthPage(): Promise<string> {
     setupStarfield();
     const canvas = document.getElementById('canvas3d') as HTMLCanvasElement | null;
     if (canvas) {
-      mountThreeStar(canvas, { mode: 'intro' });
-      setTimeout(showDiscoveryHint, prefersReducedMotion() ? 500 : 3000);
+      void import('../components/threeStar').then(({ mountThreeStar, showDiscoveryHint }) => {
+        mountThreeStar(canvas, { mode: 'intro' });
+        setTimeout(showDiscoveryHint, prefersReducedMotion() ? 500 : 3000);
+      });
     }
   }, 0);
 

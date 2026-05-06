@@ -8,6 +8,7 @@ A responsive social media SPA built with TypeScript, Vite, Tailwind CSS v4, and 
 
 - **Production:** <https://linka-social.netlify.app/>
 - **API base URL:** `https://v2.api.noroff.dev`
+- **Design system:** [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) — tokens, theme architecture, accessibility commitments, and migration roadmap.
 
 ## Features
 
