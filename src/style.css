@@ -12,7 +12,7 @@ body {
 
 #starfield,
 #canvas3d {
-  z-index: 1;
+  z-index: var(--z-graph);
 }
 
 html.light-mode body {
@@ -26,7 +26,7 @@ html.light-mode header a {
 }
 
 html.light-mode header a:hover span {
-  color: rgb(249 115 22) !important;
+  color: var(--color-orange) !important;
 }
 
 /* Ensure proper dark mode setup */
@@ -73,7 +73,7 @@ body:has(.linka-profile) {
   color: #fff;
   overflow: hidden;
   min-height: 220px;
-  padding: 1.5rem 1.75rem 1.75rem;
+  padding: var(--space-6) 1.75rem 1.75rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -97,20 +97,20 @@ html.light-mode .auth-brand-footer {
 @media (min-width: 768px) {
   .auth-brand {
     min-height: 25vh;
-    padding: 2rem 2.5rem;
+    padding: var(--space-8) var(--space-10);
   }
 }
 @media (min-width: 1024px) {
   .auth-brand {
     min-height: 100vh;
-    padding: 3rem 4rem;
+    padding: var(--space-12) var(--space-16);
   }
 }
 
 .auth-brand canvas.auth-starfield {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: var(--z-base);
   pointer-events: none;
   opacity: 0.6;
 }
@@ -120,13 +120,13 @@ html.light-mode .auth-brand canvas.auth-starfield {
 
 .auth-brand > * {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-graph);
 }
 
 .auth-brand-logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   text-decoration: none;
   color: #fff;
   font-weight: 900;
@@ -152,7 +152,7 @@ html.light-mode .auth-brand canvas.auth-starfield {
 }
 
 .auth-brand-quote {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.25rem, 6vw, 5rem);
   line-height: 0.95;
   letter-spacing: 0.01em;
@@ -161,12 +161,12 @@ html.light-mode .auth-brand canvas.auth-starfield {
   margin: 0;
 }
 .auth-brand-quote .accent {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 
 .auth-brand-footer {
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -177,7 +177,7 @@ html.light-mode .auth-brand canvas.auth-starfield {
   display: block;
   width: 2.5rem;
   height: 2px;
-  background: rgb(249 115 22);
+  background: var(--color-orange);
 }
 
 /* Mobile: show quote (smaller), hide the longer subhead and footer */
@@ -204,7 +204,7 @@ html.light-mode .auth-brand canvas.auth-starfield {
   position: relative;
   background: linear-gradient(to bottom right, #fff7f2, #ffffff);
   color: #1a1a1a;
-  padding: 2.25rem 1.5rem 2rem;
+  padding: 2.25rem var(--space-6) var(--space-8);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -215,7 +215,7 @@ html.light-mode .auth-brand canvas.auth-starfield {
 }
 @media (min-width: 1024px) {
   .auth-form-panel {
-    padding: 4rem 5rem;
+    padding: var(--space-16) 5rem;
     justify-content: center;
     min-height: 100vh;
   }
@@ -232,24 +232,24 @@ html.light-mode .auth-form-panel {
 }
 
 .auth-title {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.25rem, 4vw, 3.25rem);
   line-height: 1;
   letter-spacing: 0.01em;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
   display: inline-block;
-  border-bottom: 3px solid rgb(249 115 22);
+  border-bottom: 3px solid var(--color-orange);
   padding-bottom: 0.35rem;
 }
 .auth-subhead {
-  margin: 0.75rem 0 2rem;
+  margin: var(--space-3) 0 var(--space-8);
   font-size: 0.95rem;
   opacity: 0.7;
   line-height: 1.5;
 }
 
 .auth-field {
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--space-5);
 }
 .auth-field label {
   display: block;
@@ -257,8 +257,8 @@ html.light-mode .auth-form-panel {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgb(249 115 22);
-  margin-bottom: 0.5rem;
+  color: var(--color-orange);
+  margin-bottom: var(--space-2);
 }
 /* Inputs — match the (inverted) form panel.
    Default (dark mode): light inputs on cream form.
@@ -266,9 +266,9 @@ html.light-mode .auth-form-panel {
 .auth-field input,
 .auth-field textarea {
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem var(--space-4);
   font-size: 0.95rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-lg);
   border: 2px solid rgba(148, 163, 184, 0.35);
   background: rgba(255, 255, 255, 0.85);
   color: #0f172a;
@@ -296,7 +296,7 @@ html.light-mode .auth-field textarea::placeholder {
 .auth-field input:focus,
 .auth-field textarea:focus {
   outline: none;
-  border-color: rgb(249 115 22);
+  border-color: var(--color-orange);
   box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.18);
   transform: translateY(-1px);
   background: #ffffff;
@@ -315,15 +315,15 @@ html.light-mode .auth-field textarea:focus {
 
 .auth-submit {
   width: 100%;
-  margin-top: 0.75rem;
-  padding: 1rem 1.5rem;
+  margin-top: var(--space-3);
+  padding: var(--space-4) var(--space-6);
   font-size: 0.95rem;
   font-weight: 900;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   border: none;
-  border-radius: 0.75rem;
-  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   color: #fff;
   cursor: pointer;
   box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.55);
@@ -344,41 +344,41 @@ html.light-mode .auth-field textarea:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 .auth-btn-state svg {
   display: block;
 }
 
 .auth-msg {
-  margin-top: 1rem;
-  font-size: 0.85rem;
+  margin-top: var(--space-4);
+  font-size: var(--text-base);
   text-align: center;
-  color: #be123c;
-  background: rgba(244, 63, 94, 0.08);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: var(--color-error);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 0.5rem;
   padding: 0.6rem;
 }
 html.light-mode .auth-msg {
-  color: #fda4af;
-  background: rgba(244, 63, 94, 0.1);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.1);
 }
 .auth-msg:empty {
   display: none;
 }
 
 .auth-crosslink {
-  margin-top: 1.5rem;
+  margin-top: var(--space-6);
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   opacity: 0.75;
 }
 .auth-crosslink a {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   font-weight: 700;
   text-decoration: none;
   margin-left: 0.35rem;
@@ -423,13 +423,13 @@ html.light-mode .auth-back-link {
   color: rgba(248, 250, 252, 0.55);
 }
 .auth-back-link:hover {
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   transform: translateX(-2px);
 }
 .auth-back-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 .auth-back-link .auth-back-icon {
   display: inline-flex;
@@ -445,7 +445,7 @@ html.light-mode .auth-back-link {
    color-shift-on-hover anchors with no border. */
 .auth-brand-logo:focus-visible,
 .auth-back-link:focus-visible {
-  outline: 2px solid rgb(249 115 22);
+  outline: 2px solid var(--color-orange);
   outline-offset: 4px;
   border-radius: 0.35rem;
 }
@@ -467,12 +467,12 @@ body.is-dragging-star #canvas3d {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: var(--z-fixed);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem 2rem;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) var(--space-8);
   pointer-events: none;
   background: linear-gradient(
     to bottom,
@@ -497,12 +497,12 @@ html.light-mode .intro-top-strip {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: var(--z-fixed);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2.25rem;
-  padding: 2rem 1.5rem 1.75rem;
+  padding: var(--space-8) var(--space-6) 1.75rem;
   pointer-events: none;
   background: linear-gradient(
     to top,
@@ -514,7 +514,7 @@ html.light-mode .intro-top-strip {
 }
 .intro-bottom-strip .intro-cta-row {
   display: flex;
-  gap: 1.25rem;
+  gap: var(--space-5);
 }
 .intro-bottom-strip > * {
   pointer-events: auto;
@@ -528,7 +528,7 @@ html.light-mode .intro-bottom-strip {
 }
 
 .intro-enter-hint {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 0.78rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -562,10 +562,10 @@ html.light-mode .intro-enter-hint kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.6rem;
-  border-radius: 0.6rem;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  gap: var(--space-2);
+  padding: var(--space-3) 1.6rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
   font-size: 0.95rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -581,7 +581,7 @@ html.light-mode .intro-enter-hint kbd {
   white-space: nowrap;
 }
 .intro-cta-primary {
-  background: linear-gradient(to right, rgb(249 115 22), rgb(234 88 12));
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
   color: #fff;
   box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65);
 }
@@ -631,7 +631,7 @@ html.light-mode .intro-cta-secondary:hover {
   }
   .intro-bottom-strip .intro-cta-row {
     display: flex;
-    gap: 1rem;
+    gap: var(--space-4);
     width: 100%;
   }
   .intro-bottom-strip .intro-cta {
@@ -647,8 +647,8 @@ html.light-mode .intro-cta-secondary:hover {
   transform: translateX(-50%);
   z-index: 45;
   pointer-events: none;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
@@ -1075,17 +1075,23 @@ html.light-mode .feed-hero-compose-input {
 .feed-hero-compose-cta {
   font-family: var(--font-mono);
   font-size: 11px;
-  background: var(--color-orange);
-  color: #000;
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
+  color: #fff;
   padding: 10px 16px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 700;
   border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  box-shadow: var(--shadow-cta-rest);
+  transition:
+    transform var(--motion-base) ease,
+    box-shadow var(--motion-base) ease;
 }
 .feed-hero-compose-cta:hover {
-  background: rgb(255 122 46);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-cta-hover);
 }
 .feed-hero-compose-cta:focus-visible {
   outline: 2px solid var(--color-orange);
@@ -1459,7 +1465,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-composer-extras button {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   background: transparent;
   border: 0;
   color: inherit;
@@ -1508,7 +1514,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-composer-cancel {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   background: transparent;
   border: 0;
   color: var(--color-fg-muted);
@@ -1769,7 +1775,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-article-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--space-2);
   margin-top: var(--space-3);
 }
 .feed-article-tag {
@@ -1823,7 +1829,7 @@ html.light-mode .feed-hero-compose-input {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   font-family: inherit;
   font-size: inherit;
   font-weight: 500;
@@ -2053,7 +2059,7 @@ html.light-mode .feed-hero-compose-input {
 }
 .feed-thread .reply-input-container {
   display: flex;
-  gap: 0.4rem;
+  gap: var(--space-2);
   align-items: center;
 }
 .feed-thread .reply-input {
@@ -2078,7 +2084,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-thread .reply-cancel-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   background: transparent;
   border: 0;
   font-family: inherit;
@@ -2179,7 +2185,7 @@ html.light-mode .feed-hero-compose-input {
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: center;
-  gap: 0.4rem 0.85rem;
+  gap: var(--space-2) 0.85rem;
 }
 
 /* Prev / Next: text-and-arrow with from-left underline, matches navbar
@@ -2365,7 +2371,7 @@ html.light-mode .feed-hero-compose-input {
 .feed-pag-jump .feed-pag-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   padding: 0.4rem 0.8rem;
   font-family: var(--font-display);
   font-size: 0.82rem;
@@ -2927,14 +2933,14 @@ html.light-mode .linka-mobile-menu {
 .linka-loader {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--z-tooltip);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  background: rgb(15 23 42);
-  color: rgb(248 250 252);
+  background: var(--color-bg-base);
+  color: var(--color-fg-base);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -2959,8 +2965,8 @@ html.light-mode .linka-loader {
   display: block;
 }
 .linka-loader-brand {
-  font-family: 'Bebas Neue', system-ui, sans-serif;
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
   letter-spacing: 0.4em;
   padding-left: 0.4em; /* visually balance the trailing letter-spacing */
   text-transform: uppercase;
@@ -3006,11 +3012,11 @@ html.light-mode .linka-loader {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  padding: 4rem 1.5rem;
+  gap: var(--space-5);
+  padding: var(--space-16) var(--space-6);
   text-align: center;
-  background: rgb(15 23 42);
-  color: rgb(248 250 252);
+  background: var(--color-bg-base);
+  color: var(--color-fg-base);
 }
 html.light-mode .linka-404 {
   background: rgb(248 250 252);
@@ -3022,15 +3028,15 @@ html.light-mode .linka-404 {
   font-weight: 700;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
 }
 .linka-404-title {
   margin: 0;
-  font-family: 'Bebas Neue', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(8rem, 28vw, 18rem);
   line-height: 0.85;
   letter-spacing: 0.01em;
-  color: rgb(249 115 22);
+  color: var(--color-orange);
   text-shadow: 0 6px 40px rgba(249, 115, 22, 0.18);
 }
 .linka-404-body {
@@ -3206,7 +3212,7 @@ body:has(.linka-profile) {
 .linka-profile-tabs {
   display: flex;
   justify-content: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   margin-top: var(--space-8);
   padding: 0 var(--space-1);
   border-bottom: 1px solid rgba(203, 213, 225, 0.55);
@@ -3545,10 +3551,10 @@ html.light-mode .linka-confirm-panel {
 }
 .linka-confirm-confirm.is-danger {
   background: linear-gradient(to right, var(--color-error), #dc2626);
-  box-shadow: 0 8px 18px -8px rgba(239, 68, 68, 0.5);
+  box-shadow: var(--shadow-cta-danger-rest);
 }
 .linka-confirm-confirm.is-danger:hover {
-  box-shadow: 0 12px 22px -8px rgba(239, 68, 68, 0.65);
+  box-shadow: var(--shadow-cta-danger-hover);
 }
 
 .linka-confirm-cancel:focus-visible,
@@ -3642,7 +3648,7 @@ body:has(.linka-profile) .linka-footer {
     'bar word'
     'bar tag'
     'rule rule';
-  gap: 0.4rem var(--space-4);
+  gap: var(--space-2) var(--space-4);
   align-items: center;
   padding-bottom: var(--space-6);
   margin-bottom: var(--space-10);
