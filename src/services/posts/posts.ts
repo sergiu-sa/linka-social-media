@@ -35,6 +35,7 @@ export interface NoroffPost {
     symbol: string;
     count: number;
   }>;
+  comments?: NoroffComment[];
 }
 
 export interface PostsApiResponse {

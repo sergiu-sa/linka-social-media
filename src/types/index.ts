@@ -109,11 +109,7 @@ declare global {
     submitReply?: (postId: number, parentCommentId: number) => void;
     deleteCommentFunction?: (postId: number, commentId: number) => void;
     toggleReaction?: (postId: number, emoji: string) => void;
-    selectReaction?: (postId: number, emoji: string) => void;
-    viewFullPost?: (postId: number) => void;
     closeEditModal?: () => void;
-    showReactionsModal?: (postId: number) => void;
-    hideReactionsModal?: (postId: number) => void;
     toggleFollow?: (username: string) => void;
   }
 }
