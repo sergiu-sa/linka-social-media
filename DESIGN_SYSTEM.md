@@ -115,7 +115,8 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 | Bundle code-split | ✅ Complete | Three.js + GSAP moved to a lazy chunk. Main bundle reduced from ~658 KB to ~101 KB. |
 | Phase 3 — Surface migrations | ✅ Complete | Surface-by-surface tokenization across 7 waves: feed (1a) → toast/confirm (1b) → profile (1c) → navbar/footer (1d) → auth shell (1e) → intro (1f) → loader/404/globals (1g). Token references grew from 16 → 402 across the file. |
 | Phase 3.5 — Audit resolutions | ✅ Complete | The five behavioral fixes from the audit decision list: rose-to-red error (#1), hero CTA convergence (#5), icon-label gap to scale (#6), auth radius round-up (#7), danger CTA shadow tokens (#8). Two new shadow tokens added. |
-| Phase 4 — Optional refactor | 📋 Optional | `FeedPage.ts` (1,300 lines) → smaller files using the explicit `markup() + mount()` split (the pattern established by `feedHero.ts` / `threeStar.ts`). High cost vs payoff; defer until file becomes painful. |
+| Phase 4 — Post-launch surfaces | ✅ Complete | New surfaces shipped after the original audit, all consuming the existing token set: **reading-mode post modal** (`postModal`), **profile edit modal** (`profileEditModal`), **profile banner + avatar overlap**, **profile settings tab** (notification prefs + sign-out), **search typeahead dropdown** + **People strip** in feed search results, **navbar notifications bell + dropdown**, **per-post-card follow chip**, **post-card top-comment preview**, **feed-hero ambient starfield/node-mesh** behind the threeStar canvas. Like button collapsed from multi-emoji picker to single ❤️ with optimistic-toggle + rapid-click race protection. |
+| Phase 5 — Optional refactor | 📋 Optional | `FeedPage.ts` (~1,400 lines) → smaller files using the explicit `markup() + mount()` split (the pattern established by `feedHero.ts` / `threeStar.ts`). High cost vs payoff; defer until file becomes painful. Same option for `postCard.ts` if the action-dispatcher grows further. |
 
 ---
 
@@ -127,6 +128,10 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 | `src/style.css` | Surface CSS, sectioned by surface. First line imports tokens. |
 | `src/components/feedHero.ts` | Reference pattern — explicit `markup() + mount()` split for new components. |
 | `src/components/threeStar.ts` | Reusable Three.js component shared between intro page and feed hero. |
+| `src/components/starfield.ts` | Reusable 2D ambient background — twinkling stars in dark, orange node-mesh in light. Used by feed hero. |
+| `src/components/postModal.ts` | Reading-mode post overlay. Reference for modal-as-singleton + URL contract pattern. |
+| `src/components/profileEditModal.ts` | Edit-profile modal. Reference for inline image-preview + form validation. |
+| `src/components/notificationsBell.ts` | Navbar bell + dropdown panel. Subscribes to the notifications service via a small in-module emitter. |
 | `src/utils/theme.ts` | Theme system (sets `.dark` + `.light-mode` on `<html>` in lockstep). |
 | `src/utils/confirm.ts` | Focus-trapped confirm dialog. Reference for modal a11y. |
 
