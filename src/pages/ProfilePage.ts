@@ -9,13 +9,17 @@ import postCard, { wirePostCardActions } from '../components/postCard';
 import { type NoroffPost } from '../services/posts/posts';
 import { getLocalItem, setLocalItem } from '../utils/storage';
 import { isLoggedIn } from '../utils/auth';
-import { get, put, fetchApiKey } from '../services/api/client';
+import { get, fetchApiKey } from '../services/api/client';
+import {
+  followUser,
+  unfollowUser,
+  fetchFollowingSet,
+} from '../services/follow/follow';
 import { error as logError, warn } from '../utils/log';
 import { iconSvg } from '../utils/icon';
 import { UserPlus, ArrowLeft } from 'lucide';
 import type {
   UserProfile,
-  FollowResponse,
   ProfileWithFollowData,
 } from '../types/index';
 
@@ -469,20 +473,7 @@ async function switchTab(
 async function checkIfFollowing(username: string): Promise<boolean> {
   const currentUsername = getStoredUsername();
   if (!currentUsername) return false;
-  try {
-    const response = await get<{ data: ProfileWithFollowData }>(
-      `/social/profiles/${currentUsername}?_following=true`
-    );
-    return response.data.following?.some((u) => u.name === username) || false;
-  } catch {
-    return false;
-  }
+  const following = await fetchFollowingSet(currentUsername);
+  return following.has(username);
 }
 
-async function followUser(username: string): Promise<FollowResponse> {
-  return put(`/social/profiles/${username}/follow`, {}) as Promise<FollowResponse>;
-}
-
-async function unfollowUser(username: string): Promise<FollowResponse> {
-  return put(`/social/profiles/${username}/unfollow`, {}) as Promise<FollowResponse>;
-}

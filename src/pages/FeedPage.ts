@@ -20,6 +20,11 @@ import {
   toggleReaction,
   deleteComment,
 } from '../services/interactions/interactions';
+import {
+  followUser,
+  unfollowUser,
+  fetchFollowingSet,
+} from '../services/follow/follow';
 import { getLocalItem, setLocalItem } from '../utils/storage';
 import { renderRoute } from '../router';
 import { fetchApiKey } from '../services/api/client';
@@ -91,6 +96,17 @@ export default async function FeedPage(): Promise<string> {
     let posts: NoroffPost[] = [];
     let postsResponse: any;
 
+    const currentUser = (getLocalItem('user') as string | null) || '';
+    const userInitial = (currentUser || 'Y').charAt(0).toUpperCase();
+
+    // Kick the following lookup off in parallel with the posts fetch so the
+    // logged-in feed render isn't two sequential round-trips. Failures fall
+    // back to an empty Set inside fetchFollowingSet.
+    const followingPromise: Promise<Set<string>> =
+      isUserLoggedIn && currentUser
+        ? fetchFollowingSet(currentUser)
+        : Promise.resolve(new Set<string>());
+
     if (isSearchMode) {
       posts = searchResults;
       postsResponse = {
@@ -130,7 +146,7 @@ export default async function FeedPage(): Promise<string> {
     }
 
     const meta = postsResponse.meta;
-    const userInitial = (getLocalItem('user') || 'Y').charAt(0).toUpperCase();
+    const followingSet = await followingPromise;
 
     const heroData: FeedHeroData = {
       posts,
@@ -253,7 +269,14 @@ export default async function FeedPage(): Promise<string> {
           <div class="feed-articles" id="posts-container">
             ${
               posts.length > 0
-                ? posts.map((post, index) => postCard(post, index * 0.05)).join('')
+                ? posts
+                    .map((post, index) =>
+                      postCard(post, index * 0.05, {
+                        showFollow: isUserLoggedIn,
+                        isFollowing: followingSet.has(post.author?.name ?? ''),
+                      })
+                    )
+                    .join('')
                 : isSearchMode
                   ? renderEmptyState(
                       iconSvg(Search, { size: 36, strokeWidth: 1.6 }),
@@ -540,6 +563,7 @@ function initializeFeedInteractions(): void {
   window.closeEditModal = closeEditModal;
   window.showReactionsModal = showReactionsModal;
   window.hideReactionsModal = hideReactionsModal;
+  window.toggleFollow = handleToggleFollow;
 
   // Default navigation helpers if main.ts hasn't supplied them yet.
   if (!window.navigateToProfile) {
@@ -1344,6 +1368,64 @@ function closeFullPostModal(): void {
   if (expanded) (expanded as HTMLElement).classList.remove('is-expanded');
   const container = document.getElementById('posts-container');
   container?.classList.remove('has-expanded');
+}
+
+/* -------------------------------------- Follow toggle -------------------------------------- */
+
+/**
+ * Toggles follow state for `username`. The same author can appear in many
+ * cards on a single feed render, so we update every matching chip in lockstep
+ * (optimistic) and rollback all of them on error.
+ */
+async function handleToggleFollow(username: string): Promise<void> {
+  if (!isLoggedInNow()) {
+    showNotification('Please log in to follow people.', 'error');
+    return;
+  }
+  if (!username) return;
+
+  const selector = `.feed-author-follow[data-username="${CSS.escape(username)}"]`;
+  const chips = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(selector)
+  );
+  if (chips.length === 0) return;
+
+  const currentlyFollowing = chips[0].dataset.state === 'following';
+  const nextState = currentlyFollowing ? 'follow' : 'following';
+  const nextLabel = currentlyFollowing ? 'Follow' : 'Following';
+
+  const applyState = (state: string, label: string) => {
+    chips.forEach((c) => {
+      c.dataset.state = state;
+      c.textContent = label;
+      c.setAttribute('aria-pressed', state === 'following' ? 'true' : 'false');
+    });
+  };
+
+  applyState(nextState, nextLabel);
+  chips.forEach((c) => (c.disabled = true));
+
+  try {
+    if (currentlyFollowing) {
+      await unfollowUser(username);
+    } else {
+      await followUser(username);
+    }
+  } catch (err) {
+    logError('Follow toggle failed:', err);
+    applyState(
+      currentlyFollowing ? 'following' : 'follow',
+      currentlyFollowing ? 'Following' : 'Follow'
+    );
+    showNotification(
+      currentlyFollowing
+        ? `Couldn't unfollow ${username}.`
+        : `Couldn't follow ${username}.`,
+      'error'
+    );
+  } finally {
+    chips.forEach((c) => (c.disabled = false));
+  }
 }
 
 /* -------------------------------------- Toast helper -------------------------------------- */

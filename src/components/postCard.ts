@@ -22,9 +22,17 @@ function escHtml(s: string): string {
   return d.innerHTML;
 }
 
+export interface PostCardOptions {
+  /** When true, render the inline Follow / Following chip in the header. */
+  showFollow?: boolean;
+  /** Pre-resolved state — true if the current user already follows the author. */
+  isFollowing?: boolean;
+}
+
 export default function postCard(
   post: NoroffPost,
-  animationDelay: number = 0
+  animationDelay: number = 0,
+  options: PostCardOptions = {}
 ): string {
   const {
     id,
@@ -63,6 +71,12 @@ export default function postCard(
 
   const authorName = author?.name || 'Unknown';
 
+  const showFollowChip =
+    options.showFollow === true && !isOwner && authorName !== 'Unknown';
+  const isFollowing = options.isFollowing === true;
+  const followState = isFollowing ? 'following' : 'follow';
+  const followLabel = isFollowing ? 'Following' : 'Follow';
+
   return `
     <article
       class="feed-article"
@@ -90,6 +104,18 @@ export default function postCard(
                href="/profile?user=${escAttr(authorName)}"
                data-action="navigate-profile"
                data-username="${escAttr(authorName)}">${escHtml(authorName)}</a>
+            ${
+              showFollowChip
+                ? `<button
+                     type="button"
+                     class="feed-author-follow"
+                     data-action="follow-toggle"
+                     data-username="${escAttr(authorName)}"
+                     data-state="${followState}"
+                     aria-pressed="${isFollowing}"
+                   >${followLabel}</button>`
+                : ''
+            }
             <div class="feed-article-author-meta">${timeAgo}</div>
           </div>
         </div>
@@ -270,6 +296,13 @@ function handlePostCardClick(e: Event): void {
       e.stopPropagation();
       const username = actionEl.dataset.username;
       if (username) window.navigateToProfile?.(username);
+      return;
+    }
+    case 'follow-toggle': {
+      e.preventDefault();
+      e.stopPropagation();
+      const username = actionEl.dataset.username;
+      if (username) window.toggleFollow?.(username);
       return;
     }
     case 'post-menu-toggle': {

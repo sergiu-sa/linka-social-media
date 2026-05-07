@@ -41,8 +41,13 @@ export default async function router(
   currentPath = '',
   routes: Record<string, RouteDef> = PATHS
 ): Promise<{ html: string; path: string }> {
+  // Match on the pathname only — query strings (`/profile?user=Bob`) and
+  // hash fragments are part of the URL but never part of a route definition.
+  // Strict equality on the raw `currentPath` would 404 on any link with a query.
+  const pathname = currentPath.split('?')[0].split('#')[0];
+
   const currentRoute =
-    Object.values(routes).find((r) => r.url === currentPath) ?? null;
+    Object.values(routes).find((r) => r.url === pathname) ?? null;
 
   // Default 404
   if (!currentRoute) {
@@ -58,15 +63,14 @@ export default async function router(
   // If user is logged in and hits any auth route -> go to feed
   if (
     isLoggedIn() &&
-    (currentPath === '/' ||
-      currentPath === '/login' ||
-      currentPath === '/register')
+    (pathname === '/' || pathname === '/login' || pathname === '/register')
   ) {
     history.pushState({ path: '/feed' }, '', '/feed');
     return { html: await routes.feed.component(), path: '/feed' };
   }
 
-  // Normal render
+  // Normal render — return the original path (with query) so downstream
+  // hooks like navbar visibility see the full URL the user is on.
   return { html: await currentRoute.component(), path: currentPath };
 }
 

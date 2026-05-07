@@ -114,5 +114,6 @@ declare global {
     closeEditModal?: () => void;
     showReactionsModal?: (postId: number) => void;
     hideReactionsModal?: (postId: number) => void;
+    toggleFollow?: (username: string) => void;
   }
 }

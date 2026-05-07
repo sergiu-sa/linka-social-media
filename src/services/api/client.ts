@@ -119,8 +119,8 @@ export const get = <T = unknown>(endpoint: Endpoint): Promise<T> =>
 export const post = (endpoint: Endpoint, body: object) =>
   apiClient(endpoint, { method: 'POST', body });
 
-export const put = (endpoint: Endpoint, body: object) =>
-  apiClient(endpoint, { method: 'PUT', body });
+export const put = (endpoint: Endpoint, body?: object) =>
+  apiClient(endpoint, body !== undefined ? { method: 'PUT', body } : { method: 'PUT' });
 
 export const del = (endpoint: Endpoint) =>
   apiClient(endpoint, { method: 'DELETE' });
