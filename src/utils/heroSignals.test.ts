@@ -76,7 +76,6 @@ describe('computePulseRows', () => {
       mkPost({
         id: 1,
         author: { name: 'sergiu', email: 's@e' },
-        // @ts-expect-error - extending NoroffPost with comments at runtime
         comments: [
           { id: 10, body: 'c', owner: 'a', created: new Date(NOW - 1 * HOUR).toISOString(), postId: 1, replyToId: null },
           { id: 11, body: 'c', owner: 'b', created: new Date(NOW - 8 * HOUR).toISOString(), postId: 1, replyToId: null },

@@ -167,7 +167,8 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
     });
   });
 
-  /* Compose rail → trigger existing composer */
+  /* Compose rail → expand the (otherwise hidden) composer below. The hero
+     rail is now the sole entry point — there is no collapsed composer card. */
   const rail = root.querySelector<HTMLElement>('.feed-hero-compose-rail');
   const onRailClick = (e: Event) => {
     e.stopPropagation();
@@ -176,11 +177,12 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
       window.renderRoute?.('/login');
       return;
     }
-    const collapsed = document.getElementById('collapsed-input');
-    collapsed?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    const postBox = document.getElementById('create-post-box');
+    postBox?.classList.add('is-expanded');
     setTimeout(() => {
       const titleField = document.getElementById('post-title') as HTMLInputElement | null;
       titleField?.focus();
+      postBox?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 50);
   };
   rail?.addEventListener('click', onRailClick);

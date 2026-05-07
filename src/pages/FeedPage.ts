@@ -25,6 +25,7 @@ import {
   unfollowUser,
   fetchFollowingSet,
 } from '../services/follow/follow';
+import { openPostModal } from '../components/postModal';
 import { getLocalItem, setLocalItem } from '../utils/storage';
 import { renderRoute } from '../router';
 import { fetchApiKey } from '../services/api/client';
@@ -166,6 +167,19 @@ export default async function FeedPage(): Promise<string> {
 
       const heroHandle = mountFeedHero(heroData);
 
+      // ?post=ID (or legacy ?openPost=ID) — open that post in reading mode.
+      // Don't push the URL again; we're already at it (refresh / deep-link).
+      const params = new URLSearchParams(window.location.search);
+      const postParam = params.get('post') || params.get('openPost');
+      const openPostId = postParam ? Number(postParam) : NaN;
+      if (Number.isFinite(openPostId)) {
+        const article = document.getElementById(`post-${openPostId}`);
+        if (article) {
+          article.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          openPostModal(openPostId, { pushUrl: false });
+        }
+      }
+
       // If auth state changes (login/register on Intro page), re-render feed
       const onAuthChanged = () => renderRoute('/feed?ts=' + Date.now());
       document.addEventListener('auth:changed', onAuthChanged);
@@ -190,29 +204,8 @@ export default async function FeedPage(): Promise<string> {
           ${
             isUserLoggedIn
               ? `
-            <section class="feed-composer" id="create-post-box">
-              <p class="feed-composer-eyebrow">
-                <span class="feed-composer-eyebrow-dot" aria-hidden="true"></span>
-                Compose · New post
-              </p>
+            <section class="feed-composer" id="create-post-box" aria-label="New post">
               <form id="create-post-form">
-                <div class="feed-composer-row" role="button" tabindex="0" aria-label="Open composer">
-                  <div class="feed-composer-avatar">${userInitial}</div>
-                  <input
-                    type="text"
-                    id="collapsed-input"
-                    placeholder="What's on your mind?"
-                    readonly
-                    class="feed-composer-input"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  >
-                  <span class="feed-composer-cta-chip">
-                    <span class="feed-composer-cta-label">Write</span>
-                    <span class="feed-composer-cta-arrow" aria-hidden="true">→</span>
-                  </span>
-                </div>
-
                 <div class="feed-composer-expanded">
                   <div class="feed-composer-form-grid">
                     <div class="feed-composer-avatar">${userInitial}</div>
@@ -458,42 +451,15 @@ function initializeFeedInteractions(): void {
     createForm.addEventListener('submit', handleCreatePost);
   }
 
-  // Composer expand/collapse
+  // Composer expand/collapse — the only entry point is the hero compose
+  // rail, which directly toggles `.is-expanded` on this section.
   const postBox = document.getElementById('create-post-box');
-  const composerRow = postBox?.querySelector('.feed-composer-row') as HTMLElement | null;
   const cancelBtn = document.getElementById('cancel-post-btn');
 
-  if (postBox && composerRow) {
-    const expand = () => {
-      postBox.classList.add('is-expanded');
-      const titleInput = document.getElementById('post-title') as HTMLInputElement | null;
-      titleInput?.focus();
-    };
-    composerRow.addEventListener('click', expand);
-    composerRow.addEventListener('keydown', (e: Event) => {
-      const ke = e as KeyboardEvent;
-      if (ke.key === 'Enter' || ke.key === ' ') {
-        ke.preventDefault();
-        expand();
-      }
-    });
-
-    // First-arrival pulse to draw the eye to the composer. Skips on
-    // subsequent feed renders within the same session, and on
-    // prefers-reduced-motion.
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (!reduced && sessionStorage.getItem('linka:composer-pulsed') !== '1') {
-      setTimeout(() => {
-        postBox.classList.add('is-pulsing');
-        setTimeout(() => postBox.classList.remove('is-pulsing'), 1400);
-      }, 700);
-      sessionStorage.setItem('linka:composer-pulsed', '1');
-    }
-
+  if (postBox) {
     cancelBtn?.addEventListener('click', () => {
       postBox.classList.remove('is-expanded');
       createForm?.reset();
-      // Collapse optional rows
       ['composer-tags-row', 'composer-image-row', 'composer-image-alt-row'].forEach((id) => {
         document.getElementById(id)?.classList.remove('is-open');
       });
@@ -539,13 +505,6 @@ function initializeFeedInteractions(): void {
     }
   });
 
-  // Esc collapses any inline-expanded post
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    const expanded = document.querySelector('.feed-article.is-expanded');
-    if (expanded) closeFullPostModal();
-  });
-
   // Expose handlers for inline `onclick="..."` attributes inside post cards.
   // Typed centrally on the Window interface in src/types/index.ts.
   window.togglePostMenu = togglePostMenu;
@@ -558,11 +517,7 @@ function initializeFeedInteractions(): void {
   window.submitReply = submitReply;
   window.deleteCommentFunction = deleteCommentFunction;
   window.toggleReaction = handleToggleReaction;
-  window.selectReaction = selectReaction;
-  window.viewFullPost = viewFullPost;
   window.closeEditModal = closeEditModal;
-  window.showReactionsModal = showReactionsModal;
-  window.hideReactionsModal = hideReactionsModal;
   window.toggleFollow = handleToggleFollow;
 
   // Default navigation helpers if main.ts hasn't supplied them yet.
@@ -1279,95 +1234,52 @@ async function handleToggleReaction(
     return;
   }
 
-  const likeBtn = document.querySelector(
+  const likeBtn = document.querySelector<HTMLButtonElement>(
     `[data-post-id="${postId}"].like-btn`
-  ) as HTMLElement | null;
+  );
+  if (!likeBtn || likeBtn.disabled) return;
 
-  // Optimistic pulse (visual only — count syncs after API)
-  if (likeBtn) {
-    likeBtn.classList.add('is-pulsing');
-    setTimeout(() => likeBtn.classList.remove('is-pulsing'), 200);
-  }
+  // Lock the button while a toggle is in-flight. Without this, rapid clicks
+  // race: the first PUT succeeds (added), every later PUT fails with "already
+  // exists" and falls into the DELETE branch, so the post ends up unliked
+  // regardless of how many times the user clicked.
+  const countEl = likeBtn.querySelector<HTMLElement>('.action-count-compact');
+  const wasReactedBefore = likeBtn.classList.contains('reacted');
+  const countBefore = parseInt(countEl?.textContent || '0', 10) || 0;
+  const optimisticReacted = !wasReactedBefore;
+  const optimisticCount = optimisticReacted
+    ? countBefore + 1
+    : Math.max(0, countBefore - 1);
+
+  likeBtn.classList.toggle('reacted', optimisticReacted);
+  if (countEl) countEl.textContent = String(optimisticCount);
+  likeBtn.classList.add('is-pulsing');
+  setTimeout(() => likeBtn.classList.remove('is-pulsing'), 200);
+  likeBtn.disabled = true;
 
   try {
     const wasAdded = await toggleReaction(postId.toString(), emoji);
 
-    const reactionCount = document.querySelector(
-      `[data-post-id="${postId}"].like-btn .action-count-compact`
-    );
-    if (reactionCount) {
-      const currentCount = parseInt(reactionCount.textContent || '0');
-      (reactionCount as HTMLElement).textContent = wasAdded
-        ? (currentCount + 1).toString()
-        : Math.max(0, currentCount - 1).toString();
-    }
-
-    if (likeBtn) {
-      if (wasAdded) likeBtn.classList.add('reacted');
-      else likeBtn.classList.remove('reacted');
+    // Server is authoritative — reconcile if the actual result disagrees with
+    // the optimistic flip (rare; mostly when the post was already in the
+    // opposite state on the server).
+    if (wasAdded !== optimisticReacted) {
+      likeBtn.classList.toggle('reacted', wasAdded);
+      if (countEl) {
+        const reconciled = wasAdded
+          ? countBefore + 1
+          : Math.max(0, countBefore - 1);
+        countEl.textContent = String(reconciled);
+      }
     }
   } catch (err) {
+    likeBtn.classList.toggle('reacted', wasReactedBefore);
+    if (countEl) countEl.textContent = String(countBefore);
     logError('Error toggling reaction:', err);
     showNotification('Failed to react to post.', 'error');
+  } finally {
+    likeBtn.disabled = false;
   }
-}
-
-function selectReaction(postId: number, emoji: string): void {
-  handleToggleReaction(postId, emoji);
-  const reactionsModal = document.getElementById(`reactions-${postId}`);
-  if (reactionsModal) reactionsModal.style.display = 'none';
-}
-
-function showReactionsModal(postId: number): void {
-  const modal = document.getElementById(`reactions-${postId}`);
-  if (modal) modal.style.display = 'block';
-}
-
-function hideReactionsModal(postId: number): void {
-  setTimeout(() => {
-    const modal = document.getElementById(`reactions-${postId}`);
-    if (modal && !modal.matches(':hover')) modal.style.display = 'none';
-  }, 200);
-}
-
-/* -------------------------------------- Full-post inline expand -------------------------------------- */
-
-/**
- * Toggles inline-expand on a post article. Closes any other expanded
- * post first so only one is open at a time.
- */
-function viewFullPost(postId: number): void {
-  const article = document.getElementById(`post-${postId}`);
-  if (!article) return;
-
-  const container = document.getElementById('posts-container');
-
-  // Close any other open expansion
-  document.querySelectorAll('.feed-article.is-expanded').forEach((el) => {
-    if (el !== article) el.classList.remove('is-expanded');
-  });
-
-  const willExpand = !article.classList.contains('is-expanded');
-  article.classList.toggle('is-expanded', willExpand);
-
-  if (container) {
-    container.classList.toggle(
-      'has-expanded',
-      !!container.querySelector('.feed-article.is-expanded')
-    );
-  }
-
-  if (willExpand) {
-    article.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-/** Collapses any currently-expanded article (called from the Esc handler). */
-function closeFullPostModal(): void {
-  const expanded = document.querySelector('.feed-article.is-expanded');
-  if (expanded) (expanded as HTMLElement).classList.remove('is-expanded');
-  const container = document.getElementById('posts-container');
-  container?.classList.remove('has-expanded');
 }
 
 /* -------------------------------------- Follow toggle -------------------------------------- */

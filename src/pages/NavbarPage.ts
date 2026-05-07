@@ -22,6 +22,14 @@ import {
 import { confirmDialog } from '../utils/confirm';
 import { iconSvg } from '../utils/icon';
 import { Sun, Moon } from 'lucide';
+import {
+  notificationsBellMarkup,
+  mountNotificationsBell,
+} from '../components/notificationsBell';
+import {
+  startPolling as startNotificationsPolling,
+  stopPolling as stopNotificationsPolling,
+} from '../services/notifications/notifications';
 import '../types/index';
 
 type SearchResult =
@@ -100,6 +108,8 @@ export default function NavbarPage() {
           }
         </div>
 
+        ${userLoggedIn ? notificationsBellMarkup() : ''}
+
         <button
           id="mobile-menu-toggle"
           class="linka-nav-mobile-toggle"
@@ -141,6 +151,8 @@ export default function NavbarPage() {
 /*                              Initialization                                */
 /* -------------------------------------------------------------------------- */
 
+let disposeNotificationsBell: (() => void) | null = null;
+
 export function initNavbar() {
   wireBrandLink();
   wireNavLinks();
@@ -153,9 +165,25 @@ export function initNavbar() {
   syncNavbarThemeUI();
   updateActiveNav();
 
+  // Tear down any previous bell mount before remounting (e.g. after logout
+  // refreshes the navbar) so listeners + subscriptions don't leak.
+  disposeNotificationsBell?.();
+  disposeNotificationsBell = null;
+  if (isLoggedIn()) {
+    disposeNotificationsBell = mountNotificationsBell();
+    startNotificationsPolling();
+  }
+
   window.updateActiveNav = updateActiveNav;
   window.updateNavbarAfterLogout = updateNavbarAfterLogout;
 }
+
+// Pick up auth changes from the login form (handler.ts dispatches this on
+// successful sign-in) and rebuild the navbar so the bell appears + polling
+// starts without requiring a hard refresh.
+document.addEventListener('auth:changed', () => {
+  if (isLoggedIn()) updateNavbarAfterLogout();
+});
 
 /* -------------------------------------------------------------------------- */
 /*                              Internal wiring                               */
@@ -203,6 +231,9 @@ function wireLogout() {
     });
     if (!ok) return;
     closeMobileMenu();
+    stopNotificationsPolling({ clear: true });
+    disposeNotificationsBell?.();
+    disposeNotificationsBell = null;
     logout();
     updateNavbarAfterLogout();
     history.pushState({ path: '/' }, '', '/');

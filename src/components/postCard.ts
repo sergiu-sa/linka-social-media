@@ -10,6 +10,7 @@ import { getLocalItem } from '../utils/storage';
 import { getTimeAgo } from '../utils/date';
 import { iconSvg } from '../utils/icon';
 import { Heart, MessageCircle } from 'lucide';
+import { openPostModal } from './postModal';
 import '../types/index';
 
 function escAttr(s: string): string {
@@ -44,6 +45,7 @@ export default function postCard(
     author = { name: 'Unknown', email: 'unknown@mail.com' },
     _count = { comments: 0, reactions: 0 },
     reactions: rawReactions,
+    comments: rawComments,
   } = post;
 
   // Destructuring defaults only catch `undefined`; the Noroff API also
@@ -76,6 +78,28 @@ export default function postCard(
   const isFollowing = options.isFollowing === true;
   const followState = isFollowing ? 'following' : 'follow';
   const followLabel = isFollowing ? 'Following' : 'Follow';
+
+  // Top-comment preview: pick the newest comment regardless of API order so
+  // the preview always reflects the most recent activity. Hidden when zero.
+  const allComments = rawComments ?? [];
+  const topComment =
+    allComments.length > 0
+      ? [...allComments].sort(
+          (a, b) => +new Date(b.created) - +new Date(a.created)
+        )[0]
+      : null;
+  const moreComments = Math.max(0, _count.comments - 1);
+  const topCommentBody = topComment?.body ?? '';
+  const topCommentSnippet =
+    topCommentBody.length > 90
+      ? topCommentBody.substring(0, 90) + '…'
+      : topCommentBody;
+  const topCommentAuthor =
+    topComment?.author?.name || topComment?.owner || 'Unknown';
+  const topCommentInitial = topCommentAuthor.charAt(0).toUpperCase();
+  const topCommentTime = topComment?.created
+    ? getTimeAgo(new Date(topComment.created))
+    : '';
 
   return `
     <article
@@ -155,12 +179,10 @@ export default function postCard(
 
       ${
         truncatedTitle
-          ? `<h3 class="feed-article-title post-title-compact" data-truncated data-action="post-toggle">${escHtml(truncatedTitle)}</h3>
-             <h3 class="feed-article-title post-title-compact" data-full data-action="post-toggle">${escHtml(title)}</h3>`
+          ? `<h3 class="feed-article-title post-title-compact" data-action="post-toggle">${escHtml(truncatedTitle)}</h3>`
           : ''
       }
-      <p class="feed-article-body post-body" data-truncated>${escHtml(truncatedBody)}</p>
-      <p class="feed-article-body post-body" data-full>${escHtml(body)}</p>
+      <p class="feed-article-body post-body" data-action="post-toggle">${escHtml(truncatedBody)}</p>
 
       ${
         tags.length > 0
@@ -184,46 +206,56 @@ export default function postCard(
       ${
         media?.url
           ? `
-        <div class="feed-article-media post-media-preview">
+        <div class="feed-article-media post-media-preview" data-action="post-toggle" role="button" tabindex="0" aria-label="Open post">
           <img src="${escAttr(media.url)}" alt="${escAttr(media.alt || 'Post image')}" loading="lazy" class="post-image-preview">
         </div>
       `
           : ''
       }
 
-      <div class="feed-actions">
-        <div class="feed-action-wrap" data-reactions-wrap>
-          <button
-            type="button"
-            class="feed-action like-btn"
-            data-post-id="${id}"
-            data-action="reaction-toggle"
-            data-emoji="❤️"
-            aria-haspopup="menu"
-            aria-label="${reactionCount} ${reactionCount === 1 ? 'reaction' : 'reactions'} — pick a reaction"
-          >
-            <i class="feed-action-icon" aria-hidden="true">${iconSvg(Heart, { size: 17, strokeWidth: 2.2 })}</i>
-            <span class="action-count-compact">${reactionCount}</span>
-          </button>
-          <div class="feed-reaction-picker" id="reactions-${id}" role="menu" aria-label="Pick a reaction" style="display:none;">
-            ${['👍', '❤️', '😂', '😮', '😢', '😡']
-              .map(
-                (emoji) =>
-                  `<button type="button" data-action="reaction-pick" data-emoji="${emoji}" role="menuitem" aria-label="React with ${emoji}">${emoji}</button>`
-              )
-              .join('')}
+      ${
+        topComment
+          ? `
+        <div
+          class="feed-article-top-comment"
+          data-action="comments-toggle"
+          role="button"
+          tabindex="0"
+          aria-label="Open comment thread"
+        >
+          <div class="feed-article-top-comment-meta">
+            <span class="feed-article-top-comment-avatar" aria-hidden="true">${escHtml(topCommentInitial)}</span>
+            <span class="feed-article-top-comment-author">${escHtml(topCommentAuthor)}</span>
+            <span class="feed-article-top-comment-time">${escHtml(topCommentTime)}</span>
           </div>
+          <p class="feed-article-top-comment-body">${escHtml(topCommentSnippet)}</p>
+          ${
+            moreComments > 0
+              ? `<span class="feed-article-top-comment-more">View ${moreComments} more ${moreComments === 1 ? 'reply' : 'replies'} →</span>`
+              : ''
+          }
         </div>
+      `
+          : ''
+      }
+
+      <div class="feed-actions">
+        <button
+          type="button"
+          class="feed-action like-btn"
+          data-post-id="${id}"
+          data-action="reaction-toggle"
+          data-emoji="❤️"
+          aria-label="${reactionCount} ${reactionCount === 1 ? 'like' : 'likes'} — toggle like"
+        >
+          <i class="feed-action-icon" aria-hidden="true">${iconSvg(Heart, { size: 17, strokeWidth: 2.2 })}</i>
+          <span class="action-count-compact">${reactionCount}</span>
+        </button>
 
         <button type="button" class="feed-action comment-btn" data-post-id="${id}" data-action="comments-toggle" aria-label="${_count.comments} ${_count.comments === 1 ? 'comment' : 'comments'} — toggle thread">
           <i class="feed-action-icon" aria-hidden="true">${iconSvg(MessageCircle, { size: 17, strokeWidth: 2 })}</i>
           <span class="action-count-compact">${_count.comments}</span>
         </button>
-
-        <span class="feed-action-spacer"></span>
-
-        <button type="button" class="feed-action-read" data-action="post-toggle">read →</button>
-        <button type="button" class="feed-article-close" data-action="post-toggle">× close</button>
       </div>
 
       <div class="feed-thread" id="comments-${id}">
@@ -272,10 +304,6 @@ export function wirePostCardActions(): void {
 
   document.body.addEventListener('click', handlePostCardClick);
   document.body.addEventListener('keydown', handlePostCardKeydown);
-  document.body.addEventListener('focusin', handleReactionFocusIn);
-  document.body.addEventListener('focusout', handleReactionFocusOut);
-  document.body.addEventListener('mouseover', handleReactionMouseOver);
-  document.body.addEventListener('mouseout', handleReactionMouseOut);
 }
 
 function postIdFromTarget(el: Element | null): number {
@@ -321,17 +349,12 @@ function handlePostCardClick(e: Event): void {
       return;
     }
     case 'post-toggle': {
-      window.viewFullPost?.(postId);
+      openPostModal(postId);
       return;
     }
     case 'reaction-toggle': {
       const emoji = actionEl.dataset.emoji || '❤️';
       window.toggleReaction?.(postId, emoji);
-      return;
-    }
-    case 'reaction-pick': {
-      const emoji = actionEl.dataset.emoji || '❤️';
-      window.selectReaction?.(postId, emoji);
       return;
     }
     case 'comments-toggle': {
@@ -393,55 +416,21 @@ function handlePostCardKeydown(e: KeyboardEvent): void {
     return;
   }
 
-  // Escape inside the reaction picker (or on the like button while picker is open)
-  // closes the picker immediately and returns focus to the like button.
-  if (e.key === 'Escape') {
-    const found = reactionsWrapAndPostId(target);
-    if (found) {
-      const picker = document.getElementById(`reactions-${found.postId}`);
-      if (picker && picker.style.display !== 'none') {
-        e.preventDefault();
-        picker.style.display = 'none';
-        const likeBtn = found.wrap.querySelector<HTMLElement>('.like-btn');
-        likeBtn?.focus();
-      }
-    }
+  if (
+    (e.key === 'Enter' || e.key === ' ') &&
+    target.matches('[data-action="comments-toggle"][role="button"]')
+  ) {
+    e.preventDefault();
+    window.toggleComments?.(postIdFromTarget(target));
+    return;
   }
-}
 
-function reactionsWrapAndPostId(
-  el: Element | null
-): { wrap: HTMLElement; postId: number } | null {
-  const wrap = el?.closest<HTMLElement>('[data-reactions-wrap]') ?? null;
-  if (!wrap) return null;
-  const article = wrap.closest<HTMLElement>('.feed-article');
-  if (!article) return null;
-  return { wrap, postId: Number(article.dataset.postId) };
-}
-
-function handleReactionFocusIn(e: FocusEvent): void {
-  const found = reactionsWrapAndPostId(e.target as Element | null);
-  if (found) window.showReactionsModal?.(found.postId);
-}
-
-function handleReactionFocusOut(e: FocusEvent): void {
-  const found = reactionsWrapAndPostId(e.target as Element | null);
-  if (!found) return;
-  requestAnimationFrame(() => {
-    if (found.wrap.contains(document.activeElement)) return;
-    window.hideReactionsModal?.(found.postId);
-  });
-}
-
-function handleReactionMouseOver(e: MouseEvent): void {
-  const found = reactionsWrapAndPostId(e.target as Element | null);
-  if (found) window.showReactionsModal?.(found.postId);
-}
-
-function handleReactionMouseOut(e: MouseEvent): void {
-  const found = reactionsWrapAndPostId(e.target as Element | null);
-  if (!found) return;
-  const to = e.relatedTarget as Element | null;
-  if (to && found.wrap.contains(to)) return;
-  window.hideReactionsModal?.(found.postId);
+  if (
+    (e.key === 'Enter' || e.key === ' ') &&
+    target.matches('[data-action="post-toggle"][role="button"]')
+  ) {
+    e.preventDefault();
+    openPostModal(postIdFromTarget(target));
+    return;
+  }
 }
