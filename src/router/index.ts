@@ -75,7 +75,10 @@ export default async function router(
 }
 
 /** Render a given path into the app container and run post-render hooks. */
-export async function renderRoute(path?: string) {
+export async function renderRoute(
+  path?: string,
+  options: { preserveScroll?: boolean } = {}
+) {
   const targetPath = path ?? window.location.pathname;
   const contentContainer = document.getElementById(APP_CONTAINER_CLASSNAME);
   if (!targetPath || !contentContainer) return;
@@ -107,6 +110,14 @@ export async function renderRoute(path?: string) {
   }
 
   contentContainer.innerHTML = html;
+
+  // Reset scroll on forward navigations so each route loads from the top
+  // (clicking a user from /feed shouldn't keep the feed's scroll offset).
+  // popstate calls pass `preserveScroll: true` so back/forward keep the
+  // browser's saved position.
+  if (!options.preserveScroll) {
+    window.scrollTo(0, 0);
+  }
 
   // Update navbar visibility based on the *resolved* path (post-redirect),
   // not the original requested path. Otherwise a logged-in user landing

@@ -17,11 +17,24 @@ import {
 } from '../services/follow/follow';
 import { error as logError, warn } from '../utils/log';
 import { iconSvg } from '../utils/icon';
-import { UserPlus, ArrowLeft } from 'lucide';
+import { UserPlus, ArrowLeft, Pencil, Bell, LogOut } from 'lucide';
 import type {
   UserProfile,
   ProfileWithFollowData,
 } from '../types/index';
+import { openProfileEditModal } from '../components/profileEditModal';
+import {
+  loadPrefs,
+  savePrefs,
+  NOTIF_INTERVAL_OPTIONS,
+} from '../services/notifications/prefs';
+import {
+  restartPolling as restartNotificationsPolling,
+  stopPolling as stopNotificationsPolling,
+  checkForNotifications,
+} from '../services/notifications/notifications';
+import { logout } from '../utils/auth';
+import { confirmDialog } from '../utils/confirm';
 
 /**
  * Defensive: the profile endpoints require both the JWT and the API key.
@@ -76,11 +89,12 @@ export default async function ProfilePage(): Promise<string> {
 
     return `
       <main class="linka-profile">
+        ${renderBanner(profileData)}
         <div class="feed-column linka-profile-column">
           ${renderProfileHeader(profileData, isOwnProfile)}
           ${renderProfileMeta(profileData)}
           ${renderStatsBar(profileData)}
-          ${renderTabs(counts)}
+          ${renderTabs(counts, isOwnProfile)}
           <div id="profile-tab-content" class="linka-profile-tab-content">
             ${renderPostsTab(userPosts, postsLoadFailed)}
           </div>
@@ -126,16 +140,39 @@ async function fetchUserPosts(username: string): Promise<NoroffPost[]> {
 }
 
 /* -------------------------------------- Renderers -------------------------------------- */
+function renderBanner(profile: ProfileWithFollowData): string {
+  const url = profile.banner?.url;
+  const alt = profile.banner?.alt || `${profile.name}'s banner`;
+  return `
+    <div class="linka-profile-banner ${url ? 'has-banner' : 'is-empty'}" aria-hidden="${url ? 'false' : 'true'}">
+      ${url ? `<img src="${escAttr(url)}" alt="${escAttr(alt)}" />` : ''}
+    </div>
+  `;
+}
+
 function renderProfileHeader(
   profile: ProfileWithFollowData,
   isOwnProfile: boolean
 ): string {
   const avatarUrl = profile.avatar?.url;
   const initial = profile.name.charAt(0).toUpperCase();
-  const followAction =
-    !isOwnProfile && isLoggedIn()
-      ? `<button id="follow-btn" class="feed-cta linka-profile-follow" data-username="${escAttr(profile.name)}"><span class="btn-icon">${iconSvg(UserPlus, { size: 15, strokeWidth: 2 })}</span><span>Follow</span></button>`
-      : '';
+
+  let trailingAction = '';
+  if (isOwnProfile) {
+    trailingAction = `
+      <button id="profile-edit-btn" class="linka-profile-edit" type="button">
+        <span class="btn-icon">${iconSvg(Pencil, { size: 14, strokeWidth: 2.2 })}</span>
+        <span>Edit profile</span>
+      </button>
+    `;
+  } else if (isLoggedIn()) {
+    trailingAction = `
+      <button id="follow-btn" class="feed-cta linka-profile-follow" data-username="${escAttr(profile.name)}">
+        <span class="btn-icon">${iconSvg(UserPlus, { size: 15, strokeWidth: 2 })}</span>
+        <span>Follow</span>
+      </button>
+    `;
+  }
 
   return `
     <header class="linka-profile-header">
@@ -151,7 +188,7 @@ function renderProfileHeader(
           <p class="linka-profile-handle">@${profile.name.toLowerCase()}</p>
         </div>
       </div>
-      ${followAction}
+      ${trailingAction}
     </header>
   `;
 }
@@ -187,18 +224,21 @@ type TabCounts = {
   followers: number;
 };
 
-function renderTabs(counts: TabCounts): string {
-  const tabs: Array<[keyof TabCounts, string]> = [
+function renderTabs(counts: TabCounts, isOwnProfile: boolean): string {
+  const tabs: Array<[keyof TabCounts | 'settings', string]> = [
     ['posts', 'Posts'],
     ['media', 'Media'],
     ['following', 'Following'],
     ['followers', 'Followers'],
   ];
+  if (isOwnProfile) tabs.push(['settings', 'Settings']);
   return `
     <nav class="linka-profile-tabs" role="tablist" aria-label="Profile sections">
       ${tabs
         .map(
-          ([key, label], i) => `
+          ([key, label], i) => {
+            const count = key !== 'settings' ? counts[key as keyof TabCounts] : null;
+            return `
         <button
           type="button"
           role="tab"
@@ -207,9 +247,10 @@ function renderTabs(counts: TabCounts): string {
           aria-selected="${i === 0 ? 'true' : 'false'}"
         >
           <span class="linka-profile-tab-label">${label}</span>
-          <span class="linka-profile-tab-count" aria-label="${counts[key]} ${label.toLowerCase()}">${counts[key]}</span>
+          ${count !== null ? `<span class="linka-profile-tab-count" aria-label="${count} ${label.toLowerCase()}">${count}</span>` : ''}
         </button>
-      `
+      `;
+          }
         )
         .join('')}
     </nav>
@@ -284,6 +325,101 @@ function renderUserListTab(
   `;
 }
 
+function renderSettingsTab(profile: ProfileWithFollowData): string {
+  const prefs = loadPrefs();
+  const desktopPermission =
+    typeof Notification !== 'undefined' ? Notification.permission : 'unsupported';
+
+  return `
+    <section class="linka-profile-settings">
+      <header class="linka-profile-settings-section-head">
+        <span class="linka-profile-settings-icon" aria-hidden="true">${iconSvg(Bell, { size: 14, strokeWidth: 2.2 })}</span>
+        <span>Notifications</span>
+      </header>
+
+      <div class="linka-profile-settings-rows">
+        <label class="linka-profile-setting-row" for="notif-pref-enabled">
+          <span class="linka-profile-setting-label">
+            <strong>Enable notifications</strong>
+            <span>Get a badge on the bell when your posts get likes or comments.</span>
+          </span>
+          <input
+            type="checkbox"
+            id="notif-pref-enabled"
+            class="linka-profile-setting-toggle"
+            ${prefs.enabled ? 'checked' : ''}
+          />
+        </label>
+
+        <div class="linka-profile-setting-row">
+          <span class="linka-profile-setting-label">
+            <strong>Check every</strong>
+            <span>Lower interval = fresher, but more requests. "Manual" only checks when the app boots or the bell is clicked.</span>
+          </span>
+          <div class="linka-profile-setting-segments" role="radiogroup" aria-label="Polling cadence">
+            ${NOTIF_INTERVAL_OPTIONS.map(
+              (opt) => `
+              <label class="linka-profile-setting-segment ${prefs.intervalMs === opt.value ? 'is-active' : ''}">
+                <input
+                  type="radio"
+                  name="notif-pref-interval"
+                  value="${opt.value}"
+                  ${prefs.intervalMs === opt.value ? 'checked' : ''}
+                  ${prefs.enabled ? '' : 'disabled'}
+                />
+                <span>${opt.label}</span>
+              </label>
+            `
+            ).join('')}
+          </div>
+        </div>
+
+        <label class="linka-profile-setting-row" for="notif-pref-desktop">
+          <span class="linka-profile-setting-label">
+            <strong>Browser notifications</strong>
+            <span>Show an OS-level notification while another tab is focused.${
+              desktopPermission === 'denied'
+                ? ' <em>Permission was denied — enable it in your browser settings.</em>'
+                : ''
+            }</span>
+          </span>
+          <input
+            type="checkbox"
+            id="notif-pref-desktop"
+            class="linka-profile-setting-toggle"
+            ${prefs.desktop ? 'checked' : ''}
+            ${desktopPermission === 'denied' || desktopPermission === 'unsupported' ? 'disabled' : ''}
+          />
+        </label>
+      </div>
+
+      <header class="linka-profile-settings-section-head">
+        <span>Account</span>
+      </header>
+
+      <div class="linka-profile-settings-rows">
+        <div class="linka-profile-setting-row linka-profile-setting-row-static">
+          <span class="linka-profile-setting-label">
+            <strong>Email</strong>
+            <span>${escHtml(profile.email)}</span>
+          </span>
+        </div>
+        <div class="linka-profile-setting-row linka-profile-setting-row-static">
+          <span class="linka-profile-setting-label">
+            <strong>Username</strong>
+            <span>@${escHtml(profile.name.toLowerCase())} — username and email aren't editable on Noroff.</span>
+          </span>
+        </div>
+
+        <button type="button" id="profile-signout-btn" class="linka-profile-signout">
+          <span class="btn-icon">${iconSvg(LogOut, { size: 14, strokeWidth: 2.2 })}</span>
+          <span>Sign out</span>
+        </button>
+      </div>
+    </section>
+  `;
+}
+
 function renderEmptyState(title: string, body: string): string {
   return `
     <div class="linka-profile-empty">
@@ -351,8 +487,32 @@ function getStoredUsername(): string | null {
 /* -------------------------------------- Interactions -------------------------------------- */
 function initializeProfileInteractions(username: string, isOwnProfile: boolean): void {
   wirePostCardActions();
-  initializeTabs(username);
+  initializeTabs(username, isOwnProfile);
   if (!isOwnProfile && isLoggedIn()) initializeFollowButton(username);
+  if (isOwnProfile) initializeEditButton(username);
+}
+
+function initializeEditButton(username: string): void {
+  const btn = document.getElementById('profile-edit-btn') as HTMLButtonElement | null;
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    try {
+      const profile = await fetchUserProfile(username);
+      openProfileEditModal({
+        profile: {
+          name: profile.name,
+          bio: profile.bio,
+          avatar: profile.avatar,
+          banner: profile.banner,
+        },
+        onSaved: () => {
+          window.renderRoute?.(window.location.pathname + window.location.search);
+        },
+      });
+    } catch (err) {
+      logError('Failed to open edit modal', err);
+    }
+  });
 }
 
 async function initializeFollowButton(username: string) {
@@ -398,7 +558,7 @@ function updateFollowerCount(change: number) {
   el.textContent = count.toString();
 }
 
-function initializeTabs(username: string) {
+function initializeTabs(username: string, isOwnProfile: boolean) {
   const tabs = document.querySelectorAll<HTMLButtonElement>('.linka-profile-tab');
   const container = document.getElementById('profile-tab-content');
   if (!container) return;
@@ -412,7 +572,7 @@ function initializeTabs(username: string) {
       btn.classList.add('is-active');
       btn.setAttribute('aria-selected', 'true');
       const tab = btn.getAttribute('data-tab');
-      await switchTab(tab, username, container);
+      await switchTab(tab, username, container, isOwnProfile);
     });
   });
 }
@@ -420,7 +580,8 @@ function initializeTabs(username: string) {
 async function switchTab(
   tab: string | null,
   username: string,
-  container: HTMLElement
+  container: HTMLElement,
+  isOwnProfile: boolean
 ) {
   container.innerHTML =
     '<div class="linka-profile-empty"><p class="linka-profile-empty-body">Loading…</p></div>';
@@ -460,6 +621,10 @@ async function switchTab(
           window.renderRoute?.(href);
         });
       });
+    } else if (tab === 'settings' && isOwnProfile) {
+      const profile = await fetchUserProfile(username);
+      container.innerHTML = renderSettingsTab(profile);
+      wireSettingsTab(container);
     }
   } catch (err) {
     logError('Tab load error:', err);
@@ -468,6 +633,73 @@ async function switchTab(
       'Please try again later.'
     );
   }
+}
+
+function wireSettingsTab(container: HTMLElement): void {
+  const enabledToggle = container.querySelector<HTMLInputElement>('#notif-pref-enabled');
+  const desktopToggle = container.querySelector<HTMLInputElement>('#notif-pref-desktop');
+  const intervalRadios = container.querySelectorAll<HTMLInputElement>(
+    'input[name="notif-pref-interval"]'
+  );
+  const signoutBtn = container.querySelector<HTMLButtonElement>('#profile-signout-btn');
+
+  const refreshIntervalDisabledState = (enabled: boolean) => {
+    intervalRadios.forEach((r) => (r.disabled = !enabled));
+  };
+
+  enabledToggle?.addEventListener('change', () => {
+    savePrefs({ enabled: enabledToggle.checked });
+    refreshIntervalDisabledState(enabledToggle.checked);
+    restartNotificationsPolling();
+  });
+
+  intervalRadios.forEach((radio) => {
+    radio.addEventListener('change', () => {
+      if (!radio.checked) return;
+      savePrefs({ intervalMs: Number(radio.value) });
+      container
+        .querySelectorAll('.linka-profile-setting-segment')
+        .forEach((s) => s.classList.remove('is-active'));
+      radio.closest('.linka-profile-setting-segment')?.classList.add('is-active');
+      restartNotificationsPolling();
+    });
+  });
+
+  desktopToggle?.addEventListener('change', async () => {
+    if (desktopToggle.checked && typeof Notification !== 'undefined') {
+      // Asking permission while the user explicitly opts in keeps the
+      // browser from showing a confusing prompt at app boot.
+      if (Notification.permission === 'default') {
+        const result = await Notification.requestPermission();
+        if (result !== 'granted') {
+          desktopToggle.checked = false;
+          savePrefs({ desktop: false });
+          return;
+        }
+      } else if (Notification.permission === 'denied') {
+        desktopToggle.checked = false;
+        savePrefs({ desktop: false });
+        return;
+      }
+    }
+    savePrefs({ desktop: desktopToggle.checked });
+    if (desktopToggle.checked) void checkForNotifications();
+  });
+
+  signoutBtn?.addEventListener('click', async () => {
+    const ok = await confirmDialog({
+      title: 'Sign out?',
+      body: 'You will need to sign in again to view your feed.',
+      confirmLabel: 'Sign out',
+      cancelLabel: 'Stay',
+    });
+    if (!ok) return;
+    stopNotificationsPolling({ clear: true });
+    logout();
+    window.updateNavbarAfterLogout?.();
+    history.pushState({ path: '/' }, '', '/');
+    window.renderRoute?.('/');
+  });
 }
 
 async function checkIfFollowing(username: string): Promise<boolean> {

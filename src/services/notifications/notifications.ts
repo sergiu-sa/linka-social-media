@@ -21,6 +21,7 @@ import {
 } from './snapshot';
 import { getLocalItem } from '../../utils/storage';
 import { error as logError } from '../../utils/log';
+import { loadPrefs } from './prefs';
 
 export type NotificationItem = {
   postId: number;
@@ -32,7 +33,6 @@ export type NotificationItem = {
   latestAt: string;
 };
 
-const POLL_INTERVAL_MS = 120_000;
 const TITLE_TRUNC = 50;
 
 type Listener = (items: NotificationItem[]) => void;
@@ -156,6 +156,29 @@ export async function checkForNotifications(): Promise<NotificationItem[]> {
   }
   saveSnapshot(merged);
 
+  // Fire a single OS-level notification when new items appear since the last
+  // check. Only when the user opted in AND has granted permission AND the
+  // tab is hidden — no point pinging while they're already looking.
+  if (
+    items.length > 0 &&
+    items.length > lastItems.length &&
+    loadPrefs().desktop &&
+    typeof Notification !== 'undefined' &&
+    Notification.permission === 'granted' &&
+    document.visibilityState === 'hidden'
+  ) {
+    const newCount = items.length - lastItems.length;
+    try {
+      new Notification('LINKA — new activity', {
+        body: `${newCount} ${newCount === 1 ? 'post has' : 'posts have'} new likes or comments.`,
+        icon: '/favicon.ico',
+        tag: 'linka-notif',
+      });
+    } catch {
+      /* ignore — Notification ctor can throw on some browsers/edge cases */
+    }
+  }
+
   lastItems = items;
   publish();
   return items;
@@ -205,14 +228,26 @@ export function markAllRead(): void {
 }
 
 export function startPolling(): void {
-  if (intervalId !== null) return;
+  // Tear down before applying current prefs so this doubles as a "restart".
+  if (intervalId !== null || visibilityHandler) {
+    teardownTimers();
+  }
+  const prefs = loadPrefs();
+  if (!prefs.enabled) {
+    lastItems = [];
+    publish();
+    return;
+  }
+
   void checkForNotifications();
 
-  intervalId = window.setInterval(() => {
-    if (document.visibilityState === 'visible') {
-      void checkForNotifications();
-    }
-  }, POLL_INTERVAL_MS);
+  if (prefs.intervalMs > 0) {
+    intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void checkForNotifications();
+      }
+    }, prefs.intervalMs);
+  }
 
   visibilityHandler = () => {
     if (document.visibilityState === 'visible') {
@@ -222,7 +257,12 @@ export function startPolling(): void {
   document.addEventListener('visibilitychange', visibilityHandler);
 }
 
-export function stopPolling(opts: { clear?: boolean } = {}): void {
+/** Re-apply preferences without dropping subscribers. */
+export function restartPolling(): void {
+  startPolling();
+}
+
+function teardownTimers(): void {
   if (intervalId !== null) {
     window.clearInterval(intervalId);
     intervalId = null;
@@ -231,6 +271,10 @@ export function stopPolling(opts: { clear?: boolean } = {}): void {
     document.removeEventListener('visibilitychange', visibilityHandler);
     visibilityHandler = null;
   }
+}
+
+export function stopPolling(opts: { clear?: boolean } = {}): void {
+  teardownTimers();
   lastItems = [];
   if (opts.clear) clearSnapshot();
   publish();

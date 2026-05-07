@@ -6,6 +6,7 @@
 
 import { get, post, put, del } from "../api/client";
 import { error as logError } from "../../utils/log";
+import { getLocalItem } from "../../utils/storage";
 
 export interface NoroffPost {
   id: number;
@@ -120,22 +121,28 @@ export async function createPost(payload: {
   tags?: string[];
   media?: { url: string; alt?: string };
 }): Promise<NoroffPost> {
-  const response = await post(BASE_URL, {
+  // `?_author=true` makes Noroff include the author block in the response.
+  // Without it, the new post comes back with no `author.name` and the
+  // post-card falls back to "Unknown" until the next full feed reload.
+  const response = await post(`${BASE_URL}?_author=true`, {
     ...payload,
     tags: payload.tags && payload.tags.length > 0 ? payload.tags : [],
   });
 
   const newPost = (response as any).data || response;
+  const localUser = (getLocalItem("user") as string) || "";
 
-  // Normalise: the create endpoint occasionally omits collections that the
-  // post-card renderer expects. Without these defaults the new card crashes.
+  // Normalise: the create endpoint occasionally omits collections + the
+  // author block; fall back to the locally-stored username so the card
+  // never renders as "Unknown" right after the user posted.
   return {
     ...newPost,
     tags: newPost.tags || [],
     _count: newPost._count || { comments: 0, reactions: 0 },
     reactions: newPost.reactions || [],
     author: {
-      ...newPost.author,
+      name: newPost.author?.name || localUser || "Unknown",
+      email: newPost.author?.email || "",
       avatar: newPost.author?.avatar || { url: "", alt: "" },
     },
   };

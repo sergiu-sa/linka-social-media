@@ -9,6 +9,7 @@
  */
 
 import type { ThreeStarHandle } from './threeStar';
+import { mountStarfield, type StarfieldHandle } from './starfield';
 import { computePulseRows, computeArmLabels, getCurrentUsername, type ArmLabel } from '../utils/heroSignals';
 import { getLastVisit, setLastVisit } from '../utils/lastVisit';
 import type { NoroffPost } from '../services/posts/posts';
@@ -97,6 +98,7 @@ export function feedHeroMarkup(data: FeedHeroData): string {
           </dl>
         </div>
         <div class="feed-hero-graph" role="img" aria-label="${escapeHtml(a11ySummary)}">
+          <canvas id="feed-hero-bg-canvas" class="feed-hero-bg-canvas" aria-hidden="true"></canvas>
           <canvas id="feed-hero-canvas" aria-hidden="true"></canvas>
           <p class="feed-hero-graph-label" aria-hidden="true">
             <span class="feed-hero-graph-pulse" aria-hidden="true"></span>NETWORK · 24H
@@ -136,6 +138,16 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
 
   let starHandle: ThreeStarHandle | null = null;
   let starDisposed = false;
+  let starfieldHandle: StarfieldHandle | null = null;
+
+  const bgCanvas = document.getElementById('feed-hero-bg-canvas') as HTMLCanvasElement | null;
+  if (bgCanvas) {
+    starfieldHandle = mountStarfield(bgCanvas, {
+      contained: true,
+      starCount: 90,
+      linkDistance: 110,
+    });
+  }
 
   const onArmClick = (i: number) => {
     const a = arms[i];
@@ -222,6 +234,7 @@ export function mountFeedHero(data: FeedHeroData): FeedHeroHandle {
     dispose() {
       starDisposed = true;
       starHandle?.dispose();
+      starfieldHandle?.dispose();
       rail?.removeEventListener('click', onRailClick);
       rail?.removeEventListener('keydown', onRailKey);
       armLinks.forEach((a) => a.removeEventListener('click', onArmLinkClick));
