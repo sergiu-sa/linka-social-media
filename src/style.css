@@ -942,6 +942,21 @@ html.light-mode .feed-hero-graph {
   }
 }
 
+/* Atmospheric background — twinkling stars (dark) / orange node mesh (light)
+   sitting BEHIND the threeStar canvas. Same effect the intro page uses. */
+.feed-hero-graph .feed-hero-bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.feed-hero-graph #feed-hero-canvas {
+  position: relative;
+  z-index: 1;
+}
+
 .feed-hero-graph-label {
   position: absolute;
   bottom: 8px;
@@ -2387,6 +2402,110 @@ html.light-mode .feed-hero-compose-input {
   }
 }
 
+/* ----- People strip (search results) ----- */
+.feed-people-strip {
+  margin: var(--space-5) 0 var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.45);
+}
+.dark .feed-people-strip {
+  border-bottom-color: rgba(51, 65, 85, 0.45);
+}
+.feed-people-strip-heading {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  margin-bottom: 0.65rem;
+}
+.feed-people-strip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.4rem;
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.feed-people-strip-list::-webkit-scrollbar {
+  height: 6px;
+}
+.feed-people-strip-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.85rem 0.7rem;
+  min-width: 11rem;
+  flex-shrink: 0;
+  background: rgba(241, 245, 249, 0.55);
+  border: 1px solid rgba(203, 213, 225, 0.55);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.dark .feed-people-strip-card {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(51, 65, 85, 0.55);
+}
+.feed-people-strip-card:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  transform: translateY(-1px);
+}
+.feed-people-strip-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  min-width: 0;
+}
+.feed-people-strip-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.feed-people-strip-avatar-fallback {
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+.feed-people-strip-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: rgb(15 23 42);
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dark .feed-people-strip-name {
+  color: var(--color-fg-base);
+}
+.feed-people-strip-bio {
+  font-size: 0.72rem;
+  color: var(--color-fg-muted);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 100%;
+}
+.feed-people-strip-follow {
+  margin-top: 0.2rem;
+}
+
 /* Empty / error / inline-expand close */
 .feed-empty {
   text-align: center;
@@ -3076,6 +3195,136 @@ html.light-mode .linka-nav-search-input:focus {
   pointer-events: none;
 }
 
+/* ----- Search typeahead dropdown ----- */
+.linka-search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 65;
+  max-height: min(60vh, 28rem);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(203, 213, 225, 0.7);
+  border-radius: var(--radius-md);
+  box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.32);
+}
+.dark .linka-search-dropdown {
+  background: rgb(30 41 59);
+  border-color: rgba(51, 65, 85, 0.7);
+}
+.linka-search-dropdown-section + .linka-search-dropdown-section {
+  border-top: 1px solid rgba(203, 213, 225, 0.5);
+}
+.dark .linka-search-dropdown-section + .linka-search-dropdown-section {
+  border-top-color: rgba(51, 65, 85, 0.5);
+}
+.linka-search-dropdown-heading {
+  display: block;
+  padding: 0.5rem 0.85rem 0.3rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.linka-search-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.linka-search-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  color: rgb(15 23 42);
+}
+.dark .linka-search-dropdown-item {
+  color: var(--color-fg-base);
+}
+.linka-search-dropdown-item:hover,
+.linka-search-dropdown-item:focus-visible {
+  background: var(--color-orange-tint);
+  outline: none;
+}
+.linka-search-dropdown-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.linka-search-dropdown-avatar-fallback {
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.linka-search-dropdown-avatar-post {
+  background: rgba(241, 245, 249, 0.7);
+  color: var(--color-orange);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+.dark .linka-search-dropdown-avatar-post {
+  background: rgba(15, 23, 42, 0.6);
+}
+.linka-search-dropdown-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.linka-search-dropdown-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.linka-search-dropdown-meta {
+  font-size: 0.74rem;
+  color: var(--color-fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.linka-search-dropdown-empty {
+  margin: 0;
+  padding: 1.2rem 0.85rem;
+  font-size: 0.84rem;
+  font-style: italic;
+  color: var(--color-fg-muted);
+  text-align: center;
+}
+.linka-search-dropdown-all {
+  width: 100%;
+  text-align: center;
+  padding: 0.65rem 0.85rem;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(203, 213, 225, 0.5);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-orange);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.dark .linka-search-dropdown-all {
+  border-top-color: rgba(51, 65, 85, 0.5);
+}
+.linka-search-dropdown-all:hover {
+  background: var(--color-orange-tint);
+}
+
 .linka-nav-links {
   display: none;
   align-items: center;
@@ -3626,6 +3875,115 @@ body:has(.linka-profile) {
   box-sizing: border-box;
 }
 
+/* ----- Banner ----- */
+.linka-profile-banner {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+}
+.linka-profile-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.linka-profile-banner.is-empty {
+  height: 220px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(249, 115, 22, 0.35), transparent 55%),
+    radial-gradient(circle at 82% 70%, rgba(249, 115, 22, 0.18), transparent 60%),
+    linear-gradient(135deg, rgb(15 23 42), rgb(30 41 59));
+}
+html.light-mode .linka-profile-banner.is-empty {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(249, 115, 22, 0.55), transparent 55%),
+    radial-gradient(circle at 82% 70%, rgba(249, 115, 22, 0.28), transparent 60%),
+    linear-gradient(135deg, #fff7ed, #fde6c8);
+}
+/* Subtle dissolve at the banner's bottom edge — kept short so it doesn't eat
+   into the avatar's overlap zone. */
+.linka-profile-banner::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36px;
+  background: linear-gradient(to bottom, transparent, var(--color-bg-base));
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .linka-profile-banner {
+    height: 200px;
+  }
+  .linka-profile-banner.is-empty {
+    height: 160px;
+  }
+}
+
+/* Avatar overlaps the banner edge. Use translateY rather than margin so the
+   flex-row layout still computes against the avatar's natural box (otherwise
+   negative margin pulls the whole line up and clips the name/handle). z-index
+   keeps the avatar above the banner regardless of stacking context. */
+.linka-profile-column {
+  position: relative;
+  padding-top: var(--space-5);
+  /* `.feed-column` sets `overflow-x: hidden`, which (per CSS spec) forces
+     overflow-y to clip too — that was clipping the avatar's translated-up
+     portion into the banner. Profile column needs the avatar to overflow. */
+  overflow: visible;
+}
+.linka-profile-column .linka-profile-avatar,
+.linka-profile-column .linka-profile-avatar-fallback {
+  position: relative;
+  z-index: 2;
+  transform: translateY(-84px);
+  margin-bottom: -68px;
+  border: 4px solid var(--color-bg-base);
+  box-shadow: 0 10px 22px -14px rgba(15, 23, 42, 0.35);
+  width: 132px;
+  height: 132px;
+}
+.linka-profile-column .linka-profile-avatar-fallback {
+  font-size: 2.4rem;
+}
+@media (max-width: 640px) {
+  .linka-profile-column .linka-profile-avatar,
+  .linka-profile-column .linka-profile-avatar-fallback {
+    width: 100px;
+    height: 100px;
+    transform: translateY(-60px);
+    margin-bottom: -48px;
+  }
+}
+
+/* ----- Edit profile pill button ----- */
+.linka-profile-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  background: transparent;
+  color: var(--color-orange);
+  border: 1px solid rgba(249, 115, 22, 0.55);
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.linka-profile-edit:hover,
+.linka-profile-edit:focus-visible {
+  background: var(--color-orange);
+  color: #fff;
+  transform: translateY(-1px);
+  outline: none;
+}
+
 .linka-profile-header {
   display: flex;
   align-items: flex-end;
@@ -3640,7 +3998,7 @@ body:has(.linka-profile) {
 }
 .linka-profile-identity {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 1.1rem;
   min-width: 0;
 }
@@ -3881,6 +4239,51 @@ body:has(.linka-profile) {
   }
 }
 
+/* Mobile: 5 tabs (own profile) won't fit one row at 400px even with tight
+   padding, and horizontal scroll buries the rightmost tab. Wrap onto
+   multiple rows so every tab is visible at once. Counts move out (they're
+   already shown in the stats bar above), and the bottom border on each
+   tab replaces the container border so wrapped rows still look right. */
+@media (max-width: 640px) {
+  .linka-profile-tabs {
+    margin-top: var(--space-5);
+    padding: 0;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    border-bottom: 0;
+  }
+  .linka-profile-tab {
+    padding: 0.7rem 0.85rem 0.65rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.45);
+  }
+  .dark .linka-profile-tab {
+    border-bottom-color: rgba(51, 65, 85, 0.45);
+  }
+  .linka-profile-tab-count {
+    display: none;
+  }
+  .linka-profile-tab.is-active::before {
+    display: none;
+  }
+  /* Active underline still anchors to each tab's own bottom edge */
+  .linka-profile-tab::after {
+    bottom: -1px;
+  }
+}
+@media (max-width: 380px) {
+  .linka-profile-tab {
+    padding: 0.65rem 0.6rem 0.6rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+  }
+}
+
 .linka-profile-tab-content {
   margin-top: 0;
 }
@@ -3982,6 +4385,13 @@ body:has(.linka-profile) {
 .linka-profile-userlist-name {
   font-weight: 700;
   font-size: 0.95rem;
+  color: rgb(15 23 42);
+}
+.dark .linka-profile-userlist-name {
+  color: var(--color-fg-base);
+}
+.linka-profile-userlist-row:hover .linka-profile-userlist-name {
+  color: var(--color-orange);
 }
 .linka-profile-userlist-email {
   margin-left: auto;
@@ -4589,4 +4999,459 @@ body:has(.linka-profile) .linka-footer {
   border-radius: var(--radius-sm);
   z-index: var(--z-toast);
   box-shadow: var(--shadow-focus-ring);
+}
+
+/* ==========================================================================
+   PROFILE — Settings tab
+   ========================================================================== */
+
+.linka-profile-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) 0;
+}
+.linka-profile-settings-section-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.linka-profile-settings-icon {
+  display: inline-flex;
+  color: var(--color-orange);
+}
+.linka-profile-settings-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.linka-profile-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(241, 245, 249, 0.55);
+  border: 1px solid rgba(203, 213, 225, 0.55);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.dark .linka-profile-setting-row {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-setting-row-static {
+  cursor: default;
+}
+.linka-profile-setting-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.linka-profile-setting-label strong {
+  font-size: 0.92rem;
+  color: rgb(15 23 42);
+  font-weight: 700;
+}
+.dark .linka-profile-setting-label strong {
+  color: var(--color-fg-base);
+}
+.linka-profile-setting-label span {
+  font-size: 0.78rem;
+  color: var(--color-fg-muted);
+  line-height: 1.45;
+}
+.linka-profile-setting-label em {
+  font-style: italic;
+  color: var(--color-error, rgb(220 38 38));
+}
+
+.linka-profile-setting-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 22px;
+  background: rgb(203 213 225);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+}
+.dark .linka-profile-setting-toggle {
+  background: rgb(71 85 105);
+}
+.linka-profile-setting-toggle::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  transition: transform 0.18s ease;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.18);
+}
+.linka-profile-setting-toggle:checked {
+  background: var(--color-orange);
+}
+.linka-profile-setting-toggle:checked::before {
+  transform: translateX(16px);
+}
+.linka-profile-setting-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.linka-profile-setting-segments {
+  display: inline-flex;
+  background: rgba(241, 245, 249, 0.7);
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  border-radius: var(--radius-pill);
+  padding: 2px;
+  flex-shrink: 0;
+}
+.dark .linka-profile-setting-segments {
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+.linka-profile-setting-segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.linka-profile-setting-segment input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.linka-profile-setting-segment.is-active {
+  background: var(--color-orange);
+  color: #fff;
+}
+.linka-profile-setting-segment input:disabled {
+  cursor: not-allowed;
+}
+.linka-profile-setting-segment:has(input:disabled) {
+  opacity: 0.5;
+}
+
+.linka-profile-signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  color: var(--color-error, rgb(220 38 38));
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.linka-profile-signout:hover,
+.linka-profile-signout:focus-visible {
+  background: var(--color-error, rgb(220 38 38));
+  color: #fff;
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .linka-profile-setting-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+  .linka-profile-setting-segments {
+    align-self: flex-start;
+  }
+}
+
+/* ==========================================================================
+   PROFILE — Edit modal
+   ========================================================================== */
+
+body.profile-edit-open {
+  overflow: hidden;
+}
+.profile-edit-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: post-modal-backdrop-in 200ms ease-out;
+}
+.profile-edit-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  background: #fff;
+  border: 1px solid rgba(203, 213, 225, 0.55);
+  border-radius: var(--radius-md);
+  box-shadow: 0 36px 80px -28px rgba(15, 23, 42, 0.55);
+  overflow: hidden;
+  animation: post-modal-card-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .profile-edit-card {
+  background: rgb(15 23 42);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-edit-backdrop,
+  .profile-edit-card {
+    animation: none;
+  }
+}
+
+.profile-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0.95rem 1.1rem;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+  flex-shrink: 0;
+}
+.dark .profile-edit-header {
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+.profile-edit-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: rgb(15 23 42);
+}
+.dark .profile-edit-title {
+  color: var(--color-fg-base);
+}
+.profile-edit-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-fg-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.profile-edit-close:hover,
+.profile-edit-close:focus-visible {
+  color: var(--color-orange);
+  background: var(--color-orange-tint);
+  outline: none;
+}
+
+.profile-edit-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4) 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.profile-edit-note {
+  font-size: 0.78rem;
+  color: var(--color-fg-muted);
+  font-style: italic;
+}
+
+.profile-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+.profile-edit-field legend {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin-bottom: 0.25rem;
+}
+.profile-edit-field label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--color-fg-muted);
+}
+.profile-edit-field input[type='url'],
+.profile-edit-field input[type='text'],
+.profile-edit-field textarea {
+  width: 100%;
+  background: rgba(241, 245, 249, 0.55);
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: rgb(15 23 42);
+  outline: 0;
+  transition: border-color 0.18s ease;
+  box-sizing: border-box;
+}
+.dark .profile-edit-field input[type='url'],
+.dark .profile-edit-field input[type='text'],
+.dark .profile-edit-field textarea {
+  background: rgba(30, 41, 59, 0.55);
+  border-color: rgba(51, 65, 85, 0.55);
+  color: var(--color-fg-base);
+}
+.profile-edit-field input[type='url']:focus,
+.profile-edit-field input[type='text']:focus,
+.profile-edit-field textarea:focus {
+  border-color: var(--color-orange);
+}
+.profile-edit-field textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+  line-height: 1.5;
+}
+.profile-edit-counter {
+  align-self: flex-end;
+  font-size: 0.7rem;
+  color: var(--color-fg-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-edit-preview {
+  margin-top: 0.35rem;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(203, 213, 225, 0.45);
+  max-height: 110px;
+}
+.profile-edit-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.profile-edit-preview-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-pill);
+  max-height: 64px;
+}
+.profile-edit-error {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-error, rgb(220 38 38));
+}
+.profile-edit-error-summary {
+  padding: 0.55rem 0.75rem;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+.profile-edit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid rgba(203, 213, 225, 0.5);
+  flex-shrink: 0;
+}
+.dark .profile-edit-footer {
+  border-top-color: rgba(51, 65, 85, 0.5);
+}
+.profile-edit-cancel,
+.profile-edit-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.profile-edit-cancel {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  color: var(--color-fg-muted);
+}
+.profile-edit-cancel:hover {
+  border-color: rgba(148, 163, 184, 0.85);
+  color: rgb(15 23 42);
+}
+.dark .profile-edit-cancel:hover {
+  color: var(--color-fg-base);
+}
+.profile-edit-save {
+  background: var(--color-orange);
+  color: #fff;
+  border: 1px solid var(--color-orange);
+}
+.profile-edit-save:hover {
+  background: var(--color-orange-hover);
+  border-color: var(--color-orange-hover);
+  transform: translateY(-1px);
+}
+.profile-edit-save:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .profile-edit-backdrop {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+  .profile-edit-card {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    border: 0;
+  }
 }

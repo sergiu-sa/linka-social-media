@@ -7,11 +7,8 @@
 
 import { renderRoute } from '../router';
 import { isLoggedIn, logout } from '../utils/auth';
-import {
-  getAllPosts,
-  getPublicPosts,
-  type NoroffPost,
-} from '../services/posts/posts';
+import { search, type SearchProfile, type SearchResults } from '../services/search/search';
+import type { NoroffPost } from '../services/posts/posts';
 import { error as logError } from '../utils/log';
 import {
   getCurrentTheme,
@@ -31,10 +28,6 @@ import {
   stopPolling as stopNotificationsPolling,
 } from '../services/notifications/notifications';
 import '../types/index';
-
-type SearchResult =
-  | { type: 'post'; data: NoroffPost }
-  | { type: 'user'; data: NoroffPost['author'] };
 
 const STAR_SVG = `
   <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -80,10 +73,19 @@ export default function NavbarPage() {
             type="search"
             id="navbar-search"
             class="linka-nav-search-input"
-            placeholder="Search posts, users, hashtags…"
+            placeholder="Search posts and people…"
             aria-label="Search"
+            aria-autocomplete="list"
+            aria-controls="navbar-search-dropdown"
           />
           <kbd class="linka-nav-search-hint" aria-hidden="true">⌘K</kbd>
+          <div
+            id="navbar-search-dropdown"
+            class="linka-search-dropdown"
+            role="listbox"
+            aria-label="Search suggestions"
+            hidden
+          ></div>
         </div>
 
         <div class="linka-nav-links">
@@ -244,65 +246,245 @@ function wireLogout() {
   document.getElementById('mobile-nav-logout')?.addEventListener('click', handler);
 }
 
-function wireSearch() {
-  const desktopBtn = document.getElementById('navbar-search') as HTMLInputElement | null;
-  const mobileBtn = document.getElementById('mobile-navbar-search') as HTMLInputElement | null;
-  if (desktopBtn) attachSearchInput(desktopBtn);
-  if (mobileBtn) attachSearchInput(mobileBtn);
+const SEARCH_DEBOUNCE_MS = 250;
+const DROPDOWN_LIMIT = 4;
+
+function escAttr(s: string): string {
+  return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function escHtml(s: string): string {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
 }
 
-function attachSearchInput(input: HTMLInputElement) {
-  const handle = async () => {
-    const term = input.value.trim();
-    if (term === '') {
-      window.searchQuery = null;
-      if (window.location.pathname === '/feed') renderRoute('/feed');
+function wireSearch() {
+  const desktopInput = document.getElementById('navbar-search') as HTMLInputElement | null;
+  const desktopDropdown = document.getElementById('navbar-search-dropdown');
+  const mobileInput = document.getElementById('mobile-navbar-search') as HTMLInputElement | null;
+
+  if (desktopInput) attachSearchInput(desktopInput, desktopDropdown);
+  if (mobileInput) attachSearchInput(mobileInput, null);
+}
+
+function commitSearch(input: HTMLInputElement, query: string, results: SearchResults): void {
+  window.searchQuery = query;
+  window.searchResults = results.posts;
+  window.userResults = results.profiles;
+  if (window.location.pathname !== '/feed') {
+    history.pushState({ path: '/feed' }, '', '/feed');
+  }
+  renderRoute('/feed');
+  input.blur();
+}
+
+function clearSearchState(input: HTMLInputElement): void {
+  window.searchQuery = null;
+  window.searchResults = undefined;
+  window.userResults = undefined;
+  if (window.location.pathname === '/feed') renderRoute('/feed');
+  input.blur();
+}
+
+function renderProfileItem(p: SearchProfile): string {
+  const initial = (p.name || '?').charAt(0).toUpperCase();
+  const tagline = p.bio ? p.bio : `@${p.name.toLowerCase()}`;
+  return `
+    <li
+      class="linka-search-dropdown-item"
+      role="option"
+      data-search-item="profile"
+      data-username="${escAttr(p.name)}"
+      tabindex="0"
+    >
+      ${
+        p.avatar?.url
+          ? `<img class="linka-search-dropdown-avatar" src="${escAttr(p.avatar.url)}" alt="" loading="lazy" />`
+          : `<span class="linka-search-dropdown-avatar linka-search-dropdown-avatar-fallback">${escHtml(initial)}</span>`
+      }
+      <span class="linka-search-dropdown-text">
+        <span class="linka-search-dropdown-title">${escHtml(p.name)}</span>
+        <span class="linka-search-dropdown-meta">${escHtml(tagline)}</span>
+      </span>
+    </li>
+  `;
+}
+
+function renderPostItem(post: NoroffPost): string {
+  const author = post.author?.name || 'Unknown';
+  const title = post.title || '(untitled post)';
+  const truncatedTitle = title.length > 60 ? title.substring(0, 60) + '…' : title;
+  return `
+    <li
+      class="linka-search-dropdown-item"
+      role="option"
+      data-search-item="post"
+      data-post-id="${post.id}"
+      tabindex="0"
+    >
+      <span class="linka-search-dropdown-avatar linka-search-dropdown-avatar-post" aria-hidden="true">¶</span>
+      <span class="linka-search-dropdown-text">
+        <span class="linka-search-dropdown-title">${escHtml(truncatedTitle)}</span>
+        <span class="linka-search-dropdown-meta">by ${escHtml(author)}</span>
+      </span>
+    </li>
+  `;
+}
+
+function attachSearchInput(input: HTMLInputElement, dropdown: HTMLElement | null) {
+  let debounceTimer: number | null = null;
+  let latestResults: SearchResults | null = null;
+  let latestTerm = '';
+
+  const closeDropdown = () => {
+    dropdown?.setAttribute('hidden', '');
+    if (dropdown) dropdown.innerHTML = '';
+  };
+
+  const renderDropdown = (results: SearchResults, query: string) => {
+    if (!dropdown) return;
+    if (results.posts.length === 0 && results.profiles.length === 0) {
+      dropdown.innerHTML = `<p class="linka-search-dropdown-empty">No posts or people match “${escHtml(query)}”.</p>`;
+      dropdown.removeAttribute('hidden');
       return;
     }
-    const results = await enhancedSearch(term);
-    window.searchQuery = term;
-    window.searchResults = results
-      .filter((r) => r.type === 'post')
-      .map((r) => r.data) as NoroffPost[];
-    window.userResults = results
-      .filter((r) => r.type === 'user')
-      .map((r) => r.data);
-    if (window.location.pathname !== '/feed') {
-      history.pushState({ path: '/feed' }, '', '/feed');
-    }
-    renderRoute('/feed');
-  };
-  input.addEventListener('input', handle);
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handle();
-  });
-}
+    const profileItems = results.profiles
+      .slice(0, DROPDOWN_LIMIT)
+      .map(renderProfileItem)
+      .join('');
+    const postItems = results.posts
+      .slice(0, DROPDOWN_LIMIT)
+      .map(renderPostItem)
+      .join('');
 
-async function enhancedSearch(query: string): Promise<SearchResult[]> {
-  const out: SearchResult[] = [];
-  try {
-    const response = isLoggedIn()
-      ? await getAllPosts(50, 1)
-      : await getPublicPosts(50, 1);
-    const q = query.toLowerCase();
-    const matchingPosts = response.data.filter(
-      (post: NoroffPost) =>
-        post.title.toLowerCase().includes(q) ||
-        post.body.toLowerCase().includes(q) ||
-        post.author.name.toLowerCase().includes(q)
-    );
-    const uniqueUsers = new Map<string, NoroffPost['author']>();
-    matchingPosts.forEach((post) => {
-      if (post.author.name.toLowerCase().includes(q)) {
-        uniqueUsers.set(post.author.name, post.author);
+    dropdown.innerHTML = `
+      ${
+        profileItems
+          ? `<section class="linka-search-dropdown-section">
+              <header class="linka-search-dropdown-heading">People</header>
+              <ul role="presentation">${profileItems}</ul>
+            </section>`
+          : ''
       }
-    });
-    uniqueUsers.forEach((u) => out.push({ type: 'user', data: u }));
-    matchingPosts.forEach((p) => out.push({ type: 'post', data: p }));
-  } catch (err) {
-    logError('Search error:', err);
-  }
-  return out;
+      ${
+        postItems
+          ? `<section class="linka-search-dropdown-section">
+              <header class="linka-search-dropdown-heading">Posts</header>
+              <ul role="presentation">${postItems}</ul>
+            </section>`
+          : ''
+      }
+      <button type="button" class="linka-search-dropdown-all" data-search-item="all">
+        See all results for “${escHtml(query)}” →
+      </button>
+    `;
+    dropdown.removeAttribute('hidden');
+  };
+
+  const runSearch = async (term: string): Promise<SearchResults | null> => {
+    try {
+      const results = await search(term);
+      // Only the most recently typed term should win, otherwise an early
+      // request can clobber a later one's UI when network latency varies.
+      if (input.value.trim() !== term) return null;
+      latestResults = results;
+      latestTerm = term;
+      return results;
+    } catch (err) {
+      logError('search failed', err);
+      return null;
+    }
+  };
+
+  const onType = () => {
+    if (debounceTimer !== null) window.clearTimeout(debounceTimer);
+    const term = input.value.trim();
+    if (term === '') {
+      latestResults = null;
+      latestTerm = '';
+      closeDropdown();
+      return;
+    }
+    debounceTimer = window.setTimeout(async () => {
+      const results = await runSearch(term);
+      if (results) renderDropdown(results, term);
+    }, SEARCH_DEBOUNCE_MS);
+  };
+
+  const onKeydown = async (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      closeDropdown();
+      input.blur();
+      return;
+    }
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const term = input.value.trim();
+    if (!term) {
+      clearSearchState(input);
+      closeDropdown();
+      return;
+    }
+    if (debounceTimer !== null) window.clearTimeout(debounceTimer);
+    let results = latestResults && latestTerm === term ? latestResults : null;
+    if (!results) results = await runSearch(term);
+    if (!results) return;
+    closeDropdown();
+    commitSearch(input, term, results);
+  };
+
+  input.addEventListener('input', onType);
+  input.addEventListener('keydown', onKeydown);
+
+  input.addEventListener('focus', () => {
+    if (latestResults && latestTerm === input.value.trim()) {
+      renderDropdown(latestResults, latestTerm);
+    }
+  });
+
+  // Click handlers on the dropdown itself
+  dropdown?.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null;
+    const item = target?.closest<HTMLElement>('[data-search-item]');
+    if (!item) return;
+    e.preventDefault();
+    const kind = item.dataset.searchItem;
+    const navigateAndReset = (url: string) => {
+      input.value = '';
+      latestResults = null;
+      latestTerm = '';
+      window.searchQuery = null;
+      window.searchResults = undefined;
+      window.userResults = undefined;
+      closeDropdown();
+      history.pushState({ path: url }, '', url);
+      renderRoute(url);
+    };
+    if (kind === 'profile') {
+      const username = item.dataset.username;
+      if (!username) return;
+      navigateAndReset(`/profile?user=${encodeURIComponent(username)}`);
+    } else if (kind === 'post') {
+      const postId = item.dataset.postId;
+      if (!postId) return;
+      navigateAndReset(`/feed?post=${encodeURIComponent(postId)}`);
+    } else if (kind === 'all') {
+      const term = input.value.trim();
+      if (!term || !latestResults) return;
+      closeDropdown();
+      commitSearch(input, term, latestResults);
+    }
+  });
+
+  // Close on click outside the search container
+  document.addEventListener('click', (e) => {
+    if (!dropdown) return;
+    const container = input.closest('.linka-nav-search');
+    const target = e.target as Node | null;
+    if (target && container && !container.contains(target)) {
+      closeDropdown();
+    }
+  });
 }
 
 function wireMobileMenu() {

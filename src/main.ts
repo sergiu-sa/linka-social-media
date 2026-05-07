@@ -87,9 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderRoute(window.location.pathname);
 
-  // Handle browser navigation (back/forward buttons)
+  // Handle browser navigation (back/forward buttons). preserveScroll lets
+  // the browser's own scroll-restoration take over so back/forward feels native.
   window.addEventListener('popstate', () => {
-    renderRoute();
+    renderRoute(undefined, { preserveScroll: true });
     setTimeout(() => {
       window.updateActiveNav?.();
       updateNavbarVisibility(window.location.pathname);

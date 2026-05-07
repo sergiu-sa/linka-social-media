@@ -92,7 +92,14 @@ export default async function FeedPage(): Promise<string> {
     // Check for search results from navbar
     const searchQuery = window.searchQuery;
     const searchResults = window.searchResults as NoroffPost[];
-    const isSearchMode = Boolean(searchQuery && searchResults);
+    const userResults = (window.userResults as Array<{
+      name: string;
+      bio?: string;
+      avatar?: { url: string; alt: string } | null;
+    }> | undefined) ?? [];
+    const isSearchMode = Boolean(
+      searchQuery && (searchResults || userResults.length > 0)
+    );
 
     let posts: NoroffPost[] = [];
     let postsResponse: any;
@@ -259,6 +266,12 @@ export default async function FeedPage(): Promise<string> {
               : ''
           }
 
+          ${
+            isSearchMode && userResults.length > 0
+              ? renderPeopleStrip(userResults, followingSet)
+              : ''
+          }
+
           <div class="feed-articles" id="posts-container">
             ${
               posts.length > 0
@@ -273,8 +286,12 @@ export default async function FeedPage(): Promise<string> {
                 : isSearchMode
                   ? renderEmptyState(
                       iconSvg(Search, { size: 36, strokeWidth: 1.6 }),
-                      'No posts found',
-                      'Try a different search.'
+                      userResults.length > 0
+                        ? 'No posts match — but we found people'
+                        : `No posts or people match “${escHtml(searchQuery ?? '')}”`,
+                      userResults.length > 0
+                        ? 'Try a different keyword for posts, or open one of the profiles above.'
+                        : 'Try a different keyword.'
                     )
                   : renderEmptyState(
                       iconSvg(Telescope, { size: 36, strokeWidth: 1.6 }),
@@ -343,6 +360,65 @@ export default async function FeedPage(): Promise<string> {
 }
 
 /* -------------------------------------- Renderers -------------------------------------- */
+
+function escAttr(s: string): string {
+  return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function escHtml(s: string): string {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderPeopleStrip(
+  profiles: Array<{
+    name: string;
+    bio?: string;
+    avatar?: { url: string; alt: string } | null;
+  }>,
+  followingSet: Set<string>
+): string {
+  const cards = profiles
+    .slice(0, 8)
+    .map((p) => {
+      const initial = (p.name || '?').charAt(0).toUpperCase();
+      const isFollowing = followingSet.has(p.name);
+      const followLabel = isFollowing ? 'Following' : 'Follow';
+      const followState = isFollowing ? 'following' : 'follow';
+      const avatar = p.avatar?.url
+        ? `<img class="feed-people-strip-avatar" src="${escAttr(p.avatar.url)}" alt="${escAttr(p.avatar.alt || p.name)}" loading="lazy" />`
+        : `<span class="feed-people-strip-avatar feed-people-strip-avatar-fallback" aria-hidden="true">${escHtml(initial)}</span>`;
+      return `
+        <li class="feed-people-strip-card">
+          <a
+            class="feed-people-strip-link"
+            href="/profile?user=${escAttr(p.name)}"
+            data-action="navigate-profile"
+            data-username="${escAttr(p.name)}"
+          >
+            ${avatar}
+            <span class="feed-people-strip-name">${escHtml(p.name)}</span>
+            ${p.bio ? `<span class="feed-people-strip-bio">${escHtml(p.bio)}</span>` : ''}
+          </a>
+          <button
+            type="button"
+            class="feed-author-follow feed-people-strip-follow"
+            data-action="follow-toggle"
+            data-username="${escAttr(p.name)}"
+            data-state="${followState}"
+            aria-pressed="${isFollowing}"
+          >${followLabel}</button>
+        </li>
+      `;
+    })
+    .join('');
+  return `
+    <section class="feed-people-strip" aria-label="People matching your search">
+      <header class="feed-people-strip-heading">People</header>
+      <ul class="feed-people-strip-list" role="list">${cards}</ul>
+    </section>
+  `;
+}
 
 function renderEmptyState(
   icon: string,
