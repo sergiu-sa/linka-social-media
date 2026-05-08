@@ -45,11 +45,6 @@ interface CommentLike {
 
 type PostWithComments = NoroffPost & { comments?: CommentLike[] };
 
-export function getCurrentUsername(): string | null {
-  const raw = localStorage.getItem('user');
-  return raw && raw.length > 0 ? raw : null;
-}
-
 function tallyTags(posts: NoroffPost[]): Array<[string, number]> {
   const m = new Map<string, number>();
   for (const p of posts) {

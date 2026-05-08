@@ -71,7 +71,7 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 |---|---|
 | **Language** | TypeScript (strict) |
 | **Bundler** | Vite |
-| **CSS** | Tailwind CSS v4 (`@tailwindcss/vite`, no `tailwind.config.js`) + scoped custom CSS in `src/style.css` |
+| **CSS** | Tailwind CSS v4 (`@tailwindcss/vite`, no `tailwind.config.js`) + scoped custom CSS in `src/styles/{base,surfaces,components}/` |
 | **Fonts** | `@fontsource/bebas-neue` (display), `@fontsource/open-sans` (body) |
 | **Icons** | [Lucide](https://lucide.dev/) |
 | **3D / motion** | Three.js + GSAP (intro page interactive star + feed hero ambient star + starfield/node-mesh) |
@@ -177,7 +177,11 @@ src/
 │   └── theme.ts             # Single source of truth for light/dark theme
 ├── constant.ts              # API_URL + APP_CONTAINER_CLASSNAME
 ├── main.ts                  # Application entry
-└── style.css                # Tailwind + all custom CSS (sectioned)
+├── style.css                # Slim entry — @imports every partial in source order
+└── styles/
+    ├── base/                # tokens.css · globals.css · a11y.css
+    ├── surfaces/            # one file per page (auth-shell, feed, profile, …)
+    └── components/          # one file per component (post-card, navbar, …)
 ```
 
 ---

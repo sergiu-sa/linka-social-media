@@ -1,10 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import type { NoroffPost } from '../services/posts/posts';
-import {
-  computePulseRows,
-  computeArmLabels,
-  getCurrentUsername,
-} from './heroSignals';
+import { computePulseRows, computeArmLabels } from './heroSignals';
 
 const HOUR = 3600 * 1000;
 const NOW = 1700000000000;
@@ -23,19 +19,6 @@ function mkPost(overrides: Partial<NoroffPost>): NoroffPost {
     ...overrides,
   } as NoroffPost;
 }
-
-describe('getCurrentUsername', () => {
-  beforeEach(() => localStorage.clear());
-
-  it('returns null when no user stored', () => {
-    expect(getCurrentUsername()).toBeNull();
-  });
-
-  it('returns the stored user when present', () => {
-    localStorage.setItem('user', 'sergiu');
-    expect(getCurrentUsername()).toBe('sergiu');
-  });
-});
 
 describe('computePulseRows', () => {
   it('counts unique authors active in last 24h for VOICES', () => {

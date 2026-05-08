@@ -23,20 +23,6 @@ type Endpoint = string;
 
 const API_KEY_HEADER = 'X-Noroff-API-Key';
 
-/** Read the access token from any key shape the app might have written. */
-function resolveAccessToken(): string | undefined {
-  const fromHelper = getLocalItem('accessToken') as string | null;
-  const rawToken = localStorage.getItem('token');
-  let fromAuthObj: string | undefined;
-  try {
-    fromAuthObj = JSON.parse(localStorage.getItem('auth') || 'null')
-      ?.accessToken;
-  } catch {
-    /* ignore — malformed JSON is the same as no token here */
-  }
-  return fromHelper || rawToken || fromAuthObj || undefined;
-}
-
 async function apiClient(endpoint: string, options: ApiClientOptions = {}) {
   const { body, ...customOptions } = options;
 
@@ -67,7 +53,7 @@ async function apiClient(endpoint: string, options: ApiClientOptions = {}) {
 
   // Attach auth headers
   const apiKey = getLocalItem('apiKey') as string | null;
-  const accessToken = resolveAccessToken();
+  const accessToken = getLocalItem('accessToken') as string | null;
 
   if (apiKey) {
     (config.headers as Record<string, string>)[API_KEY_HEADER] = apiKey;
@@ -131,7 +117,7 @@ export const del = (endpoint: Endpoint) =>
    not send the `X-Noroff-API-Key` header — that header is what the auth
    endpoints *issue*, so attaching it here causes the API to 401. */
 async function authPost<T>(path: string, data: object): Promise<T> {
-  const response = await fetch(`https://v2.api.noroff.dev${path}`, {
+  const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(data),
@@ -160,16 +146,13 @@ export function loginUser(
 export async function fetchApiKey(
   accessToken: string
 ): Promise<string | undefined> {
-  const response = await fetch(
-    'https://v2.api.noroff.dev/auth/create-api-key',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
-      },
-    }
-  );
+  const response = await fetch(`${API_URL}/auth/create-api-key`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/json',
+    },
+  });
 
   if (!response.ok) {
     throw new Error(
