@@ -1,0 +1,400 @@
+/* ==========================================================================
+   FOOTER (editorial colophon)
+   ========================================================================== */
+
+/* Hidden by default; shown only on routes that should display it. */
+.linka-footer {
+  display: none;
+}
+body:has(.feed-page) .linka-footer,
+body:has(.linka-profile) .linka-footer {
+  display: block;
+}
+
+.linka-footer {
+  position: relative;
+
+  background: #f8f5f0;
+  color: rgb(15 23 42);
+  border-top: 1px solid rgba(203, 213, 225, 0.7);
+  font-family: inherit;
+  isolation: isolate;
+}
+/* Dark mode: continuous with the page (same slate as the body). The
+   editorial differentiation comes from the masthead's orange bar + the
+   top hairline + the typography, NOT from a contrasting fill. Mirrors
+   how the navbar reads at the top of the page. */
+.dark .linka-footer {
+  background: var(--color-bg-base);
+  color: rgb(226 232 240);
+  border-top-color: rgba(51, 65, 85, 0.6);
+}
+
+/* Subtle paper-grain texture in light mode (warm noise via radial gradient
+   stack — no image asset). In dark mode the same trick reads as muddy
+   smudges on slate, so we drop the orange splash and keep just a single
+   very faint highlight to break up the flatness. */
+.linka-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(249, 115, 22, 0.04),
+      transparent 40%
+    ),
+    radial-gradient(circle at 90% 80%, rgba(15, 23, 42, 0.025), transparent 45%);
+  pointer-events: none;
+}
+.dark .linka-footer::before {
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(249, 115, 22, 0.025),
+    transparent 35%
+  );
+}
+
+.linka-footer-inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-6) 1.75rem;
+}
+@media (min-width: 768px) {
+  .linka-footer-inner {
+    padding: var(--space-16) var(--space-6) var(--space-8);
+  }
+}
+
+/* -------- Masthead -------- */
+
+.linka-footer-mast {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'bar word'
+    'bar tag'
+    'rule rule';
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  padding-bottom: var(--space-6);
+  margin-bottom: var(--space-10);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+}
+.dark .linka-footer-mast {
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+@media (min-width: 768px) {
+  .linka-footer-mast {
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      'bar word rule'
+      'bar tag tag';
+    gap: var(--space-2) var(--space-6);
+  }
+}
+
+.linka-footer-mast-bar {
+  grid-area: bar;
+  width: 4px;
+  align-self: stretch;
+  background: linear-gradient(to bottom, var(--color-orange), var(--color-orange-hover));
+  border-radius: 2px;
+  min-height: 3.5rem;
+}
+
+.linka-footer-wordmark {
+  grid-area: word;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 6rem);
+  letter-spacing: 0.02em;
+  line-height: 0.85;
+  color: rgb(15 23 42);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.dark .linka-footer-wordmark {
+  color: var(--color-fg-base);
+}
+.linka-footer-wordmark.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.linka-footer-mast-rule {
+  grid-area: rule;
+  display: block;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(15, 23, 42, 0) 0%,
+    rgba(15, 23, 42, 0.25) 30%,
+    rgba(249, 115, 22, 0.6) 55%,
+    rgba(15, 23, 42, 0.25) 80%,
+    rgba(15, 23, 42, 0) 100%
+  );
+  align-self: end;
+  min-width: 4rem;
+}
+.dark .linka-footer-mast-rule {
+  background: linear-gradient(
+    to right,
+    rgba(248, 250, 252, 0) 0%,
+    rgba(248, 250, 252, 0.25) 30%,
+    rgba(249, 115, 22, 0.7) 55%,
+    rgba(248, 250, 252, 0.25) 80%,
+    rgba(248, 250, 252, 0) 100%
+  );
+}
+
+.linka-footer-tagline {
+  grid-area: tag;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.dark .linka-footer-tagline {
+  color: var(--color-fg-subtle);
+}
+
+/* -------- Link grid -------- */
+
+.linka-footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding-bottom: 2.25rem;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  margin-bottom: var(--space-6);
+}
+.dark .linka-footer-grid {
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+@media (min-width: 640px) {
+  .linka-footer-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.25rem;
+  }
+}
+
+.linka-footer-col {
+  min-width: 0;
+}
+
+.linka-footer-eyebrow {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+
+.linka-footer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.linka-footer-list li {
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.linka-footer-list a,
+.linka-footer-list span,
+.linka-footer-link-btn {
+  position: relative;
+  display: inline-block;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  padding: 0.1rem 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.linka-footer-list a::after,
+.linka-footer-link-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.linka-footer-list a:hover,
+.linka-footer-list a:focus-visible,
+.linka-footer-link-btn:hover,
+.linka-footer-link-btn:focus-visible {
+  color: var(--color-orange);
+  outline: none;
+}
+.linka-footer-list a:hover::after,
+.linka-footer-list a:focus-visible::after,
+.linka-footer-link-btn:hover::after,
+.linka-footer-link-btn:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Static "Built with" entries shouldn't get the underline-hover treatment. */
+.linka-footer-list span {
+  cursor: default;
+  color: rgb(71 85 105);
+}
+.dark .linka-footer-list span {
+  color: rgb(203 213 225);
+}
+
+/* -------- Base row -------- */
+
+.linka-footer-base {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .linka-footer-base {
+    grid-template-columns: 1fr auto auto;
+    gap: var(--space-6);
+  }
+}
+
+.linka-footer-copy {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-fg-muted);
+}
+.dark .linka-footer-copy {
+  color: var(--color-fg-subtle);
+}
+.linka-footer-copy-symbol {
+  display: inline-block;
+  margin-right: 0.3rem;
+  font-family: var(--font-display);
+  color: var(--color-orange);
+  font-size: var(--text-md);
+  vertical-align: -0.05em;
+}
+
+.linka-footer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.linka-footer-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: rgba(15, 23, 42, 0.05);
+  color: rgb(71 85 105);
+}
+.dark .linka-footer-tag {
+  background: rgba(248, 250, 252, 0.06);
+  color: rgb(203 213 225);
+}
+
+.linka-footer-top {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  background: transparent;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+  justify-self: end;
+}
+.linka-footer-top-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+.linka-footer-top-arrow svg {
+  display: block;
+}
+.linka-footer-top:hover,
+.linka-footer-top:focus-visible {
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
+  border-color: transparent;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -10px rgba(249, 115, 22, 0.6);
+  outline: none;
+}
+.linka-footer-top:hover .linka-footer-top-arrow,
+.linka-footer-top:focus-visible .linka-footer-top-arrow {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 480px) {
+  .linka-footer-top-label {
+    display: none;
+  }
+  .linka-footer-top {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linka-footer-wordmark {
+    transition: none;
+  }
+  .linka-footer-list a::after,
+  .linka-footer-link-btn::after,
+  .linka-footer-top-arrow,
+  .linka-footer-top {
+    transition: none;
+  }
+}
+
+/* Lucide icon wrappers used inside text buttons (icon + label) */
+.btn-icon,
+.composer-extra-icon,
+.pag-icon,
+.comment-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.btn-icon svg,
+.composer-extra-icon svg,
+.pag-icon svg,
+.comment-action-icon svg {
+  display: block;
+}

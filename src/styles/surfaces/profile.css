@@ -1,0 +1,538 @@
+/* ==========================================================================
+   PROFILE
+   ========================================================================== */
+
+body:has(.linka-profile) {
+  background-color: var(--color-bg-base) !important;
+}
+
+.linka-profile {
+  background: var(--color-bg-base);
+  min-height: calc(100vh - 60px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ----- Banner ----- */
+.linka-profile-banner {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+}
+.linka-profile-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.linka-profile-banner.is-empty {
+  height: 220px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(249, 115, 22, 0.35), transparent 55%),
+    radial-gradient(circle at 82% 70%, rgba(249, 115, 22, 0.18), transparent 60%),
+    linear-gradient(135deg, rgb(15 23 42), rgb(30 41 59));
+}
+html.light-mode .linka-profile-banner.is-empty {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(249, 115, 22, 0.55), transparent 55%),
+    radial-gradient(circle at 82% 70%, rgba(249, 115, 22, 0.28), transparent 60%),
+    linear-gradient(135deg, #fff7ed, #fde6c8);
+}
+/* Subtle dissolve at the banner's bottom edge — kept short so it doesn't eat
+   into the avatar's overlap zone. */
+.linka-profile-banner::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36px;
+  background: linear-gradient(to bottom, transparent, var(--color-bg-base));
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .linka-profile-banner {
+    height: 200px;
+  }
+  .linka-profile-banner.is-empty {
+    height: 160px;
+  }
+}
+
+/* Avatar overlaps the banner edge. Use translateY rather than margin so the
+   flex-row layout still computes against the avatar's natural box (otherwise
+   negative margin pulls the whole line up and clips the name/handle). z-index
+   keeps the avatar above the banner regardless of stacking context. */
+.linka-profile-column {
+  position: relative;
+  padding-top: var(--space-5);
+  /* `.feed-column` sets `overflow-x: hidden`, which (per CSS spec) forces
+     overflow-y to clip too — that was clipping the avatar's translated-up
+     portion into the banner. Profile column needs the avatar to overflow. */
+  overflow: visible;
+}
+.linka-profile-column .linka-profile-avatar,
+.linka-profile-column .linka-profile-avatar-fallback {
+  position: relative;
+  z-index: 2;
+  transform: translateY(-84px);
+  margin-bottom: -68px;
+  border: 4px solid var(--color-bg-base);
+  box-shadow: 0 10px 22px -14px rgba(15, 23, 42, 0.35);
+  width: 132px;
+  height: 132px;
+}
+.linka-profile-column .linka-profile-avatar-fallback {
+  font-size: 2.4rem;
+}
+@media (max-width: 640px) {
+  .linka-profile-column .linka-profile-avatar,
+  .linka-profile-column .linka-profile-avatar-fallback {
+    width: 100px;
+    height: 100px;
+    transform: translateY(-60px);
+    margin-bottom: -48px;
+  }
+}
+
+/* ----- Edit profile pill button ----- */
+.linka-profile-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  background: transparent;
+  color: var(--color-orange);
+  border: 1px solid rgba(249, 115, 22, 0.55);
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.linka-profile-edit:hover,
+.linka-profile-edit:focus-visible {
+  background: var(--color-orange);
+  color: #fff;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.linka-profile-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  flex-wrap: wrap;
+}
+.dark .linka-profile-header {
+  border-bottom-color: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-identity {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.1rem;
+  min-width: 0;
+}
+.linka-profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
+}
+.linka-profile-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+.linka-profile-name-block {
+  min-width: 0;
+}
+.linka-profile-eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+.linka-profile-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: rgb(15 23 42);
+  word-break: break-word;
+}
+.dark .linka-profile-name {
+  color: var(--color-fg-base);
+}
+.linka-profile-handle {
+  margin: 0.35rem 0 0;
+  font-size: var(--text-base);
+  color: var(--color-fg-muted);
+}
+.linka-profile-follow.is-following {
+  background: rgba(15, 23, 42, 0.08);
+  color: rgb(15 23 42);
+  background-image: none;
+  box-shadow: none;
+}
+.dark .linka-profile-follow.is-following {
+  background: rgba(248, 250, 252, 0.08);
+  color: var(--color-fg-base);
+}
+
+.linka-profile-bio {
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: rgb(51 65 85);
+  max-width: 60ch;
+}
+.dark .linka-profile-bio {
+  color: rgb(203 213 225);
+}
+
+.linka-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: var(--space-8) 0 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid rgba(203, 213, 225, 0.55);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  gap: 0;
+}
+.dark .linka-profile-stats {
+  border-color: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-stat {
+  text-align: center;
+  position: relative;
+  padding: 0 var(--space-2);
+  margin: 0;
+}
+.linka-profile-stat + .linka-profile-stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 1px;
+  background: rgba(203, 213, 225, 0.55);
+}
+.dark .linka-profile-stat + .linka-profile-stat::before {
+  background: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-stat dt {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  margin: 0 0 0.4rem;
+}
+.linka-profile-stat dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  line-height: 1;
+  color: rgb(15 23 42);
+  letter-spacing: 0.02em;
+}
+.dark .linka-profile-stat dd {
+  color: var(--color-fg-base);
+}
+
+.linka-profile-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+  padding: 0 var(--space-1);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.linka-profile-tabs::-webkit-scrollbar {
+  display: none;
+}
+/* On narrow viewports the four tabs would overflow if forced to centre,
+   so let them flow from the left and scroll horizontally instead. */
+@media (max-width: 520px) {
+  .linka-profile-tabs {
+    justify-content: flex-start;
+  }
+}
+.dark .linka-profile-tabs {
+  border-bottom-color: rgba(51, 65, 85, 0.55);
+}
+
+.linka-profile-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  background: transparent;
+  border: 0;
+  padding: var(--space-4) 1.1rem 0.95rem;
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.linka-profile-tab:hover {
+  color: rgb(15 23 42);
+  background: rgba(249, 115, 22, 0.06);
+}
+.dark .linka-profile-tab:hover {
+  color: var(--color-fg-base);
+  background: var(--color-orange-tint-hover);
+}
+
+.linka-profile-tab-count {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: inherit;
+  opacity: 0.65;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+.linka-profile-tab:hover .linka-profile-tab-count {
+  opacity: 1;
+}
+
+.linka-profile-tab.is-active {
+  color: rgb(15 23 42);
+}
+.dark .linka-profile-tab.is-active {
+  color: var(--color-fg-base);
+}
+.linka-profile-tab.is-active .linka-profile-tab-count {
+  color: var(--color-orange);
+  opacity: 1;
+}
+
+/* Active underline — thicker, slightly inset, with a small orange-glow */
+.linka-profile-tab::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -1px;
+  height: 3px;
+  background: var(--color-orange);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+.linka-profile-tab.is-active::after {
+  transform: scaleX(1);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.45);
+}
+
+/* Active tab gets a small dot leading the label, like an editorial bullet */
+.linka-profile-tab.is-active::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-orange);
+  margin-right: 0.55rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linka-profile-tab,
+  .linka-profile-tab::after {
+    transition: none;
+  }
+}
+
+/* Mobile: 5 tabs (own profile) won't fit one row at 400px even with tight
+   padding, and horizontal scroll buries the rightmost tab. Wrap onto
+   multiple rows so every tab is visible at once. Counts move out (they're
+   already shown in the stats bar above), and the bottom border on each
+   tab replaces the container border so wrapped rows still look right. */
+@media (max-width: 640px) {
+  .linka-profile-tabs {
+    margin-top: var(--space-5);
+    padding: 0;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    border-bottom: 0;
+  }
+  .linka-profile-tab {
+    padding: 0.7rem 0.85rem 0.65rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.45);
+  }
+  .dark .linka-profile-tab {
+    border-bottom-color: rgba(51, 65, 85, 0.45);
+  }
+  .linka-profile-tab-count {
+    display: none;
+  }
+  .linka-profile-tab.is-active::before {
+    display: none;
+  }
+  /* Active underline still anchors to each tab's own bottom edge */
+  .linka-profile-tab::after {
+    bottom: -1px;
+  }
+}
+@media (max-width: 380px) {
+  .linka-profile-tab {
+    padding: 0.65rem 0.6rem 0.6rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+.linka-profile-tab-content {
+  margin-top: 0;
+}
+
+.linka-profile-empty {
+  text-align: center;
+  padding: 3.5rem var(--space-4);
+}
+.linka-profile-empty-title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 0.02em;
+  color: rgb(15 23 42);
+}
+.dark .linka-profile-empty-title {
+  color: var(--color-fg-base);
+}
+.linka-profile-empty-body {
+  margin: 0 auto;
+  max-width: 36ch;
+  color: var(--color-fg-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.linka-profile-error {
+  padding-top: var(--space-24);
+}
+.linka-profile-error .intro-cta {
+  margin-top: var(--space-4);
+}
+
+.linka-profile-media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-top: var(--space-6);
+}
+@media (min-width: 640px) {
+  .linka-profile-media-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+  }
+}
+.linka-profile-media-tile {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: rgba(203, 213, 225, 0.4);
+  position: relative;
+}
+.dark .linka-profile-media-tile {
+  background: rgba(51, 65, 85, 0.5);
+}
+.linka-profile-media-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+}
+.linka-profile-media-tile:hover img {
+  opacity: 0.8;
+}
+
+.linka-profile-userlist {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+}
+.linka-profile-userlist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+.dark .linka-profile-userlist-row {
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+.linka-profile-userlist-row:hover {
+  color: var(--color-orange);
+}
+.linka-profile-userlist-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
+  color: #fff;
+  font-weight: 800;
+  font-size: var(--text-base);
+}
+.linka-profile-userlist-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: rgb(15 23 42);
+}
+.dark .linka-profile-userlist-name {
+  color: var(--color-fg-base);
+}
+.linka-profile-userlist-row:hover .linka-profile-userlist-name {
+  color: var(--color-orange);
+}
+.linka-profile-userlist-email {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--color-fg-muted);
+}

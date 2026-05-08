@@ -1,0 +1,258 @@
+/* -------------------------------------- Pagination -------------------------------------- */
+/* Editorial page-turn: Bebas Neue numerals, prev/next as quiet text-and-
+   arrow links, active page lifted larger with a leading orange dot. No
+   filled circles, no rounded pills — same flat language as the post-card
+   feed and the profile tabs. */
+
+.feed-pagination {
+  margin-top: var(--space-12);
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(203, 213, 225, 0.55);
+}
+.dark .feed-pagination {
+  border-color: rgba(51, 65, 85, 0.55);
+}
+
+.feed-pagination-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-2) 0.85rem;
+}
+
+/* Prev / Next: text-and-arrow with from-left underline, matches navbar
+   and footer link treatment. */
+.feed-pag-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  padding: var(--space-2) 0.1rem;
+  transition: color 0.2s ease;
+}
+.feed-pag-link::after {
+  content: '';
+  position: absolute;
+  left: 0.1rem;
+  right: 0.1rem;
+  bottom: 0.25rem;
+  height: 1px;
+  background: var(--color-orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.feed-pag-link:hover:not(:disabled),
+.feed-pag-link:focus-visible:not(:disabled) {
+  color: rgb(15 23 42);
+  outline: none;
+}
+.dark .feed-pag-link:hover:not(:disabled),
+.dark .feed-pag-link:focus-visible:not(:disabled) {
+  color: var(--color-fg-base);
+}
+.feed-pag-link:hover:not(:disabled)::after,
+.feed-pag-link:focus-visible:not(:disabled)::after {
+  transform: scaleX(1);
+}
+.feed-pag-link:disabled {
+  color: rgba(148, 163, 184, 0.5);
+  cursor: not-allowed;
+}
+.dark .feed-pag-link:disabled {
+  color: rgba(100, 116, 139, 0.5);
+}
+
+/* Page numbers as flat Bebas Neue numerals. */
+.feed-pag-num {
+  position: relative;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--color-fg-muted);
+  padding: 0.85rem 0.55rem 0.6rem;
+  min-width: 1.6rem;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.feed-pag-num:hover:not(:disabled),
+.feed-pag-num:focus-visible:not(:disabled) {
+  color: var(--color-orange);
+  outline: none;
+}
+
+/* Active page: bigger, darker, with a leading orange dot mark above. */
+.feed-pag-num.is-active {
+  font-size: 1.45rem;
+  color: rgb(15 23 42);
+  cursor: default;
+}
+.dark .feed-pag-num.is-active {
+  color: var(--color-fg-base);
+}
+.feed-pag-num.is-active::before {
+  content: '';
+  position: absolute;
+  top: 0.15rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-orange);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.55);
+}
+
+/* Ellipsis as four small dots — picks up the active-tab dot motif. */
+.feed-pag-ellipsis {
+  color: rgba(148, 163, 184, 0.7);
+  padding: 0 0.35rem;
+  font-size: var(--text-base);
+  letter-spacing: 0.18em;
+  user-select: none;
+}
+.feed-pag-ellipsis::before {
+  content: '· · ·';
+}
+
+/* Meta line: Bebas eyebrow, magazine page reference. */
+.feed-pag-meta {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  margin-top: 0.85rem;
+}
+.dark .feed-pag-meta {
+  color: var(--color-fg-subtle);
+}
+
+/* Jump-to-page row: hairline-bordered editorial field with a chip submit. */
+.feed-pag-jump {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1.6rem auto 0;
+  padding: 0.85rem var(--space-4);
+  max-width: 22rem;
+  border-top: 1px solid rgba(203, 213, 225, 0.4);
+  border-bottom: 1px solid rgba(203, 213, 225, 0.4);
+}
+.dark .feed-pag-jump {
+  border-color: rgba(51, 65, 85, 0.45);
+}
+.feed-pag-jump label {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.feed-pag-jump input {
+  width: 3.5rem;
+  padding: 0.3rem 0.4rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.7);
+  border-radius: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: rgb(15 23 42);
+  outline: 0;
+  transition:
+    border-bottom-color 0.2s ease,
+    color 0.2s ease;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.feed-pag-jump input::-webkit-outer-spin-button,
+.feed-pag-jump input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+.dark .feed-pag-jump input {
+  border-bottom-color: rgba(51, 65, 85, 0.7);
+  color: var(--color-fg-base);
+}
+.feed-pag-jump input:focus {
+  border-bottom-color: var(--color-orange);
+}
+
+/* "Go" submit chip — same shape language as the composer's WRITE chip. */
+.feed-pag-jump .feed-pag-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.4rem 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  color: var(--color-orange);
+  background: var(--color-orange-tint);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: var(--radius-pill);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.feed-pag-jump .feed-pag-link::after {
+  content: none;
+}
+.feed-pag-jump .feed-pag-link:hover:not(:disabled),
+.feed-pag-jump .feed-pag-link:focus-visible:not(:disabled) {
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
+  border-color: transparent;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -10px rgba(249, 115, 22, 0.6);
+}
+
+@media (max-width: 480px) {
+  .feed-pag-num {
+    font-size: 0.95rem;
+    padding: 0.7rem 0.4rem 0.5rem;
+    min-width: 1.4rem;
+  }
+  .feed-pag-num.is-active {
+    font-size: 1.25rem;
+  }
+  .feed-pag-link {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed-pag-link::after,
+  .feed-pag-num,
+  .feed-pag-jump .feed-pag-link {
+    transition: none;
+  }
+}

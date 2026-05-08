@@ -1,0 +1,50 @@
+/* ==========================================================================
+   404 PAGE
+   ========================================================================== */
+
+.linka-404 {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-16) var(--space-6);
+  text-align: center;
+  background: var(--color-bg-base);
+  color: var(--color-fg-base);
+}
+html.light-mode .linka-404 {
+  background: rgb(248 250 252);
+  color: rgb(15 23 42);
+}
+.linka-404-eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+.linka-404-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(8rem, 28vw, 18rem);
+  line-height: 0.85;
+  letter-spacing: 0.01em;
+  color: var(--color-orange);
+  text-shadow: 0 6px 40px rgba(249, 115, 22, 0.18);
+}
+.linka-404-body {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(148, 163, 184, 0.95);
+}
+html.light-mode .linka-404-body {
+  color: rgba(71, 85, 105, 0.95);
+}
+.linka-404-actions {
+  margin-top: 0.85rem;
+}

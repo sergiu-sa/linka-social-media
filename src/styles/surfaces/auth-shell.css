@@ -1,0 +1,399 @@
+/* ==========================================================================
+   AUTH SHELL (Login / Register split-screen)
+   ========================================================================== */
+/* (Body padding is now opt-in — see the body rule near the top — so the
+   auth shell already gets `padding-top: 0` by default.) */
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+  .auth-shell {
+    grid-template-columns: 60fr 40fr;
+  }
+}
+
+.auth-brand {
+  position: relative;
+  background: linear-gradient(135deg, #0b1220 0%, #1a1f2e 100%);
+  color: #fff;
+  overflow: hidden;
+  min-height: 220px;
+  padding: var(--space-6) 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+html.light-mode .auth-brand {
+  background: linear-gradient(135deg, #fff7f2 0%, #ffffff 100%);
+  color: #1a1a1a;
+}
+html.light-mode .auth-brand-logo {
+  color: #1a1a1a;
+}
+html.light-mode .auth-brand-quote {
+  color: #0f172a;
+}
+html.light-mode .auth-brand-footer {
+  color: rgba(15, 23, 42, 0.55);
+}
+@media (min-width: 768px) {
+  .auth-brand {
+    min-height: 25vh;
+    padding: var(--space-8) var(--space-10);
+  }
+}
+@media (min-width: 1024px) {
+  .auth-brand {
+    min-height: 100vh;
+    padding: var(--space-12) var(--space-16);
+  }
+}
+
+.auth-brand canvas.auth-starfield {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-base);
+  pointer-events: none;
+  opacity: 0.6;
+}
+html.light-mode .auth-brand canvas.auth-starfield {
+  opacity: 0.85;
+}
+
+.auth-brand > * {
+  position: relative;
+  z-index: var(--z-graph);
+}
+
+.auth-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+.auth-brand-logo svg {
+  width: 2.25rem;
+  height: 2.25rem;
+  animation: auth-rotate 30s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.35));
+}
+@keyframes auth-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-brand-logo svg {
+    animation: none;
+  }
+}
+
+.auth-brand-quote {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  color: #f8fafc;
+  max-width: 18ch;
+  margin: 0;
+}
+.auth-brand-quote .accent {
+  color: var(--color-orange);
+}
+
+.auth-brand-footer {
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.45);
+}
+.auth-brand-footer::before {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--color-orange);
+}
+
+/* Mobile: show quote (smaller), hide the longer subhead and footer */
+.auth-brand-quote {
+  display: block;
+  font-size: clamp(1.75rem, 8vw, 2.5rem);
+}
+.auth-brand-footer {
+  display: none;
+}
+@media (min-width: 768px) {
+  .auth-brand-quote {
+    font-size: clamp(2.25rem, 6vw, 5rem);
+  }
+  .auth-brand-footer {
+    display: flex;
+  }
+}
+
+/* Form panel — INVERTED to contrast with the brand panel.
+   Dark mode (default): form panel is LIGHT cream.
+   Light mode: form panel is DARK slate. */
+.auth-form-panel {
+  position: relative;
+  background: linear-gradient(to bottom right, #fff7f2, #ffffff);
+  color: #1a1a1a;
+  padding: 2.25rem var(--space-6) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: auto;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+@media (min-width: 1024px) {
+  .auth-form-panel {
+    padding: var(--space-16) 5rem;
+    justify-content: center;
+    min-height: 100vh;
+  }
+}
+html.light-mode .auth-form-panel {
+  background: linear-gradient(to bottom right, #0f172a, #1a1f2e);
+  color: #f8fafc;
+}
+
+.auth-form-inner {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  margin: 0 0 var(--space-2);
+  display: inline-block;
+  border-bottom: 3px solid var(--color-orange);
+  padding-bottom: 0.35rem;
+}
+.auth-subhead {
+  margin: var(--space-3) 0 var(--space-8);
+  font-size: 0.95rem;
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+.auth-field {
+  margin-bottom: var(--space-5);
+}
+.auth-field label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin-bottom: var(--space-2);
+}
+/* Inputs — match the (inverted) form panel.
+   Default (dark mode): light inputs on cream form.
+   Light mode: dark inputs on slate form. */
+.auth-field input,
+.auth-field textarea {
+  width: 100%;
+  padding: 0.85rem var(--space-4);
+  font-size: 0.95rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+.auth-field textarea {
+  resize: none;
+  min-height: 4.5rem;
+}
+html.light-mode .auth-field input,
+html.light-mode .auth-field textarea {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+.auth-field input::placeholder,
+.auth-field textarea::placeholder {
+  color: rgba(100, 116, 139, 0.55);
+}
+html.light-mode .auth-field input::placeholder,
+html.light-mode .auth-field textarea::placeholder {
+  color: rgba(148, 163, 184, 0.5);
+}
+.auth-field input:focus,
+.auth-field textarea:focus {
+  outline: none;
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.18);
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+html.light-mode .auth-field input:focus,
+html.light-mode .auth-field textarea:focus {
+  background: rgba(15, 23, 42, 0.85);
+}
+.auth-hint {
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  font-style: italic;
+  opacity: 0.6;
+  padding-left: 0.25rem;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.55);
+  transition: all 0.25s ease;
+}
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -10px rgba(249, 115, 22, 0.7);
+}
+.auth-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.auth-btn-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.auth-btn-state svg {
+  display: block;
+}
+
+.auth-msg {
+  margin-top: var(--space-4);
+  font-size: var(--text-base);
+  text-align: center;
+  color: var(--color-error);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  padding: 0.6rem;
+}
+html.light-mode .auth-msg {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.1);
+}
+.auth-msg:empty {
+  display: none;
+}
+
+.auth-crosslink {
+  margin-top: var(--space-6);
+  text-align: center;
+  font-size: var(--text-base);
+  opacity: 0.75;
+}
+.auth-crosslink a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--color-orange);
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 0.35rem;
+}
+.auth-crosslink a:hover {
+  text-decoration: underline;
+}
+.auth-crosslink a .auth-crosslink-icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+.auth-crosslink a:hover .auth-crosslink-icon {
+  transform: translateX(2px);
+}
+
+/* Theme toggle position on auth pages */
+.auth-theme-toggle {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+}
+
+/* Back-to-intro link on auth pages */
+.auth-back-link {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.5rem;
+  z-index: 10;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(15, 23, 42, 0.55);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+html.light-mode .auth-back-link {
+  color: rgba(248, 250, 252, 0.55);
+}
+.auth-back-link:hover {
+  color: var(--color-orange);
+  transform: translateX(-2px);
+}
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.auth-back-link .auth-back-icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+.auth-back-link:hover .auth-back-icon {
+  transform: translateX(-3px);
+}
+
+/* Visible focus rings on the auth-shell brand link + back link.
+   Browsers were giving these no `:focus-visible` outline because they're
+   color-shift-on-hover anchors with no border. */
+.auth-brand-logo:focus-visible,
+.auth-back-link:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 4px;
+  border-radius: 0.35rem;
+}

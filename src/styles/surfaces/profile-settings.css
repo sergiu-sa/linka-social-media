@@ -1,0 +1,189 @@
+/* ==========================================================================
+   PROFILE — Settings tab
+   ========================================================================== */
+
+.linka-profile-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) 0;
+}
+.linka-profile-settings-section-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.linka-profile-settings-icon {
+  display: inline-flex;
+  color: var(--color-orange);
+}
+.linka-profile-settings-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.linka-profile-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(241, 245, 249, 0.55);
+  border: 1px solid rgba(203, 213, 225, 0.55);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.dark .linka-profile-setting-row {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(51, 65, 85, 0.55);
+}
+.linka-profile-setting-row-static {
+  cursor: default;
+}
+.linka-profile-setting-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.linka-profile-setting-label strong {
+  font-size: 0.92rem;
+  color: rgb(15 23 42);
+  font-weight: 700;
+}
+.dark .linka-profile-setting-label strong {
+  color: var(--color-fg-base);
+}
+.linka-profile-setting-label span {
+  font-size: 0.78rem;
+  color: var(--color-fg-muted);
+  line-height: 1.45;
+}
+.linka-profile-setting-label em {
+  font-style: italic;
+  color: var(--color-error, rgb(220 38 38));
+}
+
+.linka-profile-setting-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 22px;
+  background: rgb(203 213 225);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+}
+.dark .linka-profile-setting-toggle {
+  background: rgb(71 85 105);
+}
+.linka-profile-setting-toggle::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  transition: transform 0.18s ease;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.18);
+}
+.linka-profile-setting-toggle:checked {
+  background: var(--color-orange);
+}
+.linka-profile-setting-toggle:checked::before {
+  transform: translateX(16px);
+}
+.linka-profile-setting-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.linka-profile-setting-segments {
+  display: inline-flex;
+  background: rgba(241, 245, 249, 0.7);
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  border-radius: var(--radius-pill);
+  padding: 2px;
+  flex-shrink: 0;
+}
+.dark .linka-profile-setting-segments {
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+.linka-profile-setting-segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.linka-profile-setting-segment input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.linka-profile-setting-segment.is-active {
+  background: var(--color-orange);
+  color: #fff;
+}
+.linka-profile-setting-segment input:disabled {
+  cursor: not-allowed;
+}
+.linka-profile-setting-segment:has(input:disabled) {
+  opacity: 0.5;
+}
+
+.linka-profile-signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  color: var(--color-error, rgb(220 38 38));
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.linka-profile-signout:hover,
+.linka-profile-signout:focus-visible {
+  background: var(--color-error, rgb(220 38 38));
+  color: #fff;
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .linka-profile-setting-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+  .linka-profile-setting-segments {
+    align-self: flex-start;
+  }
+}

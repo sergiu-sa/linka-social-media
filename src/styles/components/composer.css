@@ -1,0 +1,318 @@
+/* -------------------------------------- Composer -------------------------------------- */
+/* Hidden by default — only revealed once the hero compose rail expands it.
+   The expanded form picks up the same editorial-card language as the rest
+   of the feed surface. */
+
+.feed-composer {
+  display: none;
+  position: relative;
+  margin: var(--space-6) 0 var(--space-2);
+  padding: var(--space-5) var(--space-6) 1.4rem;
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.7);
+  border-left: 3px solid var(--color-orange);
+  border-radius: var(--radius-md);
+}
+.dark .feed-composer {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.7);
+  border-left-color: var(--color-orange);
+}
+.feed-composer.is-expanded {
+  display: block;
+  box-shadow: 0 10px 28px -18px rgba(15, 23, 42, 0.18);
+  animation: feed-composer-enter 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .feed-composer.is-expanded {
+  box-shadow: 0 10px 28px -18px rgba(0, 0, 0, 0.6);
+}
+@keyframes feed-composer-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feed-composer.is-expanded {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .feed-composer {
+    padding: var(--space-4) 1.1rem 1.1rem;
+  }
+}
+@media (max-width: 420px) {
+  .feed-composer {
+    padding: 0.9rem 0.95rem var(--space-4);
+  }
+}
+
+.feed-composer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Expanded form fields */
+.feed-composer-expanded {
+  padding-top: var(--space-1);
+}
+.feed-composer-form-grid {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.feed-composer-form-grid > .feed-composer-fields {
+  flex: 1;
+  min-width: 0;
+}
+.feed-composer-input-large,
+.feed-composer-textarea {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: inherit;
+  color: rgb(15 23 42);
+  resize: none;
+  padding: 0.4rem 0;
+}
+.dark .feed-composer-input-large,
+.dark .feed-composer-textarea {
+  color: var(--color-fg-base);
+}
+.feed-composer-input-large {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 0.01em;
+}
+.feed-composer-textarea {
+  font-size: var(--text-md);
+  line-height: 1.55;
+  min-height: 4.5rem;
+  margin-top: var(--space-2);
+}
+.feed-composer-input-large::placeholder,
+.feed-composer-textarea::placeholder {
+  color: var(--color-fg-subtle);
+}
+.feed-composer-input-large:focus,
+.feed-composer-textarea:focus {
+  outline: none;
+  box-shadow: inset 0 -2px 0 var(--color-orange);
+}
+
+.feed-composer-extras {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--color-fg-muted);
+}
+.feed-composer-extras button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+.feed-composer-extras button:hover {
+  color: var(--color-orange);
+}
+.feed-composer-optional {
+  margin-top: 0.6rem;
+  display: none;
+}
+.feed-composer-optional.is-open {
+  display: block;
+}
+.feed-composer-optional input {
+  width: 100%;
+  background: rgba(241, 245, 249, 0.6);
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  color: rgb(15 23 42);
+  font-family: inherit;
+  outline: 0;
+  transition: border-color 0.2s ease;
+}
+.dark .feed-composer-optional input {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(51, 65, 85, 0.6);
+  color: var(--color-fg-base);
+}
+.feed-composer-optional input:focus {
+  border-color: var(--color-orange);
+}
+.feed-composer-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  align-items: center;
+}
+.feed-composer-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: 0;
+  color: var(--color-fg-muted);
+  font-size: var(--text-base);
+  cursor: pointer;
+  font-family: inherit;
+}
+.feed-composer-cancel:hover {
+  color: rgb(15 23 42);
+}
+.dark .feed-composer-cancel:hover {
+  color: var(--color-fg-base);
+}
+.feed-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.55rem var(--space-6);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
+  color: white;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow-cta-rest);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  text-decoration: none;
+}
+.feed-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-cta-hover);
+}
+.feed-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Articles container */
+.feed-articles {
+  margin-top: 0;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.feed-article {
+  position: relative;
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+  transition: opacity 0.3s ease;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
+}
+.feed-article-media,
+.feed-article-tags,
+.feed-article-header,
+.feed-actions {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+/* Thread sizes itself against the article, not 100% of it — combining
+   width:100% with margin-left:36px would push its right edge 36px past
+   the article and clip the close button + thread compose submit. */
+.feed-thread {
+  box-sizing: border-box;
+  min-width: 0;
+}
+.dark .feed-article {
+  border-color: rgba(51, 65, 85, 0.55);
+}
+.feed-article-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.feed-article-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1;
+}
+.feed-article-author img,
+.feed-article-author .feed-avatar-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.feed-avatar-fallback {
+  background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.feed-article-author:hover img,
+.feed-article-author:hover .feed-avatar-fallback {
+  transform: scale(1.05);
+}
+.feed-article-author-info {
+  min-width: 0;
+}
+.feed-article-author-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: rgb(15 23 42);
+  text-decoration: none;
+}
+.dark .feed-article-author-name {
+  color: var(--color-fg-base);
+}
+.feed-article-author-name:hover {
+  color: var(--color-orange);
+}
+.feed-article-author-meta {
+  font-size: var(--text-sm);
+  color: var(--color-fg-muted);
+  margin-top: 0.1rem;
+}

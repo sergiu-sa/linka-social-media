@@ -1,0 +1,75 @@
+/* ==========================================================================
+   LOADING SCREEN
+   ========================================================================== */
+
+.linka-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-tooltip);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  background: var(--color-bg-base);
+  color: var(--color-fg-base);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.linka-loader.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+html.light-mode .linka-loader {
+  background: rgb(248 250 252);
+  color: rgb(15 23 42);
+}
+.linka-loader-mark {
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(0 0 18px rgba(249, 115, 22, 0.45));
+  animation: linka-loader-pulse 1.6s ease-in-out infinite;
+}
+.linka-loader-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.linka-loader-brand {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* visually balance the trailing letter-spacing */
+  text-transform: uppercase;
+}
+.linka-loader-message {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.75);
+  min-height: 1em;
+}
+.linka-loader-message:empty {
+  display: none;
+}
+@keyframes linka-loader-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .linka-loader-mark {
+    animation: none;
+  }
+  .linka-loader {
+    transition: none;
+  }
+}

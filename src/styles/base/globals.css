@@ -1,0 +1,44 @@
+/* ==========================================================================
+   GLOBALS — html/body, body padding, light-mode body overrides
+   ========================================================================== */
+html,
+body {
+  background-color: transparent !important;
+}
+
+#starfield,
+#canvas3d {
+  z-index: var(--z-graph);
+}
+
+html.light-mode body {
+  background: linear-gradient(to bottom right, #fff7f2, #ffffff);
+  color: #1a1a1a;
+}
+
+/* Light mode header LINKA text */
+html.light-mode header a {
+  color: #000000 !important;
+}
+
+html.light-mode header a:hover span {
+  color: var(--color-orange) !important;
+}
+
+/* Global body styling. Padding-top is added only when the navbar is
+   actually visible — see the `body:has(...)` rules below. */
+body {
+  @apply transition-colors duration-300 min-h-screen bg-white text-gray-900;
+  padding-top: 0;
+}
+
+/* Reserve room for the 60px fixed navbar on routes that show it.
+   The auth shell, intro page, and 404 use full-bleed layouts and
+   keep the default 0 padding. */
+body:has(.feed-page),
+body:has(.linka-profile) {
+  padding-top: 60px;
+}
+
+/* (Old navbar / mobile-menu / logout-notification CSS removed — see
+   `.linka-nav`, `.linka-mobile-menu`, and `.notification-toast` below.) */
