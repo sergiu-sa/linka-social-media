@@ -76,14 +76,6 @@ export async function getAllPosts(
   }
 }
 
-/** Public-view fallback used when the user is not logged in. */
-export async function getPublicPosts(
-  limit: number = 50,
-  page: number = 1
-): Promise<PostsApiResponse> {
-  return getSamplePosts(limit, page);
-}
-
 export interface NoroffComment {
   id: number;
   body: string;
@@ -163,57 +155,4 @@ export async function updatePost(
 
 export async function deletePost(postId: number): Promise<void> {
   return del(`${BASE_URL}/${postId}`);
-}
-
-/* -------------------------------------- Sample data (public view) -------------------------------------- */
-
-function getSamplePosts(limit: number, page: number): PostsApiResponse {
-  const samplePosts: NoroffPost[] = [
-    {
-      id: 1,
-      title: "Welcome to Social Platform",
-      body: "Explore and connect with people around the world. Share your thoughts, experiences, and discover new content every day.",
-      tags: ["welcome", "social", "community"],
-      media: {
-        url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-        alt: "People connecting",
-      },
-      created: new Date(Date.now() - 86400000).toISOString(),
-      updated: new Date(Date.now() - 86400000).toISOString(),
-      author: {
-        name: "social_admin",
-        email: "admin@social.com",
-        bio: "Official Social Platform Account",
-        avatar: {
-          url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
-          alt: "Admin avatar",
-        },
-      },
-      _count: {
-        comments: 12,
-        reactions: 45,
-      },
-      reactions: [
-        { symbol: "👍", count: 28 },
-        { symbol: "❤️", count: 17 },
-      ],
-    },
-  ];
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedPosts = samplePosts.slice(startIndex, endIndex);
-
-  return {
-    data: paginatedPosts,
-    meta: {
-      currentPage: page,
-      pageCount: Math.ceil(samplePosts.length / limit),
-      totalCount: samplePosts.length,
-      isFirstPage: page === 1,
-      isLastPage: page >= Math.ceil(samplePosts.length / limit),
-      previousPage: page > 1 ? page - 1 : null,
-      nextPage: page < Math.ceil(samplePosts.length / limit) ? page + 1 : null,
-    },
-  };
 }

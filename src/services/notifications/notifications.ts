@@ -19,8 +19,8 @@ import {
   clearSnapshot,
   type Snapshot,
 } from './snapshot';
-import { getLocalItem } from '../../utils/storage';
 import { error as logError } from '../../utils/log';
+import { getCurrentUsername } from '../../utils/auth';
 import { loadPrefs } from './prefs';
 
 export type NotificationItem = {
@@ -41,11 +41,6 @@ const listeners = new Set<Listener>();
 let intervalId: number | null = null;
 let visibilityHandler: (() => void) | null = null;
 let lastItems: NotificationItem[] = [];
-
-function getCurrentUsername(): string | null {
-  const u = getLocalItem('user');
-  return typeof u === 'string' && u.trim() ? u.trim() : null;
-}
 
 function truncate(s: string, n: number): string {
   return s.length > n ? s.substring(0, n) + '…' : s;

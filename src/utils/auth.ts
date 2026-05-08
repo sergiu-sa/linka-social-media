@@ -1,51 +1,24 @@
 /**
  * @file auth.ts
- * @description Authentication utilities for managing user login state.
+ * @description Authentication and current-user accessors backed by localStorage.
  */
 
 import { getLocalItem } from './storage';
 
-/**
- * Check if user is currently logged in
- */
+/** True when an access token is present in localStorage. */
 export function isLoggedIn(): boolean {
-  const accessToken = getLocalItem('accessToken');
-  return !!accessToken;
+  return !!getLocalItem('accessToken');
 }
 
-/**
- * Get current user data
- */
-export function getCurrentUser() {
-  return {
-    accessToken: getLocalItem('accessToken'),
-    user: getLocalItem('user'),
-    apiKey: getLocalItem('apiKey'),
-  };
+/** Read the stored username, or null if no user is logged in. */
+export function getCurrentUsername(): string | null {
+  const raw = localStorage.getItem('user');
+  return raw && raw.length > 0 ? raw : null;
 }
 
-/**
- * Clear all authentication data (logout)
- */
-export function logout() {
+/** Clear all authentication data. */
+export function logout(): void {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('user');
   localStorage.removeItem('apiKey');
-}
-
-/**
- * Check if access token is expired (basic check)
- */
-export function isTokenExpired(): boolean {
-  const token = getLocalItem('accessToken');
-  if (!token) return true;
-
-  try {
-    // Basic JWT expiration check
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const currentTime = Math.floor(Date.now() / 1000);
-    return payload.exp < currentTime;
-  } catch {
-    return true; // If we can't parse the token, consider it expired
-  }
 }

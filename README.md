@@ -1,5 +1,7 @@
 # LINKA — Editorial Social Feed
 
+![LINKA — feed page with the constellation console hero on a slate background](./public/og-image.png)
+
 A responsive social-media SPA built on top of the Noroff Social API v2, written in TypeScript and styled with Tailwind CSS v4 + scoped editorial CSS. Single orange accent on slate, distinctive 3D intro, real reading-mode for posts, ambient constellation background.
 
 > **Final submission for the Noroff FED2-24 CSS Frameworks course assignment**, fully restructured beyond the original team build.
@@ -8,8 +10,8 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 
 ## Live project
 
-- **Production:** https://linka-social.netlify.app/
-- **Repository:** https://github.com/sergiu-sa/linka-social-media
+- **Production:** <https://linka-social.netlify.app/>
+- **Repository:** <https://github.com/sergiu-sa/linka-social-media>
 - **API base:** `https://v2.api.noroff.dev`
 - **Design system:** [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) — tokens, theme architecture, accessibility commitments, migration roadmap.
 
@@ -18,11 +20,13 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 ## Features
 
 ### Authentication
+
 - Registration restricted to `@stud.noroff.no` email addresses
 - JWT login persisted to `localStorage`; API key fetched on-demand
 - Logged-in users hitting `/`, `/login`, or `/register` are redirected to `/feed`; unauthenticated users hitting protected routes are redirected to `/`
 
 ### Feed
+
 - Editorial single-column feed with the **constellation console hero** (live pulse rows + threeStar visualization + ambient starfield/node-mesh background)
 - **Reading-mode modal** for posts — backdrop blur, contained image (`max-height: 50vh`, `object-fit: contain`), sticky action bar, full-screen drawer on mobile. Replaces inline expand
 - Composer triggered exclusively from the hero compose rail (single source, no duplicate affordance)
@@ -32,6 +36,7 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 - Single-heart like (no multi-emoji picker), optimistic UI, button locks during in-flight to prevent rapid-click race conditions
 
 ### Profiles
+
 - **Full-bleed banner** image with avatar overlapping the bottom edge
 - Stats bar (posts / following / followers)
 - Five tabs: Posts · Media · Following · Followers · **Settings** (own profile only)
@@ -39,6 +44,7 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 - **Follow / Unfollow** chip on each post-card author *and* a CTA button on profile pages, with optimistic UI and same-author dedupe across the feed
 
 ### Notifications
+
 - **Bell in the navbar** with red-dot badge + dropdown panel listing posts with new likes/comments
 - Polling every 1–2 minutes (configurable), gated on `document.visibilityState` so hidden tabs don't burn cycles
 - **First-run bootstrap** — no "+47 likes" greeting on first login
@@ -46,6 +52,7 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 - Per-post snapshot in `localStorage`, marks-read individually or in bulk
 
 ### Search
+
 - **Server-side** via `/social/posts/search` and `/social/profiles/search` called in parallel — no more "first 50 only" client-side filtering
 - 250 ms debounced typeahead dropdown (top 4 people + top 4 posts)
 - Stale-response guard so an early request can't overwrite a later one's UI
@@ -53,10 +60,12 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 - Click-anywhere navigation: profile suggestions go to the profile, post suggestions open the reading-mode modal
 
 ### Theme
+
 - Single source of truth in `utils/theme.ts` — applies both `.dark` and `.light-mode` classes in lockstep so every selector convention works
 - Global `linka-theme-changed` event lets components react (the threeStar mesh recolors live, the starfield switches between stars and node-mesh)
 
 ### Accessibility
+
 - Every modal: focus restored on close, Esc + backdrop click + × button to dismiss
 - Action chips have proper `aria-label` reflecting count + intent
 - `prefers-reduced-motion: reduce` honored on the intro page, the loading screen, the post and profile-edit modals, the toast notifications, and the confirm dialog
@@ -68,10 +77,10 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 ## Tech stack
 
 | | |
-|---|---|
+| --- | --- |
 | **Language** | TypeScript (strict) |
 | **Bundler** | Vite |
-| **CSS** | Tailwind CSS v4 (`@tailwindcss/vite`, no `tailwind.config.js`) + scoped custom CSS in `src/style.css` |
+| **CSS** | Tailwind CSS v4 (`@tailwindcss/vite`, no `tailwind.config.js`) + scoped custom CSS in `src/styles/{base,surfaces,components}/` |
 | **Fonts** | `@fontsource/bebas-neue` (display), `@fontsource/open-sans` (body) |
 | **Icons** | [Lucide](https://lucide.dev/) |
 | **3D / motion** | Three.js + GSAP (intro page interactive star + feed hero ambient star + starfield/node-mesh) |
@@ -85,6 +94,7 @@ A responsive social-media SPA built on top of the Noroff Social API v2, written 
 ## Quick start
 
 ### Prerequisites
+
 - Node.js v18+
 - npm
 - A Noroff `@stud.noroff.no` account
@@ -177,7 +187,11 @@ src/
 │   └── theme.ts             # Single source of truth for light/dark theme
 ├── constant.ts              # API_URL + APP_CONTAINER_CLASSNAME
 ├── main.ts                  # Application entry
-└── style.css                # Tailwind + all custom CSS (sectioned)
+├── style.css                # Slim entry — @imports every partial in source order
+└── styles/
+    ├── base/                # tokens.css · globals.css · a11y.css
+    ├── surfaces/            # one file per page (auth-shell, feed, profile, …)
+    └── components/          # one file per component (post-card, navbar, …)
 ```
 
 ---

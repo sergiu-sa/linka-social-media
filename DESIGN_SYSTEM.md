@@ -21,7 +21,7 @@ This document records what was found, what was decided, and what was shipped.
 
 ## Token system
 
-Tokens live in `src/style.tokens.css` and are imported as the first line of `src/style.css`. They cover the categories most-used across the codebase.
+Tokens live in `src/styles/base/tokens.css` and are imported by the slim `src/style.css` entry before any other partial. They cover the categories most-used across the codebase.
 
 | Category | Count | Examples |
 |---|---|---|
@@ -108,7 +108,7 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 | Phase | Status | What it does |
 |---|---|---|
 | Phase 1 — Audit | ✅ Complete | Catalogued every visual + technical inconsistency; proposed 112-token taxonomy; recorded 8 user-decision items. |
-| Phase 2 — Token foundation (minimal) | ✅ Complete | 59 tokens + 6 light-mode overrides declared in `src/style.tokens.css`. Tokens declared but mostly unused — Phase 3+ surface waves consume them. |
+| Phase 2 — Token foundation (minimal) | ✅ Complete | 59 tokens + 6 light-mode overrides declared in `src/styles/base/tokens.css`. Tokens declared but mostly unused — Phase 3+ surface waves consume them. |
 | Hotfix — dark/light parity | ✅ Complete | Three broken surfaces (`.feed-page`, `.linka-profile`, `.linka-confirm-panel`) now use `var(--color-bg-base)` and swap correctly. First real consumption of Phase 2 tokens. |
 | Wave — A11y blockers (round 1) | ✅ Complete | 6 WCAG fixes shipped (see Accessibility commitments above). |
 | Wave — A11y blockers (round 2) | ✅ Complete | Composer/reply input labels, edit-post modal focus trap + dialog semantics, reactions picker Escape support. |
@@ -124,8 +124,12 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 
 | Path | Role |
 |---|---|
-| `src/style.tokens.css` | All design tokens. Single source of truth. |
-| `src/style.css` | Surface CSS, sectioned by surface. First line imports tokens. |
+| `src/style.css` | Slim entry — `@import`s every partial in original source order. |
+| `src/styles/base/tokens.css` | All design tokens. Single source of truth. |
+| `src/styles/base/globals.css` | `html`/`body` rules, body-padding gating, light-mode body overrides. |
+| `src/styles/base/a11y.css` | Shared `:focus-visible` and `.sr-only` rules. |
+| `src/styles/surfaces/` | One file per page surface (`auth-shell`, `intro-chrome`, `feed`, `profile`, `profile-settings`, `footer`, `loading-screen`, `not-found`). |
+| `src/styles/components/` | One file per component (`feed-hero`, `post-card`, `composer`, `comments-thread`, `pagination`, `people-strip`, `post-modal`, `navbar`, `search-typeahead`, `notifications-bell`, `profile-edit-modal`, `confirm-dialog`, `toast`). |
 | `src/components/feedHero.ts` | Reference pattern — explicit `markup() + mount()` split for new components. |
 | `src/components/threeStar.ts` | Reusable Three.js component shared between intro page and feed hero. |
 | `src/components/starfield.ts` | Reusable 2D ambient background — twinkling stars in dark, orange node-mesh in light. Used by feed hero. |
@@ -141,8 +145,8 @@ The audit caught real WCAG failures. The fixes shipped across two waves:
 
 - **Naming** — `<surface>-<element>[--<modifier>]` BEM-lite. Surface prefixes: `feed-`, `auth-`, `intro-`, `linka-` (shared shell), `notification-`.
 - **State classes** — `is-active`, `is-pulsing`, `is-loading`, `is-following`, `is-danger`.
-- **Tailwind vs custom CSS** — Tailwind utilities for one-off layout (chrome strips, ad-hoc spacing); custom CSS in `src/style.css` for component-scoped rules. Edit-post modal is the one inline-Tailwind exception still standing.
+- **Tailwind vs custom CSS** — Tailwind utilities for one-off layout (chrome strips, ad-hoc spacing); custom CSS in the matching `src/styles/components/` or `src/styles/surfaces/` partial for component-scoped rules. Edit-post modal is the one inline-Tailwind exception still standing.
 - **Components** — new components export `componentMarkup(data): string` AND `mountComponent(data): handle`. Existing pages stay implicit (`Promise<string>` + `setTimeout` post-render hook) unless they grow large enough to warrant the split.
 - **Comments** — default to none. Write one only when the *why* is non-obvious (workaround, hidden constraint, perf trick). No `@author`, no AI attribution, no "🤖 Generated" footers.
 - **Reduced motion** — every surface with `transition:` or `animation:` MUST also have a `prefers-reduced-motion: reduce` override that disables or shortens it.
-- **Focus indicators** — every interactive element has either an explicit `:focus-visible` rule (using `--shadow-focus-ring` for buttons or the underline pattern for borderless inputs) OR is covered by the shared rule in `src/style.css`.
+- **Focus indicators** — every interactive element has either an explicit `:focus-visible` rule (using `--shadow-focus-ring` for buttons or the underline pattern for borderless inputs) OR is covered by the shared rule in `src/styles/base/a11y.css`.

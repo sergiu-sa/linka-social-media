@@ -8,7 +8,6 @@
 import postCard, { wirePostCardActions } from '../components/postCard';
 import {
   getAllPosts,
-  getPublicPosts,
   createPost,
   updatePost,
   deletePost,
@@ -51,19 +50,10 @@ import {
 } from 'lucide';
 import { feedHeroMarkup, mountFeedHero, type FeedHeroData } from '../components/feedHero';
 
-const tokenFromAnyKey = () =>
-  localStorage.getItem('accessToken') ||
-  localStorage.getItem('token') ||
-  (JSON.parse(localStorage.getItem('auth') || 'null')?.accessToken ?? '');
-
-const isLoggedInNow = () => !!tokenFromAnyKey();
+const isLoggedInNow = () => !!localStorage.getItem('accessToken');
 
 async function ensureApiKey(): Promise<void> {
-  const token =
-    localStorage.getItem('accessToken') ||
-    localStorage.getItem('token') ||
-    (JSON.parse(localStorage.getItem('auth') || 'null')?.accessToken ?? '');
-
+  const token = localStorage.getItem('accessToken');
   const hasKey = !!localStorage.getItem('apiKey');
   if (token && !hasKey) {
     try {
@@ -133,9 +123,7 @@ export default async function FeedPage(): Promise<string> {
       const postsPerPage = 15;
 
       try {
-        postsResponse = isUserLoggedIn
-          ? await getAllPosts(postsPerPage, currentPage)
-          : await getPublicPosts(postsPerPage, currentPage);
+        postsResponse = await getAllPosts(postsPerPage, currentPage);
         posts = postsResponse.data;
       } catch (err) {
         logError('Failed to load posts:', err);

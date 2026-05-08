@@ -10,7 +10,8 @@
 
 import type { ThreeStarHandle } from './threeStar';
 import { mountStarfield, type StarfieldHandle } from './starfield';
-import { computePulseRows, computeArmLabels, getCurrentUsername, type ArmLabel } from '../utils/heroSignals';
+import { computePulseRows, computeArmLabels, type ArmLabel } from '../utils/heroSignals';
+import { getCurrentUsername } from '../utils/auth';
 import { getLastVisit, setLastVisit } from '../utils/lastVisit';
 import type { NoroffPost } from '../services/posts/posts';
 import { getLocalItem } from '../utils/storage';
