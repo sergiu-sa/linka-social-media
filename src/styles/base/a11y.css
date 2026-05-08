@@ -1,0 +1,68 @@
+/* ==========================================================================
+   FOCUS-VISIBLE — shared a11y rule
+   ==========================================================================
+   Audit ref §2.7-A — many buttons lacked any focus indicator. This single
+   shared rule gives every interactive button + link a consistent canonical
+   ring using the --shadow-focus-ring token.
+   ========================================================================== */
+
+.feed-cta:focus-visible,
+.linka-nav-cta:focus-visible,
+.linka-mobile-link-primary:focus-visible,
+.linka-mobile-link:focus-visible,
+.linka-nav-icon-btn:focus-visible,
+.linka-nav-mobile-toggle:focus-visible,
+.feed-owner-trigger:focus-visible,
+.feed-modal-close:focus-visible,
+.feed-action:focus-visible,
+.feed-thread-close:focus-visible,
+.feed-thread-compose-submit:focus-visible,
+.comment-action-btn:focus-visible,
+.reply-submit-btn:focus-visible,
+.reply-cancel-btn:focus-visible,
+.linka-profile-tab:focus-visible,
+.feed-composer-cancel:focus-visible,
+.feed-composer-extras button:focus-visible,
+.linka-profile-follow:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   SR-ONLY — visually hidden but reachable by AT
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.sr-only-focusable:focus,
+.sr-only-focusable:focus-visible {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: var(--color-orange);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  z-index: var(--z-toast);
+  box-shadow: var(--shadow-focus-ring);
+}

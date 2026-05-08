@@ -1,0 +1,253 @@
+/* ==========================================================================
+   INTRO PAGE CHROME (top strip + bottom strip + interactive star)
+   ========================================================================== */
+
+#canvas3d {
+  cursor: grab;
+}
+body.is-dragging-star,
+body.is-dragging-star #canvas3d {
+  cursor: grabbing !important;
+}
+
+.intro-top-strip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) var(--space-8);
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 18, 32, 0.65) 0%,
+    rgba(11, 18, 32, 0) 100%
+  );
+  opacity: 0;
+}
+.intro-top-strip > * {
+  pointer-events: auto;
+}
+html.light-mode .intro-top-strip {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.intro-bottom-strip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.25rem;
+  padding: var(--space-8) var(--space-6) 1.75rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(11, 18, 32, 0.7) 0%,
+    rgba(11, 18, 32, 0) 100%
+  );
+  opacity: 0;
+  flex-wrap: wrap;
+}
+.intro-bottom-strip .intro-cta-row {
+  display: flex;
+  gap: var(--space-5);
+}
+.intro-bottom-strip > * {
+  pointer-events: auto;
+}
+html.light-mode .intro-bottom-strip {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.intro-enter-hint {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+html.light-mode .intro-enter-hint {
+  color: rgba(15, 23, 42, 0.6);
+  text-shadow: none;
+}
+.intro-enter-hint kbd {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  margin-right: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.3rem;
+  font-family: inherit;
+  font-size: 0.85em;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+}
+html.light-mode .intro-enter-hint kbd {
+  border-color: rgba(15, 23, 42, 0.3);
+  color: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.intro-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 1.6rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.intro-cta-primary {
+  background: linear-gradient(to right, var(--color-orange), var(--color-orange-hover));
+  color: #fff;
+  box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65);
+}
+.intro-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px -10px rgba(249, 115, 22, 0.85);
+}
+.intro-cta-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+}
+.intro-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(249, 115, 22, 0.6);
+  transform: translateY(-2px);
+}
+html.light-mode .intro-cta-secondary {
+  background: rgba(15, 23, 42, 0.05);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.2);
+}
+html.light-mode .intro-cta-secondary:hover {
+  background: rgba(15, 23, 42, 0.1);
+  border-color: rgba(249, 115, 22, 0.6);
+}
+.intro-cta.is-pulsing {
+  animation: intro-cta-pulse 0.6s ease-out 1;
+}
+@keyframes intro-cta-pulse {
+  0% {
+    box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65);
+  }
+  50% {
+    box-shadow: 0 0 0 18px rgba(249, 115, 22, 0);
+  }
+  100% {
+    box-shadow: 0 10px 25px -10px rgba(249, 115, 22, 0.65);
+  }
+}
+
+@media (max-width: 640px) {
+  .intro-bottom-strip {
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .intro-bottom-strip .intro-cta-row {
+    display: flex;
+    gap: var(--space-4);
+    width: 100%;
+  }
+  .intro-bottom-strip .intro-cta {
+    flex: 1;
+  }
+}
+
+/* Discovery hint label that appears once near the star */
+.intro-hint-label {
+  position: fixed;
+  left: 50%;
+  bottom: 22vh;
+  transform: translateX(-50%);
+  z-index: 45;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.intro-hint-label svg {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+.intro-hint-label .intro-hint-sep {
+  opacity: 0.5;
+  letter-spacing: 0;
+}
+html.light-mode .intro-hint-label {
+  color: rgba(15, 23, 42, 0.4);
+  text-shadow: none;
+}
+.intro-hint-label.is-visible {
+  opacity: 1;
+}
+
+/* Reveal hooks set on chrome elements during page-load orchestration */
+.intro-reveal-up {
+  transform: translateY(8px);
+  opacity: 0;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.intro-reveal-up.is-revealed {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-top-strip,
+  .intro-bottom-strip {
+    opacity: 1 !important;
+  }
+  .intro-reveal-up {
+    transform: none;
+    opacity: 1;
+    transition: none;
+  }
+  .intro-cta.is-pulsing {
+    animation: none;
+  }
+}

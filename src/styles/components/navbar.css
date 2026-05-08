@@ -1,0 +1,129 @@
+/* ==========================================================================
+   NAVBAR (editorial-flat top bar)
+   ========================================================================== */
+
+.linka-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  height: 60px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.45);
+  color: var(--color-fg-base);
+  font-family: inherit;
+}
+html.light-mode .linka-nav {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom-color: rgba(203, 213, 225, 0.6);
+  color: rgb(15 23 42);
+}
+
+/* Width + horizontal padding match `.feed-column` so the brand and
+   sign-out button line up vertically with the content edges. */
+.linka-nav-inner {
+  height: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+@media (min-width: 768px) {
+  .linka-nav-inner {
+    gap: var(--space-8);
+  }
+}
+
+.linka-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+.linka-nav-mark {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.35));
+}
+.linka-nav-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.linka-nav-wordmark {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.linka-nav-brand:hover .linka-nav-wordmark {
+  color: var(--color-orange);
+}
+
+.linka-nav-search {
+  flex: 1;
+  display: none;
+  position: relative;
+  max-width: 380px;
+}
+@media (min-width: 768px) {
+  .linka-nav-search {
+    display: block;
+  }
+}
+.linka-nav-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 2.6rem 0 0.95rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: var(--text-base);
+  color: inherit;
+  outline: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.linka-nav-search-input::placeholder {
+  color: rgba(148, 163, 184, 0.7);
+}
+.linka-nav-search-input:focus {
+  border-color: var(--color-orange);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+}
+html.light-mode .linka-nav-search-input {
+  background: rgba(15, 23, 42, 0.04);
+  border-color: rgba(15, 23, 42, 0.12);
+}
+html.light-mode .linka-nav-search-input:focus {
+  background: rgba(255, 255, 255, 0.95);
+}
+.linka-nav-search-hint {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  padding: 0.18rem 0.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 0.3rem;
+  color: rgba(148, 163, 184, 0.8);
+  background: transparent;
+  pointer-events: none;
+}
